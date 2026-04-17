@@ -1,0 +1,81 @@
+{
+    "path": "/home",
+    "title": "Welcome to Metro Ford",
+    "layout": "layout",
+    "blocks": [
+        {
+            "block_ref" : "shared/blk-header"
+        },
+        {
+            "type": "hero",
+            "data": {
+                "headline": "Drive Your Dream Car Today",
+                "subheadline": "Metro Ford \u2014 Springfield's #1 Ford Dealer since 1978",
+                "backgroundImage": "https://placehold.co/1920x800/003087/ffffff?text=Metro+Ford",
+                "cta": {
+                    "label": "Shop New Vehicles",
+                    "href": "/new"
+                },
+                "ctaSecondary": {
+                    "label": "View Used Cars",
+                    "href": "/used"
+                }
+            }
+        },
+        {
+            "order": 2,
+            "id": "blk-featured-vehicles",
+            "data": {
+                "title": "Featured Vehicles",
+                "subtitle": "Handpicked deals updated daily",
+                "query": {
+                    "type": "inventory",
+                    "page":  "1",
+                    "limit": "10"
+                }
+            }
+        },
+        {
+            "id": "blk-cta",
+            "type": "cta-banner",
+            "style": "style1",
+            "order": 3,
+            "data": {
+                "headline": "Get Pre-Approved in Minutes",
+                "subtext": "Our finance team works with all credit situations.",
+                "background": "dark",
+                "cta": {
+                    "label": "Apply Now",
+                    "href": "/finance/apply"
+                }
+            }
+        },
+        {
+            "id": "blk-map",
+            "type": "map",
+            "style": "style1",
+            "order": 4,
+            "data": {
+                "title": "Visit Us Today",
+                "hours": [
+                    {
+                        "days": "Mon \u2013 Fri",
+                        "hours": "8:00 AM \u2013 8:00 PM"
+                    },
+                    {
+                        "days": "Saturday",
+                        "hours": "9:00 AM \u2013 6:00 PM"
+                    },
+                    {
+                        "days": "Sunday",
+                        "hours": "11:00 AM \u2013 4:00 PM"
+                    }
+                ]
+            }
+        },
+        {
+            "order": 5,
+            "block_ref" : "shared/blk-footer"
+        }
+    ]
+}

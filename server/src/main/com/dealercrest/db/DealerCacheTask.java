@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import com.dealercrest.db.model.Dealer;
 
-
 public class DealerCacheTask implements Runnable {
 
     private final JdbcTemplate jdbcTemplate;

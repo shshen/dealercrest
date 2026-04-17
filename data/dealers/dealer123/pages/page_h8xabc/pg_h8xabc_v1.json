@@ -1,0 +1,30 @@
+{
+    "path": "/special",
+    "title": "Special",
+    "layout": "layout",
+    "blocks": [
+        {
+            "block_ref" : "shared/blk-header"
+        },
+        {
+            "block_name": "blk-sale-vehicles",
+            "data": {
+                "title": "Sale Vehicles",
+                "subtitle": "Prices slashed for a limited time",
+                "query": {
+                    "type": "inventory-list",
+                    "filters": {
+                        "priceMax": "30000",
+                        "yearMin": "2020"
+                    },
+                    "sort":  { "key":"price", "order":"ASC" },
+                    "page":  "1",
+                    "limit": "10"
+                }
+            }
+        },
+        {
+            "block_ref" : "shared/blk-footer"
+        }
+    ]
+}

@@ -17,6 +17,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -35,10 +36,10 @@ import com.dealercrest.http.NettyHttpsHandler;
 import com.dealercrest.http.PageController;
 import com.dealercrest.http.PrefixThreadFactory;
 import com.dealercrest.http.RedirectHttpsHandler;
-import com.dealercrest.page.RenderedBlockCacheTask;
-import com.dealercrest.page.ResourceLoader;
-import com.dealercrest.page.WebResources;
+import com.dealercrest.resource.WebResource;
 import com.dealercrest.rest.NettyRouters;
+import com.dealercrest.storage.LocalStorage;
+import com.dealercrest.storage.Storage;
 
 public class HttpsWebServer extends NettyServer {
 
@@ -96,22 +97,22 @@ public class HttpsWebServer extends NettyServer {
         String jdbcUrl = "jdbc:postgresql://localhost:5432/dealer";
         DataSource dataSource = DataSourceFactory.build(jdbcUrl, "username", "password");
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        DealerCacheTask dealerTask = new DealerCacheTask(jdbcTemplate);
 
+        ThreadFactory factory = new PrefixThreadFactory("HttpExecutor");
+        ScheduledExecutorService scheduledExecutor =  Executors.newScheduledThreadPool(1, factory);
         NettyRouters nettyRouters = new NettyRouters();
-        ResourceLoader scanner = new ResourceLoader();
-        WebResources appResource = scanner.scan();
-        PageController pageController = new PageController(appResource, jdbcTemplate);
+
+        Storage storage = new LocalStorage();
+        AppConfig appConfig = new AppConfig();
+        WebResource webResource = WebResource.load(Path.of(""), appConfig.getDomain());
+
+        PageController pageController = new PageController(storage, webResource, dealerTask);
         nettyRouters.addHandler(pageController);
 
         InventoryController inventoryController = new InventoryController(jdbcTemplate);
         nettyRouters.addHandler(inventoryController);
 
-        RenderedBlockCacheTask pageRefresh = new RenderedBlockCacheTask(appResource, jdbcTemplate);
-        pageRefresh.rebuildDealerPages();
-        DealerCacheTask dealerTask = new DealerCacheTask(jdbcTemplate);
-        ThreadFactory factory = new PrefixThreadFactory("HttpExecutor");
-        ScheduledExecutorService scheduledExecutor =  Executors.newScheduledThreadPool(1, factory);
-        scheduledExecutor.scheduleWithFixedDelay(pageRefresh, 60, 60, TimeUnit.SECONDS);
         scheduledExecutor.scheduleWithFixedDelay(dealerTask, 60, 60, TimeUnit.SECONDS);
         return nettyRouters;
     }
@@ -168,7 +169,7 @@ public class HttpsWebServer extends NettyServer {
 
     @Override
     public void startAndWait() throws IOException {
-        Thread.currentThread().setName("ConsoleServerMain");
+        Thread.currentThread().setName("HttpsWebServer");
         start();
         block();
     }

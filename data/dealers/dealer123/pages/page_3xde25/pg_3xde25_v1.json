@@ -1,0 +1,59 @@
+{
+    "path": "/special",
+    "title": "Summer Sale \u2014 Save Thousands",
+    "layout": "layout",
+    "blocks": [
+        {
+            "block_ref" : "page-shared/blk-header"
+        },
+        {
+            "block_name": "blk-hero-campaign",
+            "data": {
+                "headline": "Summer Sale \u2014 Save Thousands",
+                "subheadline": "Limited time offers on new and used Ford vehicles.",
+                "backgroundImage": "https://placehold.co/1920x800/f5a623/003087?text=Summer+Sale",
+                "cta": {
+                    "label": "See All Deals",
+                    "href": "/specials"
+                },
+                "ctaSecondary": {
+                    "label": "Get Pre-Approved",
+                    "href": "/finance/apply"
+                }
+            }
+        },
+        {
+            "block_name": "blk-sale-vehicles",
+            "data": {
+                "title": "Sale Vehicles",
+                "subtitle": "Prices slashed for a limited time",
+                "query": {
+                    "type": "promotion",
+                    "filters": {
+                        "priceMax": "30000",
+                        "yearMin": "2020",
+                        "promotionId": "uuid-of-summer-sales-event"
+                    },
+                    "sort":  { "key":"price", "order":"ASC" },
+                    "page":  "1",
+                    "limit": "10"
+                }
+            }
+        },
+        {
+            "block_name": "blk-cta",
+            "data": {
+                "headline": "Offer Ends Sunday",
+                "subtext": "Don't miss out \u2014 these deals won't last.",
+                "background": "dark",
+                "cta": {
+                    "label": "Claim Your Deal",
+                    "href": "/specials"
+                }
+            }
+        },
+        {
+            "block_ref" : "shared/blk-footer"
+        }
+    ]
+}
