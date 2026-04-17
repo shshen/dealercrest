@@ -1,0 +1,130 @@
+<!-- pages/tasks.html -->
+<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+  <div>
+    <h1>Tasks & Follow-ups</h1>
+    <p>Daily to-dos, lead follow-ups and team assignments</p>
+  </div>
+  <button class="btn btn-p btn-sm" onclick="openAddTaskModal()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:5px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New Task
+  </button>
+</div>
+
+<!-- Stats -->
+<div class="sr" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+  <div class="sc"><div class="sc-l">Due Today</div><div class="sc-v" id="task-stat-today" style="color:var(--ora)">—</div></div>
+  <div class="sc"><div class="sc-l">Overdue</div><div class="sc-v" id="task-stat-overdue" style="color:var(--red)">—</div></div>
+  <div class="sc"><div class="sc-l">Upcoming</div><div class="sc-v" id="task-stat-upcoming" style="color:var(--blu)">—</div></div>
+  <div class="sc"><div class="sc-l">Completed</div><div class="sc-v" id="task-stat-done" style="color:var(--grn)">—</div></div>
+</div>
+
+<!-- Filter bar -->
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+  <div class="tabs" style="margin-bottom:0;border-bottom:none;flex:0">
+    <div class="tab on" data-filter="Today"    onclick="setTaskFilter('Today')">Today</div>
+    <div class="tab"    data-filter="All"      onclick="setTaskFilter('All')">All</div>
+    <div class="tab"    data-filter="My Tasks" onclick="setTaskFilter('My Tasks')">My Tasks</div>
+    <div class="tab"    data-filter="Done"     onclick="setTaskFilter('Done')">Done</div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
+    <span class="pill on"  data-cat="All"          onclick="setTaskCat('All')">All</span>
+    <span class="pill"     data-cat="Lead Follow-up" onclick="setTaskCat('Lead Follow-up')">Lead Follow-up</span>
+    <span class="pill"     data-cat="Service"        onclick="setTaskCat('Service')">Service</span>
+    <span class="pill"     data-cat="Marketing"      onclick="setTaskCat('Marketing')">Marketing</span>
+    <span class="pill"     data-cat="Admin"          onclick="setTaskCat('Admin')">Admin</span>
+  </div>
+</div>
+
+<!-- Task list -->
+<div class="cs">
+  <!-- Overdue section -->
+  <div id="section-overdue" style="display:none">
+    <div class="task-section-header" style="background:rgba(255,82,114,.07)">
+      <span class="task-section-label">⚠ Overdue</span>
+      <span class="task-section-count" id="count-overdue"></span>
+    </div>
+    <div id="list-overdue"></div>
+  </div>
+
+  <!-- Today section -->
+  <div id="section-today" style="display:none">
+    <div class="task-section-header">
+      <span class="task-section-label">Today</span>
+      <span class="task-section-count" id="count-today"></span>
+    </div>
+    <div id="list-today"></div>
+  </div>
+
+  <!-- Upcoming section -->
+  <div id="section-upcoming" style="display:none">
+    <div class="task-section-header">
+      <span class="task-section-label">Upcoming</span>
+      <span class="task-section-count" id="count-upcoming"></span>
+    </div>
+    <div id="list-upcoming"></div>
+  </div>
+
+  <!-- Done section -->
+  <div id="section-done" style="display:none">
+    <div class="task-section-header">
+      <span class="task-section-label">Completed</span>
+      <span class="task-section-count" id="count-done"></span>
+    </div>
+    <div id="list-done"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div id="tasks-empty" style="display:none;padding:40px;text-align:center;color:var(--tx3);font-size:13px">
+    No tasks match this filter.
+  </div>
+</div>
+
+<style>
+.task-section-header {
+  padding: 8px 16px;
+  background: var(--s2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--b1);
+}
+.task-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tx2);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+.task-section-count {
+  font-size: 10px;
+  background: var(--b1);
+  color: var(--tx3);
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+.task-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--b1);
+  transition: background .15s;
+}
+.task-row:hover { background: var(--s2); }
+.task-row.done { opacity: .5; }
+.task-checkbox {
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--b2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all .15s;
+}
+.task-checkbox.checked {
+  background: var(--grn);
+  border-color: var(--grn);
+}
+</style>

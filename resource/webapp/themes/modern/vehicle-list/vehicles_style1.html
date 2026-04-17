@@ -1,0 +1,52 @@
+<section class="vehicle-list-block" data-render="scheduled" data-refresh="300"
+    data-schema-name="Vehicle List"
+    data-schema-description="Paginated vehicle grid with filters and sorting."
+    data-schema-layout="layout.html"
+    data-schema-preview="themes/modern/vehicle-list/preview.jpg"
+    data-schema-render="dynamic"
+    data-schema-fields="title,subtitle,sort,limit,vehicles">
+    <div class="block-header">
+      <h2 data-field="title"    th:if="${data.title}"    th:text="${data.title}">Inventory</h2>
+      <p  data-field="subtitle" th:if="${data.subtitle}" th:text="${data.subtitle}" class="block-subtitle"></p>
+      <p class="result-count">
+        Showing
+        <strong th:text="${(data.page - 1) * data.limit + 1}">1</strong>&ndash;
+        <strong th:text="${data.page * data.limit < data.total ? data.page * data.limit : data.total}">12</strong>
+        of
+        <strong th:text="${data.total}">0</strong>
+        vehicles
+      </p>
+    </div>
+    <div class="vehicle-grid" data-field="vehicles">
+      <article class="vehicle-card" th:each="v : ${data.vehicles}">
+        <a th:href="'/vehicle/' + ${v.vin}">
+          <div class="vehicle-image">
+            <img th:src="${v.image}" th:alt="${v.year + ' ' + v.make + ' ' + v.model}"/>
+            <span class="badge" th:if="${v.badge}" th:text="${v.badge}"></span>
+            <span class="condition" th:classappend="'condition-' + ${#strings.toLowerCase(v.condition)}" th:text="${v.condition}"></span>
+          </div>
+          <div class="vehicle-info">
+            <h3 th:text="${v.year + ' ' + v.make + ' ' + v.model}">Vehicle</h3>
+            <p class="trim"    th:if="${v.trim}"                  th:text="${v.trim}"></p>
+            <p class="mileage" th:unless="${v.condition == 'New'}" th:text="${#numbers.formatInteger(v.mileage, 0, 'COMMA') + ' mi'}"></p>
+            <p class="price"   th:text="'$' + ${#numbers.formatInteger(v.price, 0, 'COMMA')}"></p>
+            <div class="card-actions"><span class="btn btn-primary btn-sm">View Details</span></div>
+          </div>
+        </a>
+      </article>
+    </div>
+    <nav class="pagination" th:if="${data.totalPages > 1}">
+      <a th:if="${data.hasPrev}" th:href="'?page=' + ${data.page - 1}" class="page-btn page-prev">&larr; Prev</a>
+      <span th:unless="${data.hasPrev}" class="page-btn page-prev disabled">&larr; Prev</span>
+      <a th:if="${data.page > 2}" href="?page=1" class="page-btn">1</a>
+      <span th:if="${data.page > 3}" class="page-ellipsis">...</span>
+      <a th:if="${data.page > 1}" th:href="'?page=' + ${data.page - 1}" th:text="${data.page - 1}" class="page-btn"></a>
+      <span class="page-btn page-current" th:text="${data.page}">1</span>
+      <a th:if="${data.page < data.totalPages}" th:href="'?page=' + ${data.page + 1}" th:text="${data.page + 1}" class="page-btn"></a>
+      <span th:if="${data.page < data.totalPages - 2}" class="page-ellipsis">...</span>
+      <a th:if="${data.page < data.totalPages - 1}" th:href="'?page=' + ${data.totalPages}" th:text="${data.totalPages}" class="page-btn"></a>
+      <a th:if="${data.hasNext}" th:href="'?page=' + ${data.page + 1}" class="page-btn page-next">Next &rarr;</a>
+      <span th:unless="${data.hasNext}" class="page-btn page-next disabled">Next &rarr;</span>
+      <span class="page-summary">Page <strong th:text="${data.page}">1</strong> of <strong th:text="${data.totalPages}">1</strong></span>
+    </nav>
+  </section>  

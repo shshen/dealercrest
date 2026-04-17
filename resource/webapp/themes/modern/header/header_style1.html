@@ -1,0 +1,30 @@
+<header class="site-header" data-render="static" data-field="sticky" th:classappend="${data.sticky} ? 'sticky' : ''"
+    data-schema-name="Header — Standard Nav"
+    data-schema-description="Site header with logo, multi-level navigation, phone number and CTA button"
+    data-schema-layout="layout.html"
+    data-schema-preview="themes/modern/header/preview.jpg"
+    data-schema-render="static"
+    data-schema-fields="sticky,navLinks">
+    <div class="header-inner">
+        <a href="/" class="logo">
+            <img th:src="${dealer.logo}" th:alt="${dealer.name}" />
+        </a>
+        <nav class="main-nav" data-field="navLinks">
+            <ul>
+                <li th:each="link : ${data.navLinks}" th:classappend="${link.children} ? 'has-dropdown' : ''">
+                    <a th:href="${link.href}" th:text="${link.label}">Link</a>
+                    <span th:if="${link.children}" class="dropdown-arrow">&#9660;</span>
+                    <ul th:if="${link.children}" class="dropdown">
+                        <li th:each="child : ${link.children}">
+                            <a th:href="${child.href}" th:text="${child.label}">Child</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div class="header-cta">
+            <a th:href="'tel:' + ${dealer.phone}" th:text="${dealer.phone}" class="phone"></a>
+            <a href="/inventory" class="btn btn-primary btn-sm">View Inventory</a>
+        </div>
+    </div>
+</header>

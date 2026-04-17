@@ -1,0 +1,24 @@
+{
+    "path": "/vehicle",
+    "title": "${vehicle.year} ${vehicle.make} ${vehicle.model} | ${dealer.name}",
+    "layout": "layout",
+    "blocks": [
+        {
+            "order": 1,
+            "block_ref" : "shared/blk-header"
+        },
+        {
+            "order": 2,
+            "block_key": "blk-sale-vehicles",
+            "data": {
+                "query": {
+                    "type": "vehicle"
+                }
+            }
+        },
+        {
+            "order": 3,
+            "block_ref" : "shared/blk-footer"
+        }
+    ]
+}

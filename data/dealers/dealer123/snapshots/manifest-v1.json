@@ -1,0 +1,12 @@
+{
+    "dealer_id": "uuid",
+    "version": 3,
+    "published_at": "2026-03-25T08:00:00Z",
+    "published_by": "user_uuid",
+    "note": "Spring Campaign",
+    "pages": [
+        { "page_id": "uuid", "slug": "home",      "s3_key": "dealers/.../pages/{id}/history/v3_2026-03-25.json" },
+        { "page_id": "uuid", "slug": "inventory", "s3_key": "dealers/.../pages/{id}/history/v8_2026-03-20.json" },
+        { "page_id": "uuid", "slug": "specials",  "s3_key": "dealers/.../pages/{id}/history/v2_2026-02-01.json" }
+    ]
+}

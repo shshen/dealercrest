@@ -1,0 +1,33 @@
+<!-- pages/listings.html -->
+<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+  <div>
+    <h1>Listings & Portal Syndication</h1>
+    <p>Push your inventory to AutoTrader, Cars.com, KSL, CarGurus and Facebook Marketplace</p>
+  </div>
+  <button class="btn btn-p btn-sm" onclick="syncAllPortals()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:5px"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+    Sync All Active
+  </button>
+</div>
+
+<div class="sr" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+  <div class="sc"><div class="sc-l">Active Portals</div><div class="sc-v" id="lst-stat-active" style="color:var(--grn)">—</div></div>
+  <div class="sc"><div class="sc-l">Total Listings</div><div class="sc-v" id="lst-stat-listed" style="color:var(--acc)">—</div></div>
+  <div class="sc"><div class="sc-l">Monthly Views</div><div class="sc-v" id="lst-stat-views" style="color:var(--blu)">—</div></div>
+  <div class="sc"><div class="sc-l">Portal Leads</div><div class="sc-v" id="lst-stat-leads" style="color:var(--pur)">—</div></div>
+</div>
+
+<!-- Portal cards -->
+<div id="portal-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px;padding:0 20px"></div>
+
+<!-- Feed health -->
+<div class="cs" style="margin:0 20px 20px">
+  <div class="cs-h" style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:7px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><circle cx="12" cy="21" r="1"/></svg>
+      <h3>Feed Health & Sync Log</h3>
+    </div>
+    <span style="font-size:11px;color:var(--grn)">● All feeds healthy</span>
+  </div>
+  <div id="feed-health-list"></div>
+</div>

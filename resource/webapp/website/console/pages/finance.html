@@ -1,0 +1,46 @@
+<!-- pages/finance.html -->
+<div class="ph"><h1>Finance & Desking</h1><p>Deal structure, F&I products and payment calculator</p></div>
+<div style="display:grid;grid-template-columns:1fr 360px;gap:16px;padding:0 20px 20px">
+  <!-- Left: inputs -->
+  <div>
+    <div class="cs" style="margin-bottom:14px">
+      <div class="cs-h"><h3>Deal Structure</h3></div>
+      <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">Sale Price ($)</label>
+          <input class="inp" id="fin-sale" type="number" value="45000" oninput="finCalc()"/></div>
+        <div><label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">MSRP ($)</label>
+          <input class="inp" id="fin-msrp" type="number" value="47500" oninput="finCalc()"/></div>
+        <div><label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">Trade-in Value ($)</label>
+          <input class="inp" id="fin-trade" type="number" value="0" oninput="finCalc()"/></div>
+        <div><label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">Trade-in Owed ($)</label>
+          <input class="inp" id="fin-owed" type="number" value="0" oninput="finCalc()"/></div>
+        <div><label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">Down Payment ($)</label>
+          <input class="inp" id="fin-down" type="number" value="5000" oninput="finCalc()"/></div>
+        <div><label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">Tax Rate (%)</label>
+          <input class="inp" id="fin-tax" type="number" value="7.25" step="0.01" oninput="finCalc()"/></div>
+        <div><label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">APR (%)</label>
+          <input class="inp" id="fin-rate" type="number" value="6.9" step="0.1" oninput="finCalc()"/></div>
+        <div><label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">Term (months)</label>
+          <input class="inp" id="fin-term" type="number" value="60" oninput="finCalc()"/></div>
+      </div>
+    </div>
+
+    <div class="cs" style="margin-bottom:14px">
+      <div class="cs-h"><h3>F&I Products</h3></div>
+      <div id="fin-products" style="padding:0 4px"></div>
+    </div>
+
+    <div class="cs">
+      <div class="cs-h"><h3>Payment Grid</h3></div>
+      <div id="fin-grid" style="padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+    </div>
+  </div>
+
+  <!-- Right: summary -->
+  <div>
+    <div class="cs">
+      <div class="cs-h"><h3>Deal Summary</h3></div>
+      <div id="fin-summary" style="padding:16px"></div>
+    </div>
+  </div>
+</div>

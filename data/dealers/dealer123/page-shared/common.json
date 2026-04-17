@@ -1,0 +1,79 @@
+{
+    "dealerId": "dealer-123",
+    "themeId": "modern",
+    "common": "common-minimal",
+    "dealer": {
+        "name": "Metro Ford",
+        "logo": "https://placehold.co/160x40/003087/ffffff?text=MetroFord",
+        "phone": "555-123-4567",
+        "address": "1000 Auto Plaza Drive, Springfield, IL 62701"
+    },
+    "blocks": [
+        {
+            "id": "blk-header",
+            "type": "header",
+            "style": "style1",
+            "order": 0,
+            "data": {
+                "sticky": true,
+                "navLinks": [
+                    { "label": "New Vehicles", "href": "/new"},
+                    { "label": "Used Vehicles", "href": "/used" },
+                    { "label": "Services","href": "/services",
+                        "children": [
+                            { "label": "Oil Change", "href": "/services/oil-change" },
+                            { "label": "Tires", "href": "/services/tires" },
+                            { "label": "Brake Service", "href": "/services/brakes" },
+                            { "label": "Collision", "href": "/services/collision" }
+                        ]
+                    },
+                    { "label": "Finance","href": "/finance",
+                        "children": [
+                            {"label": "Apply Online", "href": "/finance/apply" },
+                            { "label": "Trade-In Value", "href": "/finance/trade-in" },
+                            { "label": "Calculator", "href": "/finance/calculator" }
+                        ]
+                    },
+                    {"label": "About Us",  "href": "/about" },
+                    { "label": "Contact", "href": "/contact" }
+                ]
+            }
+        },
+        {
+            "id": "blk-footer",
+            "type": "footer",
+            "style": "style1",
+            "order": 999,
+            "data": {
+                "copyright": "© 2024 Metro Ford. All rights reserved.",
+                "disclaimer": "Prices exclude tax, title, and license fees.",
+                "columns": [
+                    {
+                        "heading": "Inventory",
+                        "links": [
+                            { "label": "New Vehicles", "href": "/new" },
+                            { "label": "Used Vehicles", "href": "/used" },
+                            { "label": "Special Offers", "href": "/specials" }
+                        ]
+                    },
+                    {
+                        "heading": "Services",
+                        "links": [
+                            { "label": "Schedule Service", "href": "/service" },
+                            { "label": "Parts & Accessories", "href": "/parts" },
+                            { "label": "Collision Center", "href": "/collision" }
+                        ]
+                    },
+                    {
+                        "heading": "Finance",
+                        "links": [
+                            {"label": "Apply for Credit", "href": "/finance/apply"  },
+                            {"label": "Trade-In Value",  "href": "/finance/trade-in" },
+                            { "label": "Payment Calculator", "href": "/finance/calculator" }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

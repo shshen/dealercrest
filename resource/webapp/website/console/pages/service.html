@@ -1,0 +1,33 @@
+<!-- pages/service.html -->
+<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+  <div><h1>Service Department</h1><p>Repair orders, bays and technician assignments</p></div>
+  <button class="btn btn-p btn-sm" onclick="newROModal()">+ New Repair Order</button>
+</div>
+<div class="sr" style="grid-template-columns:repeat(4,1fr)">
+  <div class="sc"><div class="sc-l">Open ROs</div><div class="sc-v" id="svc-stat-open" style="color:var(--acc)">—</div></div>
+  <div class="sc"><div class="sc-l">In Progress</div><div class="sc-v" id="svc-stat-prog" style="color:var(--ora)">—</div></div>
+  <div class="sc"><div class="sc-l">Ready / Done</div><div class="sc-v" id="svc-stat-ready" style="color:var(--grn)">—</div></div>
+  <div class="sc"><div class="sc-l">Today Revenue</div><div class="sc-v" id="svc-stat-rev">—</div></div>
+</div>
+
+<!-- Bay map -->
+<div class="cs" style="margin:0 0 16px">
+  <div class="cs-h"><h3>Bay Status</h3></div>
+  <div id="bay-map" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px"></div>
+</div>
+
+<!-- RO list -->
+<div class="cs">
+  <div class="cs-h" style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:8px">
+      <h3>Repair Orders</h3>
+    </div>
+    <div class="tabs" style="margin-bottom:0;border-bottom:none">
+      <div class="tab on" data-ro-filter="All"        onclick="setROFilter('All')">All</div>
+      <div class="tab"    data-ro-filter="In Progress" onclick="setROFilter('In Progress')">In Progress</div>
+      <div class="tab"    data-ro-filter="Waiting"     onclick="setROFilter('Waiting')">Waiting</div>
+      <div class="tab"    data-ro-filter="Ready"       onclick="setROFilter('Ready')">Ready</div>
+    </div>
+  </div>
+  <div id="ro-list"></div>
+</div>

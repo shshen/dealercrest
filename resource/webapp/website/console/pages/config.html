@@ -1,0 +1,56 @@
+<!-- pages/config.html -->
+<div class="ph"><h1>Configuration</h1><p>Team, domains, integrations and system settings</p></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 20px 20px">
+
+  <!-- Left column -->
+  <div>
+    <div class="cs" style="margin-bottom:16px">
+      <div class="cs-h"><div style="display:flex;align-items:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <h3>Team Members</h3>
+      </div></div>
+      <div id="team-list"><div style="padding:20px;color:var(--tx3);text-align:center">Loading…</div></div>
+    </div>
+
+    <div class="cs">
+      <div class="cs-h"><div style="display:flex;align-items:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        <h3>Domain Settings</h3>
+      </div></div>
+      <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div>
+          <label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">Primary Domain</label>
+          <input class="inp" id="cfg-domain" value="premiumauto.dealer.io" placeholder="yourdomain.com"/>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--tx3);display:block;margin-bottom:5px">Custom Domain</label>
+          <input class="inp" id="cfg-custom-domain" value="" placeholder="www.premiumautodealership.com"/>
+        </div>
+        <button class="btn btn-p btn-sm" onclick="saveDomain()">Save Domain</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right column -->
+  <div>
+    <div class="cs" style="margin-bottom:16px">
+      <div class="cs-h"><div style="display:flex;align-items:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M2 12h2M20 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/></svg>
+        <h3>System Preferences</h3>
+      </div></div>
+      <div id="toggles-list" style="padding:0 4px">
+        <div style="padding:20px;color:var(--tx3);text-align:center">Loading…</div>
+      </div>
+    </div>
+
+    <div class="cs">
+      <div class="cs-h"><div style="display:flex;align-items:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <h3>Integrations</h3>
+      </div></div>
+      <div id="integrations-list" style="padding:0 4px">
+        <div style="padding:20px;color:var(--tx3);text-align:center">Loading…</div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="${page.title + ' | ' + dealer.name}">Page</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;color:#1a1a1a;background:#f8f9fa}
+    img{max-width:100%;display:block} a{text-decoration:none;color:inherit}
+    .btn{display:inline-block;padding:12px 28px;border-radius:6px;font-weight:600;cursor:pointer;transition:opacity .2s}
+    .btn-primary{background:#003087;color:#fff}
+    .btn-accent{background:#f5a623;color:#003087}
+    /* Minimal layout: centred content, max 860px, clean white card */
+    .page-wrap{max-width:860px;margin:40px auto;padding:0 24px}
+    .page-card{background:#fff;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.08);padding:40px}
+    /* Minimal header strip — just logo + phone, no full nav */
+    .minimal-header{background:#003087;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+    .minimal-header img{height:32px}
+    .minimal-header a{color:#f5a623;font-weight:600}
+  </style>
+</head>
+<body class="layout-minimal">
+  <!-- $placeholder:body -->
+</body>
+</html>

@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+<project default="package" basedir=".">
+    <property name="lib.dir" value="libs" />
+    <property name="version" value="0.8.2"/>
+    <path id="src.dir">
+        <pathelement location="server/src/main" />
+        <pathelement location="rest/src/main" />
+    </path>
+    <path id="classPath">
+        <pathelement location="${lib.dir}/netty-all-4.2.9.jar" />
+    </path>
+    <target name="build">
+        <mkdir dir="target/build" />
+        <javac fork="yes" debug="true" destdir="target/build" includeantruntime="false" classpathref="classPath">
+            <compilerarg value="-Xlint:unchecked" />
+            <src refid="src.dir" />
+        </javac>
+    </target>
+    <target name="test" depends="build">
+        <junit printsummary="no" haltonfailure="false">
+            <classpath path="${lib.dir}">
+                <path refid="classPath" />
+                <path refid="src.dir" />
+            </classpath>
+            <classpath location="target/build" />
+            <formatter type="brief" usefile="false"  />
+            <batchtest fork="yes">
+                <fileset dir="server/src/test" >
+                    <include name="**/*Test.java" />
+                </fileset>
+                <fileset dir="rest/src/test">
+                    <include name="**/*Test.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+    <target name="package" depends="build">
+        <jar destfile="./target/dealercrest-${version}.jar">
+            <manifest>
+                <attribute name="Bundle-Version" value="${version}"/>
+            </manifest>
+            <fileset dir="target/build">
+                <include name="**/*.class" />
+                <exclude name="**/*Test*.class" />
+            </fileset>
+            <fileset dir="resource">
+                <include name="**/*" />
+            </fileset>
+        </jar>
+    </target>
+    <target name="combine-jars">
+        <unzip dest="libs/netty-4.2.9/temp">
+            <fileset dir="libs/netty-4.2.9">
+                <include name="netty-buff-*.jar" />
+                <include name="netty-codec-*.jar" />
+                <include name="netty-common-*.jar" />
+                <include name="netty-handler-*.jar" />
+                <include name="netty-transport-*.jar" />
+                <include name="netty-transport-native-unix-*.jar" />
+            </fileset>
+        </unzip>
+        <jar destfile="target/netty-all-4.2.9.jar">
+            <fileset dir="libs/netty-4.2.9/temp">
+                <include name="**/*" />
+                <exclude name="**/http/websocketx/**/*" />
+                <!--        <exclude name="**/codec/compression/**/*" />-->
+                <exclude name="**/codec/rtsp/**/*" />
+                <exclude name="**/codec/spdy/**/*" />
+            </fileset>
+        </jar>
+    </target>
+</project>

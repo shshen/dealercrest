@@ -1,0 +1,20 @@
+<section class="hero-block" data-render="static" data-field="backgroundImage"
+    th:style="'background-image: url(' + ${data.backgroundImage} + ')'"
+    data-schema-name="Hero Banner"
+    data-schema-description="Full-width hero section with headline, subheadline and up to two CTA buttons"
+    data-schema-layout="layout.html"
+    data-schema-preview="themes/modern/hero/preview.jpg",
+    data-schema-render="static"
+    data-schema-fields="headline,subheadline,backgroundImage,cta,ctaSecondary",>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 data-field="headline" th:text="${data.headline}">Headline</h1>
+        <p class="hero-sub" data-field="subheadline" th:if="${data.subheadline}" th:text="${data.subheadline}"></p>
+        <div class="hero-actions">
+            <a data-field="cta" th:if="${data.cta}" th:href="${data.cta.href}" th:text="${data.cta.label}"
+                class="btn btn-primary btn-lg"></a>
+            <a data-field="ctaSecondary" th:if="${data.ctaSecondary}" th:href="${data.ctaSecondary.href}"
+                th:text="${data.ctaSecondary.label}" class="btn btn-outline btn-lg"></a>
+        </div>
+    </div>
+</section>

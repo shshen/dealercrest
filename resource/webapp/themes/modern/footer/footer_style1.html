@@ -1,0 +1,27 @@
+<footer class="site-footer"
+    data-block-name="Footer — Standard"
+    data-block-description="Site footer with dealer branding"
+    data-block-layout="layout.html"
+    data-block-preview="themes/modern/footer/preview.jpg"
+    data-block-render="static"
+    data-block-fields="logo,copyright">
+    <div class="footer-top">
+        <div class="footer-brand">
+            <img data-field="logo" th:src="${dealer.logo}" th:alt="${dealer.name}" />
+            <p class="footer-address" th:text="${dealer.address}"></p>
+            <a th:href="'tel:' + ${dealer.phone}" th:text="${dealer.phone}" class="footer-phone"></a>
+        </div>
+        <div class="footer-col" data-field="columns" th:each="col : ${data.columns}">
+            <h4 th:text="${col.heading}">Links</h4>
+            <ul>
+                <li th:each="link : ${col.links}">
+                    <a th:href="${link.href}" th:text="${link.label}">Link</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p data-field="copyright" class="copyright" th:text="${data.copyright}"></p>
+        <p data-field="disclaimer" class="disclaimer" th:if="${data.disclaimer}" th:text="${data.disclaimer}"></p>
+    </div>
+</footer>
