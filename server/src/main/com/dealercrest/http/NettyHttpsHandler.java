@@ -10,7 +10,6 @@ import io.netty.util.CharsetUtil;
 import javax.net.ssl.SSLException;
 
 import com.dealercrest.rest.NettyRouters;
-import com.dealercrest.rest.http.HttpResult;
 
 import java.net.InetSocketAddress;
 import java.util.logging.Level;

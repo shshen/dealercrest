@@ -3,7 +3,7 @@ package com.dealercrest.rest;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.dealercrest.rest.http.HttpResult;
+import com.dealercrest.http.HttpResult;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

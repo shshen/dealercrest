@@ -2,8 +2,6 @@ package com.dealercrest.rest;
 
 import org.junit.Test;
 
-import com.dealercrest.rest.MultiValueMap;
-
 import java.util.List;
 import java.util.Map;
 

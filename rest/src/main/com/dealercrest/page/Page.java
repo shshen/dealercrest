@@ -2,20 +2,27 @@ package com.dealercrest.page;
 
 import org.json.JSONObject;
 
-import com.dealercrest.rest.http.HttpResult;
+import com.dealercrest.http.HttpResult;
+import com.dealercrest.http.QueryRequest;
 
 public abstract class Page {
 
-    private String path;
-    private long lastModified;
+    private final String dealerId;
+    private final String resourcePath;
+    private final long lastModified;
 
-    public Page(String path, long lastModified) {
-        this.path = path;
+    public Page(String dealerId, String resourcePath, long lastModified) {
+        this.dealerId = dealerId;
+        this.resourcePath = resourcePath;
         this.lastModified = lastModified;
     }
 
-    public String getPath() {
-        return path;
+    public String getDealerId() {
+        return dealerId;
+    }
+
+    public String getResourcePath() {
+        return resourcePath;
     }
     
     public long getLastModified() {
@@ -26,6 +33,6 @@ public abstract class Page {
         return 0;
     }
 
-    public abstract HttpResult render(RenderContext ctx);
+    public abstract HttpResult render(QueryRequest requestContext);
 
 }

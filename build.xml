@@ -8,6 +8,14 @@
     </path>
     <path id="classPath">
         <pathelement location="${lib.dir}/netty-all-4.2.9.jar" />
+        <pathelement location="${lib.dir}/ext/hamcrest-all-1.3.jar" />
+        <pathelement location="${lib.dir}/ext/junit-4.12.jar" />
+        <pathelement location="${lib.dir}/ext/guava-33.4.9-jre.jar" />
+        <pathelement location="${lib.dir}/ext/guava-testlib-33.5.0-jre.jar" />
+        <pathelement location="${lib.dir}/ext/byte-buddy-1.17.7.jar" />
+        <pathelement location="${lib.dir}/ext/byte-buddy-agent-1.17.7.jar" />
+        <pathelement location="${lib.dir}/ext/objimfs-1.3.1.jar" />
+        <pathelement location="${lib.dir}/ext/mockito-core-5.21.0.jar" />
     </path>
     <target name="build">
         <mkdir dir="target/build" />

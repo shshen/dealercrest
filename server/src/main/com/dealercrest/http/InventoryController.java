@@ -8,8 +8,6 @@ import com.dealercrest.db.JdbcTemplate;
 import com.dealercrest.rest.MapParam;
 import com.dealercrest.rest.QueryParam;
 import com.dealercrest.rest.Route;
-import com.dealercrest.rest.http.HttpResult;
-import com.dealercrest.rest.http.JsonResult;
 
 public class InventoryController {
     
@@ -54,5 +52,6 @@ public class InventoryController {
         JSONObject result = new JSONObject().put("code", 200);
         return new JsonResult(result);
     }
+    
 }
 

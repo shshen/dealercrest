@@ -32,4 +32,11 @@ Stores the redirect mapping
 
 Candidate domain names:
 dealerbase, dealersoft, dealersystem, dealerforce, dealerhub,dealerstack,dealergrid,dealerpilot, dealersite
-dealerworld,dealerhome
+dealerworld,dealerhome, dealerclibm, dealercrest, dealercrown
+
+For dealer images:
+1,  save it in aws s3.
+2,  config DNS, and map cdn.dealercrest.com to aws s3 cloudfront. 
+    for example:  https://d123abcd.cloudfront.net/dealer123/logo.png
+3,  in page, set image src to: https://cdn.dealercrest.com/dealer123/logo.png
+

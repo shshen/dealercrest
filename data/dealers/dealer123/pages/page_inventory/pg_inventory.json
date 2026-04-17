@@ -1,0 +1,29 @@
+{
+    "path": "/inventory",
+    "title": "${query.condition} ${query.year} ${query.make} Inventory | ${dealer.name}",
+    "layout": "layout",
+    "blocks": [
+        {
+            "block_ref" : "shared/blk-header"
+        },
+        {
+            "block_key": "blk-sale-vehicles",
+            "data": {
+                "title": "Browse Inventory",
+                "query": {
+                    "type": "inventory",
+                    "filters": {
+                        "priceMax": "30000",
+                        "yearMin": "2020"
+                    },
+                    "sort":  { "key":"price", "order":"ASC" },
+                    "page":  "1",
+                    "limit": "10"
+                }
+            }
+        },
+        {
+            "block_ref" : "shared/blk-footer"
+        }
+    ]
+}

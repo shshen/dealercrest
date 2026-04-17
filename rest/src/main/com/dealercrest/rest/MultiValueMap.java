@@ -124,6 +124,10 @@ public class MultiValueMap {
         return map.isEmpty();
     }
 
+    public Map<String, List<String>> toMap() {
+        return Collections.unmodifiableMap(map);
+    }
+
     public Map<String, String> toFlatMap() {
         Map<String, String> flat = new LinkedHashMap<String, String>();
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {

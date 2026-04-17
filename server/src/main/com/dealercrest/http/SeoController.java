@@ -1,7 +1,6 @@
 package com.dealercrest.http;
 
 import com.dealercrest.rest.Route;
-import com.dealercrest.rest.http.HttpResult;
 
 public class SeoController {
     

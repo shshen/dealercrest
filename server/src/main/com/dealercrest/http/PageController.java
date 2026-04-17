@@ -1,54 +1,34 @@
 package com.dealercrest.http;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-
-import org.json.JSONObject;
-
 import com.dealercrest.db.DealerCacheTask;
-import com.dealercrest.db.JdbcTemplate;
 import com.dealercrest.page.Page;
 import com.dealercrest.page.SitePages;
-import com.dealercrest.page.WebResources;
+import com.dealercrest.page.ThemeFiles;
+import com.dealercrest.resource.WebResource;
 import com.dealercrest.rest.ContextParam;
+import com.dealercrest.rest.HeaderParam;
 import com.dealercrest.rest.MapParam;
 import com.dealercrest.rest.MultiValueMap;
 import com.dealercrest.rest.PathParam;
 import com.dealercrest.rest.Route;
-import com.dealercrest.rest.http.DeferredResult;
-import com.dealercrest.rest.http.HttpResult;
-import com.dealercrest.rest.http.JsonResult;
-
-import io.netty.handler.codec.http.HttpResponse;
+import com.dealercrest.storage.Storage;
 
 public class PageController {
 
-    private final WebResources webResources;
-    private final JdbcTemplate jdbcTemplate;
+    private final WebResource webResource;
     private final DealerCacheTask dealerCache;
-    private final ExecutorService executorService;
 
-    public PageController(WebResources appResource, JdbcTemplate jdbcTemplate) {
-        this.webResources = appResource;
-        this.jdbcTemplate = jdbcTemplate;
-        this.dealerCache = null;
-        this.executorService = null;
+    public PageController(Storage storage, WebResource webResource, DealerCacheTask dealerCache) {
+        this.webResource = webResource;
+        this.dealerCache = dealerCache;
     }
 
-    @Route(path = "/assets/{path*}")
-    public HttpResult assets(
-            @ContextParam("dealerDomain") String dealerDomain,
-            @PathParam("path") String path) {
-        // 1, get dealerId async
-        // 2, then get pages by dealerId, and byteBuf
-        // return DeferredResult
-        if (dealerDomain.endsWith("dataleading.com")) {
-            return null;
-        }
-        String dealerId = dealerCache.getDealerId(dealerDomain);
-        SitePages sitePages = webResources.getDealerPages(dealerId);
-        Page page = sitePages.getPage(path);
-        return page.render(null);
+    @Route(path = "/themes/{path*}")
+    public HttpResult themes(@PathParam("path") String path, 
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        String themeName = "";
+        ThemeFiles themeTemplate = webResource.getTheme(themeName);
+        return themeTemplate.buildHttpResult(path, ifModifiedSince);
     }
 
     /**
@@ -57,16 +37,13 @@ public class PageController {
      * PATH: condition/make/model  (high SEO value, page identity) 
      * QUERY STRING: everything else — secondary filters,sort, and pagination
      */
-    @Route(path = "/inventory/{path*}")
+    @Route(path = "/inventory/{filter*}")
     public HttpResult inventory(
             @ContextParam("host") String host,
-            @PathParam("path") String path,
+            @PathParam("filter") String filter,
             @MapParam MultiValueMap queryParams) {
-        CompletableFuture<HttpResponse> future = new CompletableFuture<>();
-
-        // PageRenderTask pageRender = new PageRenderTask(dealerDomain, appResource, jdbcTemplate, future);
-
-        return new DeferredResult(future);
+        QueryRequest queryResource = new QueryRequest(filter, queryParams);
+        return renderPage(host, "/inventory", queryResource);
     }
 
     /**
@@ -74,42 +51,50 @@ public class PageController {
      * 
      * @return
      */
-    @Route(path = "/vehicle/{condition}/{slug*}")
+    @Route(path = "/vehicle/{condition}/{detail*}")
     public HttpResult vehicle(
             @ContextParam("host") String host,
             @PathParam("condition") String condition,
-            @PathParam("slug") String slug) {
-        String vin = extractVin(slug);
-        SitePages sitePages = webResources.getDealerPages("dealer");
-        Page page = sitePages.getPage("/inventory");
-        return page.render(null);
+            @PathParam("detail") String detail) {
+        String fullPath = "/vehicle/" + condition + "/" + detail;
+        QueryRequest requestContext = new QueryRequest(fullPath, new MultiValueMap());
+        return renderPage(host, "/vehicle", requestContext);
     }
 
     /**
+     * Fallback route for all other paths, can be used to render a 404 page or redirect to homepage
+     * 
+     * 1, predefined set of dealer paths. 
+     *    such as /about, /contact, /service etc. that can be rendered with static pages or simple templates.
+     * 2, my own saas pages
      * 
      */
     @Route(path = "{path**}")
     public HttpResult fallback(
             @ContextParam("host") String host,
             @PathParam("path") String path, 
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @MapParam MultiValueMap queryParams) {
-        JSONObject result = new JSONObject().put("code", 200);
-        return new JsonResult(result);
+        QueryRequest queryRequest = new QueryRequest(path, ifModifiedSince, queryParams);
+        return renderPage(host, path, queryRequest);
     }
 
-    private String extractVin(String slug) {
-        int lastHyphen = -1;
-        for (int i = slug.length() - 1; i >= 0; i--) {
-            if (slug.charAt(i) == '-') {
-                lastHyphen = i;
-                break;
-            }
+    private HttpResult renderPage(String host, String path, QueryRequest queryRequest) {
+        String dealerId = dealerCache.getDealerId(host);
+        if (dealerId == null) {
+            Page page = webResource.getErrorPage(404);
+            return page.render(queryRequest);
         }
-        if (lastHyphen == -1) {
-            return slug;
+        SitePages dealerSite = webResource.getDealerPages(dealerId);
+        if (dealerSite == null) {
+            Page page = webResource.getErrorPage(501);
+            return page.render(queryRequest);
         }
-        return slug.substring(lastHyphen + 1);
+        Page page = dealerSite.getPage(path);
+        if (page == null) {
+            page = dealerSite.getPage("/404");
+        }
+        return page.render(queryRequest);
     }
-
 
 }

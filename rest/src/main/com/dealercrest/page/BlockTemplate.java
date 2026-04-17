@@ -20,8 +20,7 @@ import java.util.Map;
  *   data-schema-name="Footer — Standard"
  *   data-schema-fields="logo,copyright"
  *   data-schema-layout="layout.html"
- *   data-schema-preview="themes/modern/footer/preview.jpg"
- * >
+ *   data-schema-preview="themes/modern/footer/preview.jpg">
  *   <img data-field="logo" src="{{logo}}" />
  *   <p data-field="copyright">{{copyright}}</p>
  * </footer>

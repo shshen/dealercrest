@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import com.dealercrest.http.HttpResult;
 import com.dealercrest.rest.ParamEntry;
-import com.dealercrest.rest.http.HttpResult;
 
 public class Handler {
 

@@ -5,11 +5,11 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import org.json.JSONObject;
 
-import com.dealercrest.rest.http.BytesBody;
-import com.dealercrest.rest.http.FileUploads;
-import com.dealercrest.rest.http.HttpResult;
-import com.dealercrest.rest.http.JsonResult;
-import com.dealercrest.rest.http.NettyRequest;
+import com.dealercrest.http.BytesBody;
+import com.dealercrest.http.FileUploads;
+import com.dealercrest.http.HttpResult;
+import com.dealercrest.http.JsonResult;
+import com.dealercrest.http.NettyRequest;
 import com.dealercrest.router.Handler;
 import com.dealercrest.router.MatchResult;
 import com.dealercrest.router.PathRouter;

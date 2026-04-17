@@ -1,0 +1,12 @@
+{
+    "path": "/404",
+    "title": "Page Not Found",
+    "blocks": [
+        {
+            "block_name": "hero",
+            "data": {
+                "title": "404 - Page Not Found"
+            }
+        }
+    ]    
+}

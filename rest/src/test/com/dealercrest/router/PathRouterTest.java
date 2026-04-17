@@ -5,10 +5,6 @@ import org.junit.Test;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 
-import com.dealercrest.router.MatchResult;
-import com.dealercrest.router.PathRouter;
-import com.dealercrest.router.RouteInfo;
-
 import java.util.Collections;
 
 import static org.junit.Assert.*;
