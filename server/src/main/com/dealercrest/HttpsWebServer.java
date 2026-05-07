@@ -30,12 +30,13 @@ import javax.sql.DataSource;
 import com.dealercrest.db.DataSourceFactory;
 import com.dealercrest.db.DealerCacheTask;
 import com.dealercrest.db.JdbcTemplate;
+import com.dealercrest.domain.AcmeChallengeStore;
+import com.dealercrest.domain.RedirectHttpsHandler;
 import com.dealercrest.http.CertificateManager;
 import com.dealercrest.http.InventoryController;
 import com.dealercrest.http.NettyHttpsHandler;
 import com.dealercrest.http.PageController;
 import com.dealercrest.http.PrefixThreadFactory;
-import com.dealercrest.http.RedirectHttpsHandler;
 import com.dealercrest.resource.WebResource;
 import com.dealercrest.rest.NettyRouters;
 import com.dealercrest.storage.LocalStorage;
@@ -74,6 +75,7 @@ public class HttpsWebServer extends NettyServer {
     }
 
     private void startHttpServer(int port) {
+        AcmeChallengeStore challengeStore = new AcmeChallengeStore(null);
         ServerBootstrap httpBootstrap = new ServerBootstrap();
         httpBootstrap.group(bossGroup, workerGroup).channel(KQueueServerSocketChannel.class)
                 .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 6000)
@@ -82,7 +84,7 @@ public class HttpsWebServer extends NettyServer {
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
                         p.addLast(new HttpServerCodec());
-                        p.addLast(new RedirectHttpsHandler());
+                        p.addLast(new RedirectHttpsHandler(challengeStore));
                     }
                 });
         try {

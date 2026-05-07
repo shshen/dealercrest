@@ -41,12 +41,12 @@ public class StaticPage extends Page {
         dataModel.setAll(pageSource.getMetadata());
         dataModel.setAll(pageSource.getSlots());
         String output = templateEngine.render(layout.getPath(), layout.getContent(), dataModel);
-        this.byteBuf = Unpooled.copiedBuffer(output, StandardCharsets.UTF_8);
+        this.byteBuf = Unpooled.copiedBuffer(output, StandardCharsets.UTF_8).asReadOnly();
     }
 
     public StaticPage(String dealerId, String path, long lastModified, String content) {
         super(dealerId, path, lastModified);
-        this.byteBuf = Unpooled.copiedBuffer(content, StandardCharsets.UTF_8);
+        this.byteBuf = Unpooled.copiedBuffer(content, StandardCharsets.UTF_8).asReadOnly();
     }
 
     public StaticPage(String dealerId, String path, ThemeFiles themeTemplate, DealerSiteJson siteDefinitin,
