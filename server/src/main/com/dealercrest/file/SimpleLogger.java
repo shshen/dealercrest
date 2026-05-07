@@ -30,7 +30,7 @@ public class SimpleLogger {
         StdConsoleHandler consoleHandler = new StdConsoleHandler();
         consoleHandler.setLevel(level);
         consoleHandler.setFormatter(new MyFormatter());
-        setLogger("com.dataleading", level, consoleHandler);
+        setLogger("com.dealercrest", level, consoleHandler);
     }
 
     private void setLogger(String pkg, Level level, StdConsoleHandler consoleHandler) {

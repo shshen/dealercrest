@@ -71,8 +71,9 @@ public class ShellExecutor {
             Command clsCmd = cls.getAnnotation(Command.class);
             invokeMethod(pathChain, current, execute, clsCmd, argList);
         } catch (NoSuchMethodException e) {
-            System.err.println("Error: No execute() method found for " + cls.getSimpleName());
-            help.print(cls, pathChain.join());
+            String pathCmd = pathChain.join();
+            System.err.println("Error: sub command required");
+            help.print(cls, pathCmd);
         }
     }
 

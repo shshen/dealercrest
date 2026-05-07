@@ -5,7 +5,9 @@ import java.time.Duration;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class AsyncLogManager {
+import com.dealercrest.Lifecycle;
+
+public class AsyncLogManager extends Lifecycle {
 
     private final MpscQueue<String> mpscQueue;
     private final Thread writerThread;

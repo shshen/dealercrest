@@ -2,16 +2,17 @@ package com.dealercrest.http;
 
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.json.JSONObject;
 
-import com.dealercrest.db.JdbcTemplate;
 import com.dealercrest.rest.MapParam;
 import com.dealercrest.rest.QueryParam;
 import com.dealercrest.rest.Route;
 
 public class InventoryController {
     
-    public InventoryController(JdbcTemplate jdbcTemplate) {
+    public InventoryController(DataSource dataSource) {
         
     }
 

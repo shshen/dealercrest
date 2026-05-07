@@ -1,11 +1,7 @@
 package com.dealercrest;
 
-public abstract class NettyServer extends Lifecycle {
-
+public abstract class Lifecycle {
     public abstract String getName();
     public abstract void start() throws Exception;
     public abstract void shutdown();
-    public abstract void block();
-    public abstract void startAndWait() throws Exception;
-
 }

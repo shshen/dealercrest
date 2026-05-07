@@ -16,8 +16,8 @@ import io.netty.util.Mapping;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.nio.file.Path;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -29,7 +29,6 @@ import javax.sql.DataSource;
 
 import com.dealercrest.db.DataSourceFactory;
 import com.dealercrest.db.DealerCacheTask;
-import com.dealercrest.db.JdbcTemplate;
 import com.dealercrest.domain.AcmeChallengeStore;
 import com.dealercrest.domain.RedirectHttpsHandler;
 import com.dealercrest.http.CertificateManager;
@@ -37,10 +36,16 @@ import com.dealercrest.http.InventoryController;
 import com.dealercrest.http.NettyHttpsHandler;
 import com.dealercrest.http.PageController;
 import com.dealercrest.http.PrefixThreadFactory;
-import com.dealercrest.resource.WebResource;
+import com.dealercrest.resource.WebResources;
 import com.dealercrest.rest.NettyRouters;
 import com.dealercrest.storage.LocalStorage;
 import com.dealercrest.storage.Storage;
+import com.dealercrest.template.DirectiveRegistry;
+import com.dealercrest.template.EachDirective;
+import com.dealercrest.template.FragmentRegistry;
+import com.dealercrest.template.IfDirective;
+import com.dealercrest.template.ReplaceDirective;
+import com.dealercrest.template.TemplateEngine;
 
 public class HttpsWebServer extends NettyServer {
 
@@ -48,7 +53,9 @@ public class HttpsWebServer extends NettyServer {
     private final int httpsPort;
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
+    private final DataSource dataSource;
     private final static int maxContentLength = 65536; // 64*1024 = 64K
+    private final String jdbcUrl = "jdbc:postgresql://localhost:5432/dealerbase";
     private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private static final Logger logger = Logger.getLogger(HttpsWebServer.class.getName());
 
@@ -59,6 +66,7 @@ public class HttpsWebServer extends NettyServer {
     public HttpsWebServer(int httpPort, int httpsPort) throws UnknownHostException {
         this.httpPort = httpPort;
         this.httpsPort = httpsPort;
+        this.dataSource = DataSourceFactory.build(jdbcUrl, "dealerbase_app", "zhu88jie");
         // Configure the bootstrap.
         this.bossGroup = new MultiThreadIoEventLoopGroup(1, new PrefixThreadFactory("HttpsWebServer:" + httpsPort),
                 KQueueIoHandler.newFactory());
@@ -67,15 +75,15 @@ public class HttpsWebServer extends NettyServer {
     }
 
     @Override
-    public void start() throws IOException {
-        startHttpsServer(httpsPort);
+    public void start() throws Exception {
         startHttpServer(httpPort);
+        startHttpsServer(httpsPort);
         logger.log(Level.INFO, "console server started at http port {0},https port {1}",
                 new String[] { Integer.toString(httpPort), Integer.toString(httpsPort) });
     }
 
     private void startHttpServer(int port) {
-        AcmeChallengeStore challengeStore = new AcmeChallengeStore(null);
+        AcmeChallengeStore challengeStore = new AcmeChallengeStore(dataSource);
         ServerBootstrap httpBootstrap = new ServerBootstrap();
         httpBootstrap.group(bossGroup, workerGroup).channel(KQueueServerSocketChannel.class)
                 .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 6000)
@@ -95,31 +103,32 @@ public class HttpsWebServer extends NettyServer {
         }
     }
 
-    private NettyRouters buildRouters() throws IOException {
-        String jdbcUrl = "jdbc:postgresql://localhost:5432/dealer";
-        DataSource dataSource = DataSourceFactory.build(jdbcUrl, "username", "password");
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        DealerCacheTask dealerTask = new DealerCacheTask(jdbcTemplate);
-
+    private NettyRouters buildRouters() throws IOException, URISyntaxException {
         ThreadFactory factory = new PrefixThreadFactory("HttpExecutor");
         ScheduledExecutorService scheduledExecutor =  Executors.newScheduledThreadPool(1, factory);
-        NettyRouters nettyRouters = new NettyRouters();
+        DealerCacheTask dealerTask = new DealerCacheTask(dataSource);
+        scheduledExecutor.scheduleWithFixedDelay(dealerTask, 60, 60, TimeUnit.SECONDS);
 
         Storage storage = new LocalStorage();
         AppConfig appConfig = new AppConfig();
-        WebResource webResource = WebResource.load(Path.of(""), appConfig.getDomain());
+        FragmentRegistry fragments = new FragmentRegistry();
+        DirectiveRegistry reg = new DirectiveRegistry();
+        reg.register(new ReplaceDirective(fragments));
+        reg.register(new IfDirective());
+        reg.register(new EachDirective());
+        TemplateEngine templateEngine = new TemplateEngine(reg);
+        WebResources webResource = WebResources.load(appConfig.getDomain(), templateEngine);
 
+        NettyRouters nettyRouters = new NettyRouters();
         PageController pageController = new PageController(storage, webResource, dealerTask);
         nettyRouters.addHandler(pageController);
 
-        InventoryController inventoryController = new InventoryController(jdbcTemplate);
+        InventoryController inventoryController = new InventoryController(dataSource);
         nettyRouters.addHandler(inventoryController);
-
-        scheduledExecutor.scheduleWithFixedDelay(dealerTask, 60, 60, TimeUnit.SECONDS);
         return nettyRouters;
     }
 
-    private void startHttpsServer(int port) throws IOException {
+    private void startHttpsServer(int port) throws IOException, URISyntaxException {
         NettyRouters nettyRouters = buildRouters();
         CertificateManager certificateManager = new CertificateManager();
         Mapping<String, SslContext> sniMapping = certificateManager.getMapping();
@@ -133,7 +142,6 @@ public class HttpsWebServer extends NettyServer {
                         p.addLast(new SniHandler(sniMapping));
                         p.addLast(new HttpServerCodec());
                         p.addLast(new HttpObjectAggregator(maxContentLength));
-                        // p.addLast(new ChunkedWriteHandler());
                         p.addLast(new HttpContentCompressor());
                         p.addLast(new NettyHttpsHandler(nettyRouters));
                     }
@@ -170,7 +178,7 @@ public class HttpsWebServer extends NettyServer {
     }
 
     @Override
-    public void startAndWait() throws IOException {
+    public void startAndWait() throws Exception {
         Thread.currentThread().setName("HttpsWebServer");
         start();
         block();

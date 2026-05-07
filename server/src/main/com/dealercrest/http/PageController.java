@@ -4,7 +4,7 @@ import com.dealercrest.db.DealerCacheTask;
 import com.dealercrest.page.Page;
 import com.dealercrest.page.SitePages;
 import com.dealercrest.page.ThemeFiles;
-import com.dealercrest.resource.WebResource;
+import com.dealercrest.resource.WebResources;
 import com.dealercrest.rest.ContextParam;
 import com.dealercrest.rest.HeaderParam;
 import com.dealercrest.rest.MapParam;
@@ -15,10 +15,10 @@ import com.dealercrest.storage.Storage;
 
 public class PageController {
 
-    private final WebResource webResource;
+    private final WebResources webResource;
     private final DealerCacheTask dealerCache;
 
-    public PageController(Storage storage, WebResource webResource, DealerCacheTask dealerCache) {
+    public PageController(Storage storage, WebResources webResource, DealerCacheTask dealerCache) {
         this.webResource = webResource;
         this.dealerCache = dealerCache;
     }

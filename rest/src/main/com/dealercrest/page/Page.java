@@ -35,4 +35,8 @@ public abstract class Page {
 
     public abstract HttpResult render(QueryRequest requestContext);
 
+    @Override
+    public String toString() {
+        return "Page [dealerId=" + dealerId + ", resourcePath=" + resourcePath + ", lastModified=" + lastModified + "]";
+    }
 }

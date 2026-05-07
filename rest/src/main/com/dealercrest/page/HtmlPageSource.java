@@ -79,6 +79,9 @@ public class HtmlPageSource {
                 }
             }
         }
+        if (layoutPath == null) {
+            return null; // Must have data-layout to be valid
+        }
 
         // 2. Find all <div data-slot="..."> blocks and capture inner HTML
         int searchFrom = htmlTagEnd + 1;

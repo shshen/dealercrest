@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
- * Thread-safe SNI domain → SslContext mapping.
+ * Thread-safe SNI domain -> SslContext mapping.
  * Registered with Netty's SniHandler at server startup.
  * Updated at runtime as dealer certs are issued or renewed.
  */
@@ -18,14 +18,14 @@ public class SniMapping implements AsyncMapping<String, SslContext> {
     private static final Logger LOG = Logger.getLogger(SniMapping.class.getName());
 
     private final ConcurrentHashMap<String, SslContext> mapping;
-    private final SslContext                            defaultSslContext;
+    private final SslContext defaultSslContext;
 
     /**
      * @param defaultSslContext fallback context for unrecognized domains
      *                          (e.g. your platform's own wildcard cert)
      */
     public SniMapping(SslContext defaultSslContext) {
-        this.mapping          = new ConcurrentHashMap<String, SslContext>();
+        this.mapping = new ConcurrentHashMap<String, SslContext>();
         this.defaultSslContext = defaultSslContext;
     }
 

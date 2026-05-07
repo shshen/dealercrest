@@ -18,14 +18,14 @@ public class TlsCertRepository {
         this.dataSource = dataSource;
     }
 
-    public List<DealerDomain> findByStatus(String status) throws SQLException {
+    public List<DealerDomain> findByStatus(DomainStatus status) throws SQLException {
         Connection conn = dataSource.getConnection();
         PreparedStatement stmt = conn.prepareStatement(
             "SELECT dealer_id, domain, status, order_url, challenge_url, " +
             "       attempt_count, last_checked, error_message " +
             "FROM dealer_domain WHERE status = ?"
         );
-        stmt.setString(1, status);
+        stmt.setString(1, status.toDbValue());
         ResultSet rs = stmt.executeQuery();
 
         List<DealerDomain> results = new ArrayList<DealerDomain>();
@@ -38,12 +38,12 @@ public class TlsCertRepository {
         return results;
     }
 
-    public void updateStatus(long dealerId, String status) throws SQLException {
+    public void updateStatus(long dealerId, DomainStatus status) throws SQLException {
         Connection conn = dataSource.getConnection();
         PreparedStatement stmt = conn.prepareStatement(
             "UPDATE dealer_domain SET status = ?, last_checked = ? WHERE dealer_id = ?"
         );
-        stmt.setString(1, status);
+        stmt.setString(1, status.toDbValue());
         stmt.setTimestamp(2, Timestamp.from(Instant.now()));
         stmt.setLong(3, dealerId);
         stmt.executeUpdate();
@@ -51,14 +51,14 @@ public class TlsCertRepository {
         conn.close();
     }
 
-    public void updateStatusWithError(long dealerId, String status, String error) throws SQLException {
+    public void updateStatusWithError(long dealerId, DomainStatus status, String error) throws SQLException {
         Connection conn = dataSource.getConnection();
         PreparedStatement stmt = conn.prepareStatement(
             "UPDATE dealer_domain " +
             "SET status = ?, error_message = ?, last_checked = ?, attempt_count = attempt_count + 1 " +
             "WHERE dealer_id = ?"
         );
-        stmt.setString(1, status);
+        stmt.setString(1, status.toDbValue());
         stmt.setString(2, error);
         stmt.setTimestamp(3, Timestamp.from(Instant.now()));
         stmt.setLong(4, dealerId);
@@ -76,7 +76,7 @@ public class TlsCertRepository {
         );
         stmt.setString(1, orderUrl);
         stmt.setString(2, challengeUrl);
-        stmt.setString(3, DomainStatus.VALIDATING);
+        stmt.setString(3, DomainStatus.VALIDATING.toDbValue());
         stmt.setTimestamp(4, Timestamp.from(Instant.now()));
         stmt.setLong(5, dealerId);
         stmt.executeUpdate();
@@ -91,7 +91,7 @@ public class TlsCertRepository {
             "SET status = ?, activated_at = ?, last_checked = ? " +
             "WHERE dealer_id = ?"
         );
-        stmt.setString(1, DomainStatus.ACTIVE);
+        stmt.setString(1, DomainStatus.ACTIVE.toDbValue());
         stmt.setTimestamp(2, Timestamp.from(Instant.now()));
         stmt.setTimestamp(3, Timestamp.from(Instant.now()));
         stmt.setLong(4, dealerId);
@@ -105,7 +105,7 @@ public class TlsCertRepository {
         PreparedStatement stmt = conn.prepareStatement(
             "SELECT * FROM dealer_domain WHERE status = ? AND activated_at > ?"
         );
-        stmt.setString(1, DomainStatus.ACTIVE);
+        stmt.setString(1, DomainStatus.ACTIVE.toDbValue());
         stmt.setTimestamp(2, Timestamp.from(since));
         ResultSet rs = stmt.executeQuery();
     

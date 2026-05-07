@@ -20,16 +20,16 @@ import java.util.Map;
  */
 public class DirectiveRegistry {
 
-    private final Map<String, Directive> map = new HashMap<String, Directive>();
+    private final Map<String, Directive> map = new HashMap<>();
 
     // Sorted by priority ascending (lower number = higher priority)
-    private final List<Directive> sortedList = new ArrayList<Directive>();
+    private final List<Directive> sortedList = new ArrayList<>();
 
     public void register(Directive d) {
         map.put(d.name(), d);
         sortedList.add(d);
         // Keep sorted after each registration
-        Collections.sort(sortedList, new Comparator<Directive>() {
+        Collections.sort(sortedList, new Comparator<>() {
             public int compare(Directive a, Directive b) {
                 return Integer.compare(a.priority(), b.priority());
             }
