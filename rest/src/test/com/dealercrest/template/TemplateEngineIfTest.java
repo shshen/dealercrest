@@ -23,17 +23,17 @@ public class TemplateEngineIfTest {
         engine = new TemplateEngine(reg);
     }
 
-    private String render(String tmpl, DataModel ctx) {
+    private String render(String tmpl, Model ctx) {
         return engine.render(tmpl, tmpl, ctx);
     }
 
-    private DataModel ctx() { return new DataModel(); }
+    private Model ctx() { return new Model(); }
 
     // ------------------------------------------------------------------ basic true/false
 
     @Test
     public void testIfTrueRendersContent() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("show", Boolean.TRUE);
         assertEquals("<div><p>Visible</p></div>",
                 render("<div th:if=\"${show}\"><p>Visible</p></div>", ctx));
@@ -41,7 +41,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testIfFalseRendersNothing() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("show", Boolean.FALSE);
         assertEquals("",
                 render("<div th:if=\"${show}\"><p>Hidden</p></div>", ctx));
@@ -49,7 +49,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testIfPreservesOuterWrapperTag() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("ok", Boolean.TRUE);
         String out = render("<section th:if=\"${ok}\">body</section>", ctx);
         assertEquals("<section>body</section>", out);
@@ -59,7 +59,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testIfNegationTrueHidesElement() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("active", Boolean.TRUE);
         assertEquals("",
                 render("<span th:if=\"${!active}\">Inactive</span>", ctx));
@@ -67,7 +67,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testIfNegationFalseShowsElement() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("active", Boolean.FALSE);
         assertEquals("<span>Inactive</span>",
                 render("<span th:if=\"${!active}\">Inactive</span>", ctx));
@@ -92,7 +92,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testIfNonNullStringIsTruthy() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("label", "hello");
         assertEquals("<p>Yes</p>",
                 render("<p th:if=\"${label}\">Yes</p>", ctx));
@@ -100,7 +100,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testIfNonNullObjectIsTruthy() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("obj", new Object());
         assertEquals("<p>Yes</p>",
                 render("<p th:if=\"${obj}\">Yes</p>", ctx));
@@ -110,7 +110,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testIfWithNestedExpressionInContent() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("show", Boolean.TRUE);
         ctx.set("name", "Alice");
         assertEquals("<div>Hello Alice</div>",
@@ -119,7 +119,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testIfWithMultipleChildren() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("show", Boolean.TRUE);
         assertEquals("<div><h1>Title</h1><p>Body</p></div>",
                 render("<div th:if=\"${show}\"><h1>Title</h1><p>Body</p></div>", ctx));
@@ -129,7 +129,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testOnlyConditionalElementIsAffected() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("show", Boolean.FALSE);
         String out = render(
                 "<div>" +
@@ -142,7 +142,7 @@ public class TemplateEngineIfTest {
 
     @Test
     public void testTwoConditionalsIndependent() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("a", Boolean.TRUE);
         ctx.set("b", Boolean.FALSE);
         String out = render(

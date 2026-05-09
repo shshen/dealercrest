@@ -115,6 +115,16 @@ function sendMessage(){
 }
 function chatKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
 
+function initChatUi(){
+  renderChatBubble();
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',initChatUi);
+}else{
+  initChatUi();
+}
+
 /* ══════════════════════════════════════════
    PAGE BUILDER ENGINE
 ══════════════════════════════════════════ */

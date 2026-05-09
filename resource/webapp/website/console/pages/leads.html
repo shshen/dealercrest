@@ -1,65 +1,119 @@
-<!-- pages/leads.html -->
-<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-  <div>
-    <h1>Leads & CRM</h1>
-    <p>Manage prospects, pipeline and follow-ups</p>
-  </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <div style="display:flex;gap:6px">
-      <div class="pill on" data-view="list"     onclick="setLeadsView('list')">List</div>
-      <div class="pill"    data-view="pipeline" onclick="setLeadsView('pipeline')">Pipeline</div>
-    </div>
-    <button class="btn btn-p btn-sm" onclick="openAddLeadModal()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:5px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Add Lead
-    </button>
-  </div>
-</div>
-
-<!-- Stats -->
-<div class="sr" style="grid-template-columns:repeat(5,1fr)">
-  <div class="sc"><div class="sc-l">Total Leads</div><div class="sc-v" id="lead-stat-total">—</div></div>
-  <div class="sc"><div class="sc-l">Hot</div><div class="sc-v" style="color:var(--red)" id="lead-stat-hot">—</div></div>
-  <div class="sc"><div class="sc-l">Warm</div><div class="sc-v" style="color:var(--ora)" id="lead-stat-warm">—</div></div>
-  <div class="sc"><div class="sc-l">Cold</div><div class="sc-v" style="color:var(--blu)" id="lead-stat-cold">—</div></div>
-  <div class="sc"><div class="sc-l">Tasks Due</div><div class="sc-v" style="color:var(--pur)" id="lead-stat-tasks">—</div></div>
-</div>
-
-<!-- Toolbar -->
-<div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;flex-wrap:wrap">
-  <div class="tabs" style="flex:0;margin-bottom:0;border-bottom:none">
-    <div class="tab on" data-status="All"  onclick="setLeadsStatus('All')">All</div>
-    <div class="tab"    data-status="Hot"  onclick="setLeadsStatus('Hot')">Hot</div>
-    <div class="tab"    data-status="Warm" onclick="setLeadsStatus('Warm')">Warm</div>
-    <div class="tab"    data-status="Cold" onclick="setLeadsStatus('Cold')">Cold</div>
-  </div>
-  <div class="hd-srch">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input id="lead-search" placeholder="Search leads…" oninput="filterLeads()"/>
-  </div>
-</div>
-
-<!-- Lead list / pipeline — JS fills this -->
-<div id="leads-content">
-  <div style="padding:30px;text-align:center;color:var(--tx3)">Loading…</div>
-</div>
-
+<!-- fragment: pages/leads.html -->
 <style>
-.lead-card {
-  display: flex; align-items: center; gap: 13px;
-  padding: 14px 16px; border-bottom: 1px solid var(--b1);
-  cursor: pointer; transition: background .15s;
-}
-.lead-card:hover { background: var(--s2); }
-.lead-avatar {
-  width: 38px; height: 38px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 13px; flex-shrink: 0;
-}
-.pipeline-col { flex: 1; min-width: 160px; }
-.pipeline-card {
-  background: var(--s2); border: 1px solid var(--b1); border-radius: 9px;
-  padding: 12px; margin-bottom: 8px; cursor: pointer; transition: border-color .15s;
-}
-.pipeline-card:hover { border-color: var(--acc); }
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap svg{position:absolute;left:10px;width:14px;height:14px;color:var(--text-3);pointer-events:none}
+.search-wrap input{padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;width:220px}
+.search-wrap input:focus{border-color:var(--green)}
+.filter-sel{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;cursor:pointer}
+.filter-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.lead-name{font-weight:600;font-size:13.5px}
+.lead-email{font-size:12px;color:var(--text-3);margin-top:1px}
+.interest-tag{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:2px 9px;color:var(--text-2);white-space:nowrap}
+@media(max-width:700px){.hide-sm{display:none}.search-wrap input{width:160px}}
 </style>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Leads</div>
+      <div class="page-sub">248 total leads · 12 new this week</div>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+      <button class="btn btn-primary btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add lead
+      </button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+      <div class="stat-card"><div class="stat-label">New</div><div class="stat-value">12</div><div class="stat-delta up">↑ 4 today</div></div>
+      <div class="stat-card"><div class="stat-label">Contacted</div><div class="stat-value">47</div><div class="stat-delta">Awaiting reply</div></div>
+      <div class="stat-card"><div class="stat-label">Qualified</div><div class="stat-value">89</div><div class="stat-delta up">↑ 22% rate</div></div>
+      <div class="stat-card"><div class="stat-label">Closed</div><div class="stat-value">100</div><div class="stat-delta">All time</div></div>
+    </div>
+
+    <div class="filter-row">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search leads…">
+      </div>
+      <select class="filter-sel">
+        <option>All statuses</option><option>New</option><option>Contacted</option><option>Qualified</option><option>Closed</option>
+      </select>
+      <select class="filter-sel hide-sm">
+        <option>All sources</option><option>Website form</option><option>Phone</option><option>Walk-in</option>
+      </select>
+      <span style="margin-left:auto;font-size:13px;color:var(--text-3);font-weight:500">248 leads</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Interest</th><th class="hide-sm">Source</th><th>Status</th><th class="hide-sm">Date</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="lead-name">James Harper</div><div class="lead-email">james@email.com · (801) 555-0182</div></td>
+            <td><span class="interest-tag">🚗 2023 Camry</span></td>
+            <td class="hide-sm"><span class="badge badge-blue">Website</span></td>
+            <td><span class="badge badge-yellow">New</span></td>
+            <td class="hide-sm" style="color:var(--text-3);font-size:13px">12 min ago</td>
+            <td><button class="btn btn-secondary btn-sm">Contact</button></td>
+          </tr>
+          <tr>
+            <td><div class="lead-name">Sara Chen</div><div class="lead-email">s.chen@mail.com · (801) 555-0291</div></td>
+            <td><span class="interest-tag">🚙 2022 CR-V</span></td>
+            <td class="hide-sm"><span class="badge badge-blue">Website</span></td>
+            <td><span class="badge badge-blue">Contacted</span></td>
+            <td class="hide-sm" style="color:var(--text-3);font-size:13px">1h ago</td>
+            <td><button class="btn btn-secondary btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td><div class="lead-name">Mike Torres</div><div class="lead-email">mtorres@mail.com · (801) 555-0384</div></td>
+            <td><span class="interest-tag">🚛 2024 F-150</span></td>
+            <td class="hide-sm"><span class="badge badge-gray">Phone</span></td>
+            <td><span class="badge badge-green">Qualified</span></td>
+            <td class="hide-sm" style="color:var(--text-3);font-size:13px">3h ago</td>
+            <td><button class="btn btn-secondary btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td><div class="lead-name">Linda Park</div><div class="lead-email">lpark@mail.com · (801) 555-0477</div></td>
+            <td><span class="interest-tag">🚙 2021 RAV4</span></td>
+            <td class="hide-sm"><span class="badge badge-gray">Walk-in</span></td>
+            <td><span class="badge badge-gray">Closed</span></td>
+            <td class="hide-sm" style="color:var(--text-3);font-size:13px">Yesterday</td>
+            <td><button class="btn btn-secondary btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td><div class="lead-name">David Kim</div><div class="lead-email">dkim@mail.com · (801) 555-0533</div></td>
+            <td><span class="interest-tag">🚗 2023 Accord</span></td>
+            <td class="hide-sm"><span class="badge badge-blue">Website</span></td>
+            <td><span class="badge badge-yellow">New</span></td>
+            <td class="hide-sm" style="color:var(--text-3);font-size:13px">2 days ago</td>
+            <td><button class="btn btn-secondary btn-sm">Contact</button></td>
+          </tr>
+          <tr>
+            <td><div class="lead-name">Rachel Moore</div><div class="lead-email">rmoore@mail.com · (801) 555-0614</div></td>
+            <td><span class="interest-tag">🚘 2024 Mustang</span></td>
+            <td class="hide-sm"><span class="badge badge-blue">Website</span></td>
+            <td><span class="badge badge-green">Qualified</span></td>
+            <td class="hide-sm" style="color:var(--text-3);font-size:13px">3 days ago</td>
+            <td><button class="btn btn-secondary btn-sm">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <span class="pagination-info">Showing 6 of 248 leads</span>
+      <div class="pagination-btns">
+        <button class="btn btn-secondary btn-sm">← Previous</button>
+        <button class="btn btn-secondary btn-sm">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>

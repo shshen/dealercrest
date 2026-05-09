@@ -10,17 +10,13 @@ public class SitePages {
     private final Map<String, Page> pages;
 
     public SitePages(String hostId) {
-        this(hostId, new HashMap<>());
-    }
-
-    public SitePages(String hostId, Map<String, Page> pages) {
-        this.pages = pages;
         this.hostId = hostId;
         this.layouts = new HashMap<>();
+        this.pages = new HashMap<>();
     }
 
-    public Page getPage(String pagePath) {
-        return pages.get(pagePath);
+    public Page getPage(String resourcePath) {
+        return pages.get(resourcePath);
     }
 
     public String getHostId() {
@@ -28,7 +24,15 @@ public class SitePages {
     }
 
     public void addPage(Page page) {
-        pages.put(page.getResourcePath(), page);
+        String resourcePath = page.getResourcePath();
+        if ( resourcePath.endsWith(".html") ) {
+            int endIdx = resourcePath.length() - 5;
+            resourcePath = resourcePath.substring(0, endIdx);
+        }
+        if ( "/index".equals(resourcePath)) {
+            pages.put("/", page);
+        }
+        pages.put(resourcePath, page);
     }
 
     public void addLayout(String path, long lastModified, String content) {

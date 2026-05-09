@@ -12,6 +12,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;backgroun
 /* ── Sidebar ── */
 .sb{width:60px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:2px;flex-shrink:0;z-index:50}
 .sb-logo{width:36px;height:36px;border-radius:10px;background:var(--acc);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#fff;margin-bottom:12px;box-shadow:0 0 20px var(--glow);cursor:pointer}
+#sidebar-nav{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%}
 .sb-btn{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);transition:all .15s;position:relative;border:none;background:transparent}
 .sb-btn:hover{background:var(--s2);color:var(--tx2)}
 .sb-btn.on{background:var(--glow);color:var(--acc)}

@@ -557,10 +557,13 @@ public class PathRouter {
         if (fallbackRoute == null) {
             return null;
         }
+    
+        boolean patternHasLeadingSlash = fallbackRoute.getRoutePath().startsWith("/");
         String path = requestPath;
-        if (path.length() > 0 && path.charAt(0) == '/') {
+        if (patternHasLeadingSlash && path.startsWith("/")) {
             path = path.substring(1);
         }
+    
         Map<String, String> params = new HashMap<>();
         List<String> names = fallbackRoute.getPathParams();
         if (names.size() > 0) {

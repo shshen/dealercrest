@@ -17,5 +17,5 @@ public interface CompiledExpression {
      * Evaluate this expression against the given rendering context.
      * Returns a String (for text output) or any Object (for logic checks).
      */
-    Object evaluate(DataModel ctx);
+    Object evaluate(Model ctx);
 }

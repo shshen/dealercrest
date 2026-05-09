@@ -1,0 +1,60 @@
+<!-- pages/inventory.html -->
+<div class="ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+  <div>
+    <h1>Inventory</h1>
+    <p>Manage your vehicle listings and stock</p>
+  </div>
+  <button class="btn btn-p btn-sm" onclick="navigate('vehicle-editor'); initNewCar()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:5px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add Vehicle
+  </button>
+</div>
+
+<!-- KPI row -->
+<div class="sr" id="inv-stats" style="grid-template-columns:repeat(4,1fr)">
+  <div class="sc"><div class="sc-l">Total</div><div class="sc-v" id="inv-stat-total">—</div></div>
+  <div class="sc"><div class="sc-l">Available</div><div class="sc-v" style="color:var(--grn)" id="inv-stat-avail">—</div></div>
+  <div class="sc"><div class="sc-l">Reserved</div><div class="sc-v" style="color:var(--ora)" id="inv-stat-res">—</div></div>
+  <div class="sc"><div class="sc-l">Sold</div><div class="sc-v" style="color:var(--tx2)" id="inv-stat-sold">—</div></div>
+</div>
+
+<!-- Toolbar -->
+<div class="tw">
+  <div class="th2">
+    <h3>Vehicles</h3>
+    <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+      <div class="pills" id="inv-filters">
+        <span class="pill on" data-filter="All"    onclick="setInvFilter('All')">All</span>
+        <span class="pill"    data-filter="Available" onclick="setInvFilter('Available')">Available</span>
+        <span class="pill"    data-filter="Reserved"  onclick="setInvFilter('Reserved')">Reserved</span>
+        <span class="pill"    data-filter="Sold"       onclick="setInvFilter('Sold')">Sold</span>
+      </div>
+      <div class="hd-srch" style="width:180px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="inv-search" placeholder="Search make, model…" oninput="filterInventory()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Vehicle</th>
+        <th>Year</th>
+        <th>Price</th>
+        <th>Mileage</th>
+        <th>Color</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="inv-tbody">
+      <tr><td colspan="7" style="text-align:center;color:var(--tx3);padding:30px">Loading…</td></tr>
+    </tbody>
+  </table>
+
+  <div id="inv-empty" style="display:none;padding:40px;text-align:center;color:var(--tx3)">
+    No vehicles match this filter.
+  </div>
+</div>

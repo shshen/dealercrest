@@ -31,7 +31,7 @@ public class EachNode extends Node {
     }
 
     @Override
-    public void render(DataModel ctx, StringBuilder out) {
+    public void render(Model ctx, StringBuilder out) {
 
         Object val = ctx.get(listName);
         if (val == null) return;
@@ -39,7 +39,7 @@ public class EachNode extends Node {
         if (val instanceof List) {
             List<?> list = (List<?>) val;
             for (int i = 0; i < list.size(); i++) {
-                DataModel.SavedValue saved = ctx.saveAndSet(var, list.get(i));
+                Model.SavedValue saved = ctx.saveAndSet(var, list.get(i));
                 template.render(ctx, out);
                 ctx.restore(saved);
             }
@@ -49,7 +49,7 @@ public class EachNode extends Node {
         if (val instanceof JSONArray) {
             JSONArray arr = (JSONArray) val;
             for (int i = 0; i < arr.length(); i++) {
-                DataModel.SavedValue saved = ctx.saveAndSet(var, arr.opt(i));
+                Model.SavedValue saved = ctx.saveAndSet(var, arr.opt(i));
                 template.render(ctx, out);
                 ctx.restore(saved);
             }

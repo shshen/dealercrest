@@ -72,38 +72,6 @@ const CAMPAIGNS = [
 const MONTHS=['Oct','Nov','Dec','Jan','Feb','Mar'];
 const VISITORS=[8400,9200,11800,10200,13400,14890];
 const LEADS_CNT=[124,148,210,189,267,312];
-const FEATURES=[
-  {id:'inventory',  label:'Inventory',    desc:'Vehicle stock, pricing and listings', icon:'car',   color:'#7c6eff',bg:'rgba(124,110,255,.12)',badge:'324 cars', bc:'bg-blu'},
-  {id:'leads',      label:'Leads',        desc:'Prospects via chat, phone and email',  icon:'leads', color:'#1fd6a0',bg:'rgba(31,214,160,.12)', badge:'12 new',  bc:'bg-grn'},
-  {id:'config',     label:'Configuration',desc:'Users, domains and system settings',   icon:'cog',   color:'#c084fc',bg:'rgba(192,132,252,.12)',badge:'',        bc:''},
-  {id:'website',    label:'Website',      desc:'Web pages, content and builder',       icon:'globe', color:'#42c4f7',bg:'rgba(66,196,247,.12)', badge:'8 pages', bc:'bg-blu'},
-  {id:'analytics',  label:'Analytics',    desc:'Traffic, clicks and conversions',      icon:'chart', color:'#f87171',bg:'rgba(248,113,113,.12)',badge:'Live',    bc:'bg-grn'},
-  {id:'advertising',label:'Advertising',  desc:'Paid ad campaigns and ROI tracking',   icon:'zap',   color:'#ffab4c',bg:'rgba(255,171,76,.12)', badge:'3 active',bc:'bg-ora'},
-  {id:'marketing',  label:'Marketing',    desc:'Email campaigns and automation flows', icon:'mail',  color:'#ff5272',bg:'rgba(255,82,114,.12)', badge:'2 running',bc:'bg-red'},
-  {id:'social',     label:'Social',       desc:'Posts, comments and social inbox',     icon:'share', color:'#1fd6a0',bg:'rgba(31,214,160,.12)', badge:'7 pending',bc:'bg-ora'},
-  {id:'finance',    label:'Finance',      desc:'Deal worksheets, F&I and payment calc', icon:'dollar',color:'#ffab4c',bg:'rgba(255,171,76,.12)', badge:'',         bc:''},
-  {id:'service',    label:'Service',      desc:'Repair orders, bays and technicians',   icon:'wrench',color:'#42c4f7',bg:'rgba(66,196,247,.12)', badge:'4 open',   bc:'bg-blu'},
-  {id:'reports',    label:'Reports',      desc:'Sales leaderboard and aged inventory',  icon:'report',color:'#c084fc',bg:'rgba(192,132,252,.12)',badge:'',         bc:''},
-  {id:'tasks',      label:'Tasks',        desc:'Daily to-dos, follow-ups and team assignments', icon:'task', color:'#f87171',bg:'rgba(248,113,113,.12)',badge:'3 due today',bc:'bg-red'},
-  {id:'listings',   label:'Listings',     desc:'Push inventory to Autotrader, Cars.com, KSL and more', icon:'cast',color:'#1fd6a0',bg:'rgba(31,214,160,.12)', badge:'5 portals', bc:'bg-grn'},
-];
-const NAV_ITEMS=[
-  {id:'home',       icon:'home',  label:'Home'},
-  {id:'inventory',  icon:'car',   label:'Inventory'},
-  {id:'leads',      icon:'leads', label:'Leads'},
-  {id:'website',    icon:'globe', label:'Website'},
-  {id:'analytics',  icon:'chart', label:'Analytics'},
-  {id:'advertising',icon:'zap',   label:'Advertising'},
-  {id:'marketing',  icon:'mail',  label:'Marketing'},
-  {id:'social',     icon:'share', label:'Social'},
-  {id:'finance',    icon:'dollar',label:'Finance'},
-  {id:'service',    icon:'wrench',label:'Service'},
-  {id:'reports',    icon:'report',label:'Reports'},
-  {id:'tasks',      icon:'task',  label:'Tasks'},
-  {id:'listings',   icon:'cast',  label:'Listings'},
-  {id:'config',     icon:'cog',   label:'Config'},
-];
-const PAGE_TITLES={home:'Dashboard',inventory:'Inventory','vehicle-editor':'Vehicle',leads:'Leads','lead-detail':'Lead Detail',website:'Website',analytics:'Analytics',advertising:'Advertising',marketing:'Marketing',social:'Social',finance:'Finance & Desking',service:'Service',reports:'Reports',tasks:'Tasks',listings:'Listings',config:'Configuration',vdp:'Vehicle Detail'};
 let TOGGLES={notif:true,tfa:false,analytics:true,maintenance:false,backup:true};
 let INV_FEED={url:'',token:'',format:'JSON',status:''}; // inventory feed config
 

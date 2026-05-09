@@ -13,11 +13,11 @@ import static org.junit.Assert.assertTrue;
  */
 public class ExpressionCompilerTest {
 
-    private DataModel ctx;
+    private Model ctx;
 
     @Before
     public void setUp() {
-        ctx = new DataModel();
+        ctx = new Model();
     }
 
     // ------------------------------------------------------------------ compile type selection

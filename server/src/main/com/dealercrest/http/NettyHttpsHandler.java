@@ -10,52 +10,31 @@ import io.netty.util.CharsetUtil;
 import javax.net.ssl.SSLException;
 
 import com.dealercrest.rest.NettyRouters;
+import com.dealercrest.rest.RequestContext;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NettyHttpsHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    // private final NettyRouters nettyRouters;
-    // private final String domainHost = "dev.dataleading.com";
+    private final NettyRouters nettyRouters;
     public static final int HTTP_CACHE_SECONDS = 60;
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     private static final Logger logger = Logger.getLogger(NettyHttpsHandler.class.getName());
 
     public NettyHttpsHandler(NettyRouters nettyRouters) {
-        // this.nettyRouters = nettyRouters;
-        // this.domainHost = Environment.getInstance().getDomainHost();
+        this.nettyRouters = nettyRouters;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request)
             throws Exception {
-        String path = sanitizeUri(request.uri());
-        if (path.endsWith(".mp4")) {
-            // Mp4VideoService streamingService = new Mp4VideoService();
-            // streamingService.handle(ctx, request, path);
-            return;
-        }
-        HttpResult httpResult = buildHttpResult(request, path);
+        RequestContext requestContext = new RequestContext(request, Map.of());
+        HttpResult httpResult = nettyRouters.handle(requestContext);
         httpResult.write(ctx);
-    }
-
-    private HttpResult buildHttpResult(FullHttpRequest request, String path) {
-        return null;
-    }
-
-    private String sanitizeUri(String path) {
-        int idx = path.indexOf("?");
-        if (idx > -1) {
-            path = path.substring(0, idx);
-        }
-
-        if ("/".equals(path)) {
-            path = "/product.html";
-        }
-        return path;
     }
 
     @Override

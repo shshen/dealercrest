@@ -15,7 +15,7 @@ public class LiteralExpression implements CompiledExpression {
     }
 
     @Override
-    public Object evaluate(DataModel ctx) {
+    public Object evaluate(Model ctx) {
         return value;
     }
 }

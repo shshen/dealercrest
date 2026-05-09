@@ -26,7 +26,7 @@ public class CompositeExpression implements CompiledExpression {
     }
 
     @Override
-    public Object evaluate(DataModel ctx) {
+    public Object evaluate(Model ctx) {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < parts.size(); i++) {

@@ -1,0 +1,36 @@
+{
+    "fields": {
+      "logo": {
+        "label": "Logo",
+        "type": "group",
+        "fields": [
+          { "key": "logo.url", "label": "Image",    "type": "image" },
+          { "key": "logo.alt", "label": "Alt text", "type": "text"  }
+        ]
+      },
+      "cta": {
+        "label": "CTA button",
+        "type": "group",
+        "fields": [
+          { "key": "cta.label", "label": "Label", "type": "text" },
+          { "key": "cta.href",  "label": "URL",   "type": "text" }
+        ]
+      },
+      "navItems": {
+        "label": "Nav links",
+        "type":  "repeater",
+        "key":   "navItems",
+        "itemSchema": [
+          { "key": "label", "label": "Label", "type": "text" },
+          { "key": "href",  "label": "URL",   "type": "text" }
+        ]
+      },
+      "heading":  { "key": "heading",  "label": "Heading",  "type": "text"   },
+      "sticky":   { "key": "sticky",   "label": "Sticky",   "type": "toggle" },
+      "theme":    { "key": "theme",    "label": "Theme",    "type": "select",
+                    "options": ["light","dark","transparent"] },
+      "overlay":  { "key": "overlay",  "label": "Overlay",  "type": "toggle" },
+      "align":    { "key": "align",    "label": "Alignment","type": "select",
+                    "options": ["left","center","right"] }
+    }
+  }

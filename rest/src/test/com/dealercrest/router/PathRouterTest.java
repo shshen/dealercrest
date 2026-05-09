@@ -239,6 +239,17 @@ public class PathRouterTest {
     }
 
     @Test
+    public void fallbackRoute_matchesDeepPath2() {
+        RouteInfo fallback = makeRoute("GET", "{path**}");
+        router.addRoute(fallback);
+
+        MatchResult result = router.match("GET", "/blog/2026/march");
+
+        assertNotNull(result);
+        assertEquals("/blog/2026/march", result.getParamValues().get("path"));
+    }
+
+    @Test
     public void fallbackRoute_stripsLeadingSlash_fromPathParam() {
         RouteInfo fallback = makeRoute("GET", "/{path**}");
         router.addRoute(fallback);

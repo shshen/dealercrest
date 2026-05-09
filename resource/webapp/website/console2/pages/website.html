@@ -1,0 +1,827 @@
+<!-- pages/website.html -->
+<!-- This file is fetched by router.js and injected into #main-ct -->
+<script>
+function renderWebsite(){
+  const cards=PAGES_DATA.map(page=>`
+    <div class="pgc">
+      <div class="pgp"><div class="pl h"></div><div style="height:3px"></div><div class="pl"></div><div class="pl m"></div><div class="pl sm"></div><div style="height:5px"></div><div class="pl"></div><div class="pl m"></div></div>
+      <div class="pgi"><div class="pgn">${page.name}<span class="bdg ${page.status==='Published'?'bg-grn':'bg-gry'}" style="font-size:10px">${page.status}</span></div>
+      <div class="pgu">${page.url}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:11px;color:var(--tx3)"><span>${page.views>0?page.views.toLocaleString()+' views':'No views'}</span><span>${page.edited}</span></div>
+      <div style="display:flex;gap:5px;margin-top:8px">${btn(svgIcon('edit',12)+' Edit','btn btn-p btn-sm',`onclick="openBuilder(${page.id})"`)}</div>
+      <div style="display:flex;gap:5px;margin-top:5px">${btn(svgIcon('eye',12),'btn btn-s btn-sm',`onclick=\"\"`)}${btn(svgIcon('trash',12),'btn btn-d btn-sm',`onclick="deletePage(${page.id})"`)}</div>
+      </div></div>`).join('');
+  return `${bc('Website')}<div class="ph"><h1>Website Pages</h1><p>Manage your website content and pages</p></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:9px"><span style="font-size:13px;color:var(--tx2)">Domain:</span><span style="font-size:13px;font-weight:500">premiummotors.com</span>${bdg('Live','bg-grn')}</div>
+    ${btn(svgIcon('plus',13)+' New Page','btn btn-p btn-sm','onclick="openNewPageModal()"')}</div>
+    <div class="pg">${cards}</div>`;
+}
+function bindWebsite(){}
+function refreshWebsitePage(){
+  const ct=document.getElementById('main-ct');
+  if(ct) ct.innerHTML=renderWebsite();
+}
+function deletePage(id){
+  const page=PAGES_DATA.find(p=>p.id===id);
+  if(!page) return;
+  openModal('Delete Page',
+    `<div style="text-align:center;padding:10px 0">
+      <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,82,114,.12);color:var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">${svgIcon('trash',22)}</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px">Delete "${page.name}"?</div>
+      <div style="font-size:13px;color:var(--tx2)">This will permanently remove the page at <strong>${page.url}</strong>. This action cannot be undone.</div>
+    </div>`,
+    ()=>{ PAGES_DATA=PAGES_DATA.filter(p=>p.id!==id); closeModal(); refreshWebsitePage(); showToast('Page deleted.','var(--red)'); },
+    'Delete Page'
+  );
+  // Make delete button red
+  setTimeout(()=>{
+    const f=document.getElementById('modal-footer');
+    if(f){ const b=f.querySelector('.btn-p'); if(b){b.style.background='var(--red)';b.style.boxShadow='0 0 16px rgba(255,82,114,.3)';}}
+  },30);
+}
+function openNewPageModal(){
+  openModal('New Page',`<div style="display:flex;flex-direction:column;gap:11px"><div class="fc2"><div class="fl">Page Name</div><input class="inp" id="f-pname" placeholder="e.g. About Us"/></div><div class="fc2"><div class="fl">URL Slug</div><input class="inp" id="f-purl" placeholder="/about"/></div><div class="fc2"><div class="fl">Status</div><select class="inp" id="f-pstatus"><option>Draft</option><option>Published</option></select></div></div>`,
+    ()=>{const np={id:Date.now(),name:document.getElementById('f-pname').value||'Untitled',url:document.getElementById('f-purl').value||'/',status:document.getElementById('f-pstatus').value,views:0,edited:'Just now'};PAGES_DATA.push(np);closeModal();refreshWebsitePage();setTimeout(()=>openBuilder(np.id),80);},'Create & Edit');
+}
+
+/* ══════════════════════════════════════════
+   ANALYTICS
+══════════════════════════════════════════ */
+
+/* ── Extra functions for this page ── */
+
+function getDefaultProps(type, varIdx){
+  const defs=BLOCK_DEFS[type];
+  if(!defs) return {};
+  return JSON.parse(JSON.stringify(defs[Math.min(varIdx,defs.length-1)]||defs[0]));
+}
+
+/* ─ Builder open/close ─ */
+function openBuilder(pageId){
+  const page=PAGES_DATA.find(p=>p.id===pageId);
+  if(!page) return;
+  builderPageId=pageId;
+  builderActive=true;
+  document.getElementById('main-ct').style.display='none';
+  const bl=document.getElementById('page-builder');
+  bl.style.display='flex';
+  bl.classList.add('active');
+  _blUserCollapsedLeft=false; _blUserCollapsedRight=false; _initBuilderResizeObserver();
+  document.getElementById('bl-pagename').value=page.name;
+  document.getElementById('bl-bar-url').textContent=page.url;
+  document.getElementById('page-title').textContent='Builder - '+page.name;
+  canvasEls=[];selectedElId=null;tmplMode=null;
+  buildBlockLibraryUI();
+  renderCanvas();
+  renderPropsEmpty();
+  updatePanelState();
+}
+let _blResizeObserver = null;
+function _initBuilderResizeObserver(){
+  if(_blResizeObserver) _blResizeObserver.disconnect();
+  const bl = document.getElementById('page-builder');
+  if(!bl || !window.ResizeObserver) return;
+  let _lastCollapsed = null;
+  _blResizeObserver = new ResizeObserver(entries=>{
+    const w = entries[0].contentRect.width;
+    const shouldCollapse = w < 900;
+    const bothCollapsed = w < 640;
+    if(shouldCollapse === _lastCollapsed) return;
+    _lastCollapsed = shouldCollapse;
+    if(shouldCollapse){
+      // collapse both panels
+      document.getElementById('bl-left-panel').classList.add('collapsed');
+      document.getElementById('bl-right-panel').classList.add('collapsed');
+      updatePanelState();
+    } else {
+      // restore both panels only if user hasn't manually toggled
+      if(!_blUserCollapsedLeft)  document.getElementById('bl-left-panel').classList.remove('collapsed');
+      if(!_blUserCollapsedRight) document.getElementById('bl-right-panel').classList.remove('collapsed');
+      updatePanelState();
+    }
+  });
+  _blResizeObserver.observe(bl);
+}
+// Track manual user collapses so we don't override them on resize
+let _blUserCollapsedLeft  = false;
+let _blUserCollapsedRight = false;
+function closeBuilder(){
+  if(_blResizeObserver){ _blResizeObserver.disconnect(); _blResizeObserver=null; }
+  builderActive=false;
+  const bl=document.getElementById('page-builder');
+  bl.classList.remove('active');
+  bl.style.display='none';
+  document.getElementById('main-ct').style.display='';
+  navigate('website');
+}
+function previewPage(){
+  const page = PAGES_DATA.find(p=>p.id===builderPageId)||{};
+  const pageName = page.name || 'Preview';
+  // slug: e.g. "Home Page" -> "home-page"
+  const slug = pageName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const blocksHtml = canvasEls.map(el=>renderBlockHTML(el.type,el.variantIdx,el.props)).join('\n');
+  const cbCss = (document.getElementById('cb-style')||{}).innerHTML||'';
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>${pageName} — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#fff}
+${cbCss}
+</style>
+<${'script'}>
+window.addEventListener('DOMContentLoaded',function(){
+  try{
+    if(location.origin&&location.origin!=='null'&&location.origin.startsWith('http')){
+      history.replaceState(null,'','/${slug}/preview');
+    }
+  }catch(e){}
+});
+<\/script>
+</head>
+<body>
+${blocksHtml}
+</body>
+</html>`;
+  // Use Blob URL so the tab has a real URL we can rewrite
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if(!win){
+    URL.revokeObjectURL(url);
+    showToast('Pop-up blocked — please allow pop-ups for preview','var(--ora)');
+    return;
+  }
+  // Revoke blob URL after tab has loaded (5s grace)
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+}
+function savePageFromBuilder(){
+  const name=document.getElementById('bl-pagename').value;
+  const page=PAGES_DATA.find(p=>p.id===builderPageId);
+  if(page){page.name=name;page.status='Published';page.edited='Just now';}
+  showToast('Page saved & published!');
+}
+
+/* ─ Panel toggle ─ */
+function toggleLeftPanel(){
+  _blUserCollapsedLeft = !document.getElementById('bl-left-panel').classList.contains('collapsed');
+  leftPanelOpen=!leftPanelOpen;
+  updatePanelState();
+}
+function toggleRightPanel(){
+  _blUserCollapsedRight = !document.getElementById('bl-right-panel').classList.contains('collapsed');
+  rightPanelOpen=!rightPanelOpen;
+  updatePanelState();
+}
+function updatePanelState(){
+  const lp=document.getElementById('bl-left-panel');
+  const rp=document.getElementById('bl-right-panel');
+  if(lp) lp.classList.toggle('collapsed',!leftPanelOpen);
+  if(rp) rp.classList.toggle('collapsed',!rightPanelOpen);
+  // Update toggle button icons in bar
+  const lBtn=document.getElementById('bl-toggle-left');
+  const rBtn=document.getElementById('bl-toggle-right');
+  if(lBtn) lBtn.innerHTML=leftPanelOpen?svgIcon('arrowL',18):svgIcon('arrowR',18);
+  if(rBtn) rBtn.innerHTML=rightPanelOpen?svgIcon('arrowR',18):svgIcon('arrowL',18);
+}
+
+/* ─ Block library UI ─ */
+function buildBlockLibraryUI(){
+  const listEl=document.getElementById('bl-lib-list');
+  if(!listEl) return;
+  listEl.innerHTML=BLOCK_CATALOG.map(group=>`
+    <div class="bl-block-group">
+      <div class="bl-block-group-label">${group.group}</div>
+      ${group.blocks.map(block=>`
+        <div class="bl-block-item" onclick="openTmplPicker('${block.type}')">
+          <div class="bl-block-ic">${svgIcon(block.icon,13)}</div>
+          <div class="bl-block-label">${block.label}</div>
+          <div class="bl-block-arrow">&#8250;</div>
+        </div>`).join('')}
+    </div>`).join('');
+  renderBlockList();
+}
+function renderBlockList(){
+  const libEl=document.getElementById('bl-lib-list');
+  const tmplEl=document.getElementById('bl-tmpl-picker');
+  if(!libEl||!tmplEl) return;
+  if(tmplMode){
+    libEl.style.display='none';
+    tmplEl.style.display='flex';
+    renderTemplatePicker(tmplMode);
+  } else {
+    libEl.style.display='block';
+    tmplEl.style.display='none';
+  }
+}
+function renderTemplatePicker(type){
+  const el=document.getElementById('bl-tmpl-picker');
+  if(!el) return;
+  const catalog=BLOCK_CATALOG.flatMap(g=>g.blocks).find(b=>b.type===type);
+  if(!catalog){el.innerHTML='';return;}
+  const previews=TMPL_PREVIEWS[type]||[];
+  const items=catalog.variants.map((v,i)=>{
+    const previewHtml=previews[i]||'<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#888;font-size:11px">'+v+'</div>';
+    let evalHtml=previewHtml;
+    try{ evalHtml=Function('"use strict";return `'+previewHtml+'`')(); }catch(e){ evalHtml=previewHtml; }
+    return `<div class="tmpl-item" draggable="true"
+      ondragstart="tmplDragStart('${type}',${i},event)"
+      ondragend="tmplDragEnd()"
+      onclick="tmplSelect(this)">
+      <div class="tmpl-preview">${evalHtml}<div class="tmpl-drag-hint">&#x2197; drag to add</div></div>
+      <div class="tmpl-label">${v}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div class="tmpl-picker-h">
+    <button class="tmpl-back" onclick="closeTmplPicker()">${svgIcon('arrowL',11)} Blocks</button>
+    <div class="tmpl-picker-title">${catalog.label}</div>
+  </div>
+  <div style="padding:6px 10px 4px;font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em">Drag a variant onto the canvas</div>
+  <div class="tmpl-list">${items}</div>`;
+}
+function openTmplPicker(type){tmplMode=type;renderBlockList();}
+function closeTmplPicker(){tmplMode=null;renderBlockList();}
+
+function tmplSelect(el){
+  // Click just highlights the item — drag it to canvas to add
+  document.querySelectorAll('.tmpl-item').forEach(i=>i.classList.remove('tmpl-selected'));
+  el.classList.add('tmpl-selected');
+}
+function addBlockVariant(type,varIdx){
+  const id='el-'+Date.now();
+  // Insert after pending drop position, or append
+  const newEl={id,type,variantIdx:varIdx,props:getDefaultProps(type,varIdx)};
+  if(window._pendingInsertAfter!==undefined&&window._pendingInsertAfter!==null){
+    const idx=canvasEls.findIndex(x=>x.id===window._pendingInsertAfter);
+    if(idx>=0) canvasEls.splice(idx+1,0,newEl);
+    else canvasEls.push(newEl);
+    window._pendingInsertAfter=undefined;
+  } else {
+    canvasEls.push(newEl);
+  }
+  // Stay on template picker — do NOT reset tmplMode so user can keep adding variants
+  renderCanvas();
+  selectEl(id);
+}
+
+/* ─ Drag-drop from library ─ */
+// dragBlockType: {type, variantIdx}
+let _nearestZone=null;
+
+function tmplDragStart(type,varIdx,e){
+  dragBlockType={type,varIdx};
+  e.dataTransfer.effectAllowed='copy';
+  e.dataTransfer.setData('text/plain',type+':'+varIdx);
+  // Attach mousemove tracker to canvas wrap during drag
+  const wrap=document.getElementById('bl-canvas-wrap');
+  if(wrap) wrap.addEventListener('dragover', _trackNearestZone);
+}
+function tmplDragEnd(){
+  dragBlockType=null;
+  _nearestZone=null;
+  const wrap=document.getElementById('bl-canvas-wrap');
+  if(wrap) wrap.removeEventListener('dragover', _trackNearestZone);
+  document.querySelectorAll('.drop-zone').forEach(z=>{
+    z.classList.remove('dz-visible');
+    z.classList.remove('dz-over');
+  });
+}
+function blDragStart(type,e){ /* parent blocks no longer draggable */ }
+function blDragEnd(){ }
+
+function _trackNearestZone(e){
+  e.preventDefault();
+  const zones=[...document.querySelectorAll('.drop-zone')];
+  if(!zones.length) return;
+  // Find zone whose vertical center is closest to cursor Y
+  let best=null, bestDist=Infinity;
+  zones.forEach(z=>{
+    const r=z.getBoundingClientRect();
+    const centerY=r.top+r.height/2;
+    const dist=Math.abs(e.clientY-centerY);
+    if(dist<bestDist){ bestDist=dist; best=z; }
+  });
+  if(best===_nearestZone) return; // no change
+  // Hide old, show new
+  if(_nearestZone){
+    _nearestZone.classList.remove('dz-visible');
+    _nearestZone.classList.remove('dz-over');
+  }
+  _nearestZone=best;
+  if(_nearestZone){
+    _nearestZone.classList.add('dz-visible');
+    _nearestZone.classList.add('dz-over');
+  }
+}
+
+function dzOver(e,el){ e.preventDefault(); }
+function dzLeave(el){ }
+function dzDrop(e,afterId){
+  e.preventDefault();
+  document.querySelectorAll('.drop-zone').forEach(z=>{z.classList.remove('dz-over');z.classList.remove('dz-visible');});
+  if(!dragBlockType) return;
+  const {type,varIdx}=dragBlockType;
+  dragBlockType=null;
+  const id='el-'+Date.now();
+  const newEl={id,type,variantIdx:varIdx,props:getDefaultProps(type,varIdx)};
+  if(afterId===null){
+    canvasEls.unshift(newEl);
+  } else {
+    const idx=canvasEls.findIndex(x=>x.id===afterId);
+    canvasEls.splice(idx+1,0,newEl);
+  }
+  renderCanvas();
+  selectEl(id);
+}
+
+/* ─ Canvas ─ */
+function renderCanvas(){
+  const canvas=document.getElementById('bl-canvas');
+  if(!canvas) return;
+  const isEmpty=canvasEls.length===0;
+  const _vp=window._canvasVp||'desktop';
+  canvas.className='bl-canvas '+_vp+(isEmpty?' bl-canvas-empty':'');
+  canvas.dataset.vp=_vp;
+  let html='<style id="cb-style">\n/* ── Canvas Block Base ── */\n.cb{box-sizing:border-box;width:100%;font-family:\'DM Sans\',sans-serif}\n/* Navbar */\n.cb-nav{display:flex;align-items:center;justify-content:space-between;padding:13px 32px;gap:12px}\n.cb-nav-links{display:flex;gap:4px;flex-wrap:wrap}\n.cb-nav-link{color:inherit;text-decoration:none;font-size:13px;padding:6px 10px;border-radius:5px;white-space:nowrap}\n.cb-nav-cta{border:none;padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}\n.cb-nav-logo{font-family:\'Syne\',sans-serif;font-weight:800;font-size:17px;flex-shrink:0}\n.cb-nav-burger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px;flex-shrink:0}\n.cb-nav-burger span{display:block;width:20px;height:2px;border-radius:2px}\n/* Hero */\n.cb-hero{padding:60px 40px;text-align:center}\n.cb-hero-split{padding:50px 40px;display:flex;align-items:center;gap:40px}\n.cb-hero-split-img{width:280px;height:190px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:80px;flex-shrink:0;border:1px solid rgba(255,255,255,.08)}\n.cb-hero-h1{font-family:\'Syne\',sans-serif;font-size:36px;font-weight:800;margin-bottom:14px;line-height:1.2}\n.cb-hero-sub{font-size:15px;margin-bottom:26px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7}\n.cb-hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}\n.cb-btn-primary{background:#7c6eff;color:#fff;border:none;padding:13px 28px;border-radius:7px;font-weight:600;cursor:pointer;font-size:14px}\n.cb-btn-secondary{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15);padding:13px 28px;border-radius:7px;font-weight:500;cursor:pointer;font-size:14px}\n.cb-btn-dark{background:#1a1a2e;color:#fff;border:none;padding:11px 28px;border-radius:7px;font-weight:600;cursor:pointer;font-size:13px}\n.cb-btn-light{background:#fff;color:#333;border:none;padding:13px 28px;border-radius:7px;font-weight:700;cursor:pointer;font-size:14px}\n.cb-btn-acc{background:#7c6eff;color:#fff;border:none;padding:12px 28px;border-radius:7px;font-weight:600;cursor:pointer;font-size:14px;width:100%}\n.cb-btn-green{background:#1fd6a0;color:#fff;border:none;padding:12px;border-radius:7px;font-weight:600;cursor:pointer;font-size:14px;width:100%}\n/* Section */\n.cb-section{padding:48px 40px}\n.cb-section-2col{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}\n.cb-h2{font-family:\'Syne\',sans-serif;font-size:24px;font-weight:700;margin-bottom:12px}\n.cb-body{font-size:14px;line-height:1.8}\n/* Grid layouts */\n.cb-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}\n.cb-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}\n.cb-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}\n.cb-grid-2-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px}\n/* Pad wrappers */\n.cb-pad{padding:36px 40px}\n.cb-pad-sm{padding:28px 40px}\n/* Card */\n.cb-card{background:#fff;border:1px solid #e8e8f0;border-radius:10px;overflow:hidden}\n.cb-card-dark{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden}\n.cb-card-img{height:140px;background:linear-gradient(135deg,#1a1a2e,#2a2a4e);display:flex;align-items:center;justify-content:center;font-size:48px}\n.cb-card-img-dark{height:130px;background:linear-gradient(135deg,#1a1a2e,#0d0d2e);display:flex;align-items:center;justify-content:center;font-size:44px}\n.cb-card-body{padding:14px}\n/* Countdown */\n.cb-countdown{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}\n.cb-countdown-num{min-width:64px;padding:14px 18px;border-radius:10px;font-family:\'Syne\',sans-serif;font-size:36px;font-weight:800;text-align:center}\n/* Form */\n.cb-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}\n.cb-input{border-radius:6px;padding:10px 12px;font-size:13px;outline:none;width:100%;box-sizing:border-box}\n/* Map */\n.cb-map-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}\n.cb-map-img{height:220px;background:linear-gradient(135deg,#e8eaf6,#c5cae9);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;font-size:13px;color:#666}\n/* Flex row */\n.cb-row{display:flex;align-items:center;gap:14px}\n.cb-row-between{display:flex;align-items:center;justify-content:space-between;gap:14px}\n/* Team / Testimonials */\n.cb-avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:\'Syne\',sans-serif;font-weight:700;font-size:18px;margin:0 auto 12px;flex-shrink:0}\n.cb-avatar-sm{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:\'Syne\',sans-serif;font-weight:700;font-size:14px;flex-shrink:0}\n/* Search bar */\n.cb-search-bar{background:#fff;padding:14px 20px;border-bottom:2px solid #7c6eff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n.cb-search-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}\n.cb-select{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;padding:10px;font-size:13px;color:#fff;width:100%}\n.cb-select-light{background:#f8f8ff;border:1px solid #e8e8f0;border-radius:7px;padding:8px 12px;font-size:13px;color:#333}\n/* Stats row */\n.cb-stats-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:500px;margin:0 auto 24px}\n/* Car detail */\n.cb-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}\n.cb-detail-img{height:260px;background:linear-gradient(135deg,#1a1a2e,#2a2a4e);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:80px;margin-bottom:12px}\n.cb-detail-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}\n/* Schedule */\n.cb-sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}\n\n/* ── RESPONSIVE ── */\n@media(max-width:700px){\n  .cb-nav-links,.cb-nav-cta-wrap{display:none}\n  .cb-nav-burger{display:flex}\n  .cb-nav{padding:12px 16px}\n  .cb-hero{padding:36px 16px}\n  .cb-hero-split{flex-direction:column;padding:36px 16px;gap:20px}\n  .cb-hero-split-img{width:100%;height:160px}\n  .cb-hero-h1{font-size:24px}\n  .cb-hero-sub{font-size:14px}\n  .cb-section{padding:28px 16px}\n  .cb-section-2col{grid-template-columns:1fr;gap:20px}\n  .cb-pad{padding:24px 16px}\n  .cb-pad-sm{padding:18px 16px}\n  .cb-grid-3,.cb-grid-4{grid-template-columns:1fr}\n  .cb-grid-2{grid-template-columns:1fr}\n  .cb-grid-2-3{grid-template-columns:1fr}\n  .cb-countdown-num{font-size:24px;padding:10px 12px;min-width:44px}\n  .cb-form-grid{grid-template-columns:1fr}\n  .cb-map-grid{grid-template-columns:1fr}\n  .cb-map-img{height:160px}\n  .cb-detail-grid{grid-template-columns:1fr}\n  .cb-detail-img{height:200px}\n  .cb-detail-thumbs{grid-template-columns:repeat(4,1fr)}\n  .cb-search-grid{grid-template-columns:1fr 1fr}\n  .cb-sched-grid{grid-template-columns:1fr}\n  .cb-stats-3{grid-template-columns:1fr}\n  .cb-h2{font-size:20px}\n  .cb-row-between{flex-wrap:wrap}\n  .cb-search-bar{flex-direction:column;align-items:stretch}\n}\n@media(max-width:900px) and (min-width:701px){\n  .cb-nav{padding:12px 20px}\n  .cb-hero{padding:44px 24px}\n  .cb-hero-split{padding:44px 24px;gap:24px}\n  .cb-hero-split-img{width:220px;height:150px}\n  .cb-hero-h1{font-size:28px}\n  .cb-section{padding:36px 24px}\n  .cb-pad{padding:28px 24px}\n  .cb-pad-sm{padding:20px 24px}\n  .cb-grid-3{grid-template-columns:1fr 1fr}\n  .cb-grid-4{grid-template-columns:1fr 1fr}\n  .cb-grid-2-3{grid-template-columns:1fr 1fr}\n  .cb-search-grid{grid-template-columns:1fr 1fr}\n  .cb-detail-grid{grid-template-columns:1fr}\n  .cb-detail-img{height:200px}\n  .cb-sched-grid{grid-template-columns:1fr 1fr}\n  .cb-map-grid{grid-template-columns:1fr}\n  .cb-map-img{height:180px}\n}\n</style>'+
+    '<div class="drop-zone" ondragover="dzOver(event,this)" ondragleave="dzLeave(this)" ondrop="dzDrop(event,null)">'+(isEmpty?'Drag a block here, or click a block in the left panel to add':'')+'</div>';
+  canvasEls.forEach((el,idx)=>{
+    html+=`<div class="bl-element${selectedElId===el.id?' selected':''}" id="wrapper-${el.id}" onclick="selectEl('${el.id}')">
+      <div class="bl-el-actions">
+        ${idx>0?`<button class="bl-el-btn" onclick="moveEl('${el.id}',-1,event)">${svgIcon('arrowU',10)} Up</button>`:''}
+        ${idx<canvasEls.length-1?`<button class="bl-el-btn" onclick="moveEl('${el.id}',1,event)">${svgIcon('arrowD',10)} Dn</button>`:''}
+        <button class="bl-el-btn del" onclick="delEl('${el.id}',event)">${svgIcon('trash',10)} Del</button>
+      </div>
+      ${renderBlockHTML(el.type,el.variantIdx,el.props)}
+    </div>
+    <div class="drop-zone" ondragover="dzOver(event,this)" ondragleave="dzLeave(this)" ondrop="dzDrop(event,'${el.id}')">+</div>`;
+  });
+  canvas.innerHTML=html;
+}
+
+function selectEl(id){
+  selectedElId=id;
+  renderCanvas();
+  const el=canvasEls.find(e=>e.id===id);
+  if(el) renderPropsPanel(el);
+  if(!rightPanelOpen){rightPanelOpen=true;updatePanelState();}
+}
+function delEl(id,e){e.stopPropagation();canvasEls=canvasEls.filter(x=>x.id!==id);if(selectedElId===id){selectedElId=null;renderPropsEmpty();}renderCanvas();}
+function dupEl(id,e){e.stopPropagation();const src=canvasEls.find(x=>x.id===id);if(!src)return;const clone={id:'el-'+Date.now(),type:src.type,variantIdx:src.variantIdx,props:JSON.parse(JSON.stringify(src.props))};const idx=canvasEls.findIndex(x=>x.id===id);canvasEls.splice(idx+1,0,clone);renderCanvas();}
+function moveEl(id,dir,e){e.stopPropagation();const idx=canvasEls.findIndex(x=>x.id===id);const ni=idx+dir;if(ni<0||ni>=canvasEls.length)return;[canvasEls[idx],canvasEls[ni]]=[canvasEls[ni],canvasEls[idx]];renderCanvas();}
+
+function setViewport(vp,el){
+  document.querySelectorAll('.vp-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  const canvas=document.getElementById('bl-canvas');
+  const wasEmpty=canvas.classList.contains('bl-canvas-empty');
+  canvas.className='bl-canvas '+vp+(wasEmpty?' bl-canvas-empty':'');
+  canvas.dataset.vp=vp;
+  window._canvasVp=vp;
+}
+
+/* ─ Block HTML renderers ─ */
+function renderBlockHTML(type,vi,p){
+  vi=vi||0; p=p||{};
+  switch(type){
+
+    case 'navbar':{
+      const links=(p.links||'New Cars,Used Cars,Finance,Service,Contact').split(',');
+      const mkA=(txt,col)=>'<a href="#" class="cb-nav-link" style="color:'+col+'">'+txt.trim()+'</a>';
+      const burger='<div class="cb-nav-burger"><span style="background:currentColor"></span><span style="background:currentColor"></span><span style="background:currentColor"></span></div>';
+      if(vi===1){
+        return '<div class="cb cb-nav" style="background:#fff;border-bottom:1px solid #eee;color:#333">'
+          +'<div class="cb-nav-logo" style="color:#1a1a2e">'+(p.logoText||'Brand')+'</div>'
+          +'<div class="cb-nav-links">'+links.map(l=>mkA(l,'#333')).join('')+'</div>'
+          +(p.ctaText?'<button class="cb-nav-cta cb-nav-cta-wrap" style="background:#1a1a2e;color:#fff">'+p.ctaText+'</button>':'')
+          +burger+'</div>';
+      }
+      if(vi===2){
+        return '<div class="cb" style="background:#0f0f1a;border-bottom:1px solid rgba(255,255,255,.08)">'
+          +'<div class="cb-nav">'
+          +'<div class="cb-nav-logo" style="color:#7c6eff">'+(p.logoText||'Brand')+'</div>'
+          +'<div class="cb-nav-links">'+links.map(l=>mkA(l,'rgba(255,255,255,.65)')).join('')+'</div>'
+          +'<div class="cb-nav-cta-wrap" style="display:flex;gap:6px">'
+          +'<button style="background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.15);padding:6px 13px;border-radius:6px;font-size:12px;cursor:pointer">Sign In</button>'
+          +'<button style="background:#7c6eff;color:#fff;border:none;padding:6px 13px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600">Get a Quote</button>'
+          +'</div>'
+          +'<div class="cb-nav-burger" style="color:#fff"><span style="background:#fff"></span><span style="background:#fff"></span><span style="background:#fff"></span></div>'
+          +'</div></div>';
+      }
+      return '<div class="cb cb-nav" style="background:#0f0f1a;color:#fff">'
+        +'<div class="cb-nav-logo" style="color:#7c6eff">'+(p.logoText||'Brand')+'</div>'
+        +'<div class="cb-nav-links">'+links.map(l=>mkA(l,'rgba(255,255,255,.7)')).join('')+'</div>'
+        +(p.ctaText?'<div class="cb-nav-cta-wrap"><button class="cb-nav-cta" style="background:#7c6eff;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer">'+p.ctaText+'</button></div>':'')
+        +'<div class="cb-nav-burger" style="color:#fff"><span style="background:#fff"></span><span style="background:#fff"></span><span style="background:#fff"></span></div>'
+        +'</div>';
+    }
+
+    case 'hero':{
+      const bg=p.bgColor||'#0d0d1a';
+      const accent='<div style="color:#7c6eff;font-size:12px;text-transform:uppercase;letter-spacing:3px;margin-bottom:12px">Premium Motors</div>';
+      if(vi===1) return '<div class="cb cb-hero-split" style="background:'+bg+'">'
+        +'<div style="flex:1"><div style="color:#7c6eff;font-size:12px;text-transform:uppercase;letter-spacing:3px;margin-bottom:10px">New Arrivals</div>'
+        +'<h1 class="cb-hero-h1" style="color:#fff">'+(p.heading||'2024 Models Now Arriving')+'</h1>'
+        +'<p class="cb-hero-sub" style="color:rgba(255,255,255,.6);margin-left:0">'+(p.subtext||'Be the first.')+'</p>'
+        +'<div class="cb-hero-btns" style="justify-content:flex-start"><button class="cb-btn-primary">'+(p.btnText||'Shop Now')+'</button></div></div>'
+        +'<div class="cb-hero-split-img" style="background:rgba(255,255,255,.04)">&#x1F697;</div></div>';
+      if(vi===2) return '<div class="cb cb-hero" style="background:'+bg+';position:relative;overflow:hidden">'
+        +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(124,110,255,.2),transparent 70%)"></div>'
+        +'<div style="position:relative">'+accent
+        +'<h1 class="cb-hero-h1" style="color:#fff;font-size:40px">'+(p.heading||'Welcome to Premium Motors')+'</h1>'
+        +'<p class="cb-hero-sub" style="color:rgba(255,255,255,.55)">'+(p.subtext||'Your journey starts here.')+'</p>'
+        +'<div class="cb-hero-btns"><button class="cb-btn-primary" style="padding:14px 32px;font-size:15px;box-shadow:0 0 32px rgba(124,110,255,.4)">'+(p.btnText||'Explore')+'</button></div>'
+        +'</div></div>';
+      return '<div class="cb cb-hero" style="background:'+bg+'">'+accent
+        +'<h1 class="cb-hero-h1" style="color:#fff">'+(p.heading||'Drive Your Dream Car Today')+'</h1>'
+        +'<p class="cb-hero-sub" style="color:rgba(255,255,255,.6)">'+(p.subtext||'500+ premium vehicles in stock.')+'</p>'
+        +'<div class="cb-hero-btns"><button class="cb-btn-primary">'+(p.btnText||'Browse Inventory')+'</button>'
+        +'<button class="cb-btn-secondary">'+(p.btn2Text||'Book Test Drive')+'</button></div></div>';
+    }
+
+    case 'section':{
+      const bg=p.bgColor||'#fff',tc=bg==='#fff'?'#1a1a2e':'#fff',bc=bg==='#fff'?'#555':'rgba(255,255,255,.7)';
+      if(vi===1) return '<div class="cb cb-section" style="background:'+bg+';text-align:center"><h2 class="cb-h2" style="color:'+tc+'">'+(p.heading||'Heading')+'</h2><p class="cb-body" style="color:'+bc+';max-width:620px;margin:0 auto">'+(p.body||'Content.')+'</p></div>';
+      if(vi===2) return '<div class="cb cb-section"><div class="cb-section-2col" style="background:'+bg+'"><div><h2 class="cb-h2" style="color:'+tc+'">'+(p.heading||'Heading')+'</h2><p class="cb-body" style="color:'+bc+'">'+(p.colLeft||'Left column.')+'</p></div><div class="cb-body" style="color:'+bc+'">'+(p.colRight||'Right column.')+'</div></div></div>';
+      return '<div class="cb cb-section" style="background:'+bg+'"><h2 class="cb-h2" style="color:'+tc+'">'+(p.heading||'Heading')+'</h2><p class="cb-body" style="color:'+bc+'">'+(p.body||'Content.')+'</p></div>';
+    }
+
+    case 'cta':{
+      if(vi===1) return '<div class="cb cb-pad" style="background:linear-gradient(135deg,#0f0f1a,#1a1a2e);text-align:center;border-top:1px solid rgba(124,110,255,.2);border-bottom:1px solid rgba(124,110,255,.2)"><h2 class="cb-h2" style="color:#fff;font-size:28px;font-weight:800;margin-bottom:10px">'+(p.heading||'CTA')+'</h2><p style="color:rgba(255,255,255,.55);font-size:14px;margin-bottom:22px">'+(p.subtext||'')+'</p><button class="cb-btn-primary">'+(p.btnText||'Button')+'</button></div>';
+      if(vi===2) return '<div class="cb cb-pad-sm cb-row-between" style="background:#fff;border-top:2px solid #7c6eff;border-bottom:1px solid #eee"><div><h2 class="cb-h2" style="color:#1a1a2e;font-size:22px;margin-bottom:6px">'+(p.heading||'CTA')+'</h2><p style="color:#666;font-size:14px">'+(p.subtext||'')+'</p></div><button class="cb-btn-primary" style="white-space:nowrap;flex-shrink:0">'+(p.btnText||'Button')+'</button></div>';
+      return '<div class="cb cb-pad" style="background:linear-gradient(135deg,#7c6eff,#c084fc);text-align:center"><h2 class="cb-h2" style="color:#fff;font-size:28px;font-weight:800;margin-bottom:10px">'+(p.heading||'CTA')+'</h2><p style="color:rgba(255,255,255,.85);font-size:14px;margin-bottom:22px">'+(p.subtext||'')+'</p><button class="cb-btn-light">'+(p.btnText||'Button')+'</button></div>';
+    }
+
+    case 'footer':{
+      if(vi===1){
+        const col2=(p.col2Links||'New Cars,Used Cars,Finance,Offers').split(',').map(function(l){return '<a href="#" style="display:block;color:rgba(255,255,255,.4);text-decoration:none;font-size:13px;margin-bottom:7px">'+l.trim()+'</a>';}).join('');
+        const col3=(p.col3Links||'Service,Schedule,Parts,Contact').split(',').map(function(l){return '<a href="#" style="display:block;color:rgba(255,255,255,.4);text-decoration:none;font-size:13px;margin-bottom:7px">'+l.trim()+'</a>';}).join('');
+        return '<div class="cb" style="background:#0a0a12"><div class="cb-pad"><div class="cb-grid-2-3" style="margin-bottom:32px"><div><div style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#7c6eff;margin-bottom:10px">'+(p.logoText||'Brand')+'</div><p style="color:rgba(255,255,255,.4);font-size:13px;line-height:1.7">'+(p.col1||'Your trusted dealership.')+'</p></div><div><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:#fff;margin-bottom:12px;text-transform:uppercase">Vehicles</div>'+col2+'</div><div><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:#fff;margin-bottom:12px;text-transform:uppercase">Service</div>'+col3+'</div></div><div style="border-top:1px solid rgba(255,255,255,.07);padding-top:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div style="font-family:Syne,sans-serif;font-weight:800;color:#fff">'+(p.logoText||'Brand')+'</div><span style="color:rgba(255,255,255,.3);font-size:13px">'+(p.copyright||'© 2024')+'</span></div></div></div>';
+      }
+      return '<div class="cb cb-pad-sm" style="background:#0a0a12;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px"><div style="font-family:Syne,sans-serif;font-weight:800;color:#fff;font-size:15px">'+(p.logoText||'Brand')+'</div><span style="color:rgba(255,255,255,.35);font-size:13px">'+(p.copyright||'© 2024 All rights reserved')+'</span></div>';
+    }
+
+    case 'divider': return '<div class="cb" style="padding:8px 20px"><hr style="border:none;border-top:1px solid #e0e0f0"/></div>';
+
+    case 'inv_grid':{
+      const cols=vi===2?1:vi===1?2:3;
+      if(vi===2){
+        const rows=CARS.slice(0,6).map(function(c){return '<div class="cb-row-between" style="padding:14px;background:#fff;border:1px solid #e8e8f0;border-radius:9px;margin-bottom:8px;flex-wrap:wrap;gap:8px"><div class="cb-row"><div style="width:80px;height:54px;background:linear-gradient(135deg,#1a1a2e,#2a2a4e);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">&#x1F697;</div><div><div style="font-family:Syne,sans-serif;font-weight:700;font-size:14px;color:#1a1a2e">'+c.year+' '+c.make+' '+c.model+'</div><div style="font-size:12px;color:#666;margin-top:3px">'+(c.mileage===0?'New':c.mileage.toLocaleString()+' mi')+' &middot; '+c.color+'</div></div></div><div style="text-align:right;flex-shrink:0"><div style="font-family:Syne,sans-serif;font-weight:700;font-size:16px;color:#7c6eff">$'+c.price.toLocaleString()+'</div><button class="cb-btn-primary" style="font-size:11px;padding:5px 12px;margin-top:5px;width:auto">View</button></div></div>';}).join('');
+        return '<div class="cb cb-pad" style="background:#f8f9ff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:16px">'+(p.heading||'Our Inventory')+'</h2>'+rows+'</div>';
+      }
+      const gridClass=cols===3?'cb-grid-3':'cb-grid-2';
+      const cards=CARS.slice(0,cols===3?3:4).map(function(c){return '<div class="cb-card"><div class="cb-card-img">&#x1F697;</div><div class="cb-card-body"><div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:#1a1a2e;margin-bottom:4px">'+c.year+' '+c.make+' '+c.model+'</div><div style="font-size:12px;color:#666;margin-bottom:8px">'+(c.mileage===0?'New':c.mileage.toLocaleString()+' mi')+' &middot; '+c.color+'</div><div class="cb-row-between"><span style="font-family:Syne,sans-serif;font-weight:700;font-size:16px;color:#7c6eff">$'+c.price.toLocaleString()+'</span><button class="cb-btn-primary" style="font-size:11px;padding:6px 13px;width:auto">Details</button></div></div></div>';}).join('');
+      return '<div class="cb cb-pad" style="background:#f8f9ff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:16px">'+(p.heading||'Browse Our Inventory')+'</h2><div class="'+gridClass+'">'+cards+'</div><div style="text-align:center;margin-top:20px"><button class="cb-btn-dark">View All Vehicles</button></div></div>';
+    }
+
+    case 'inv_featured':{
+      if(vi===1){
+        const car=CARS[0];
+        return '<div class="cb cb-pad" style="background:#0f0f1a"><div class="cb-detail-grid"><div class="cb-detail-img">&#x1F697;</div><div><div style="color:#7c6eff;font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Vehicle of the Month</div><h2 class="cb-h2" style="color:#fff;font-size:24px;font-weight:800">'+(p.year||car.year)+' '+(p.make||car.make)+' '+(p.model||car.model)+'</h2><div style="font-family:Syne,sans-serif;font-size:22px;color:#7c6eff;font-weight:700;margin-bottom:14px">$'+((p.price||car.price)*1).toLocaleString()+'</div><div class="cb-hero-btns" style="justify-content:flex-start"><button class="cb-btn-primary" style="width:auto">View Details</button><button class="cb-btn-secondary" style="width:auto">Book Test Drive</button></div></div></div></div>';
+      }
+      const cards=CARS.slice(0,3).map(function(c){return '<div class="cb-card-dark"><div class="cb-card-img-dark">&#x1F697;</div><div class="cb-card-body"><div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:#fff;margin-bottom:4px">'+c.year+' '+c.make+' '+c.model+'</div><div class="cb-row-between" style="margin-top:8px"><span style="font-family:Syne,sans-serif;font-weight:700;color:#7c6eff">$'+c.price.toLocaleString()+'</span><button class="cb-btn-primary" style="font-size:11px;padding:5px 11px;width:auto">View</button></div></div></div>';}).join('');
+      return '<div class="cb cb-pad" style="background:#0f0f1a"><div class="cb-row-between" style="margin-bottom:20px"><h2 class="cb-h2" style="color:#fff;margin-bottom:0">'+(p.heading||'Featured Vehicles')+'</h2><button style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.1);padding:7px 16px;border-radius:6px;font-size:12px;cursor:pointer;white-space:nowrap">View All</button></div><div class="cb-grid-3">'+cards+'</div></div>';
+    }
+
+    case 'inv_search':{
+      if(vi===1) return '<div class="cb cb-search-bar"><div style="flex:1;min-width:160px;display:flex;align-items:center;gap:7px;background:#f8f8ff;border:1px solid #e8e8f0;border-radius:7px;padding:8px 12px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9090b0" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="'+(p.placeholder||'Make, model...')+'" style="border:none;background:transparent;outline:none;font-size:13px;color:#333;width:100%"/></div><select class="cb-select-light">'+['Any Make','Tesla','BMW','Mercedes'].map(function(o){return '<option>'+o+'</option>';}).join('')+'</select><select class="cb-select-light">'+['Any Year','2024','2023','2022'].map(function(o){return '<option>'+o+'</option>';}).join('')+'</select><button class="cb-btn-primary" style="width:auto">Search</button></div>';
+      return '<div class="cb cb-pad" style="background:#1a1a2e"><h2 class="cb-h2" style="color:#fff;font-size:22px;text-align:center;margin-bottom:20px">'+(p.heading||'Find Your Perfect Vehicle')+'</h2><div class="cb-search-grid">'+['Any Make','Any Model','Any Year','Any Price'].map(function(o){return '<select class="cb-select"><option>'+o+'</option></select>';}).join('')+'</div><button class="cb-btn-acc">Search Inventory</button></div>';
+    }
+
+    case 'car_detail':{
+      const car=CARS[0];
+      const specs=[['Year',p.year||car.year],['Make',p.make||car.make],['Model',p.model||car.model],['Mileage',p.mileage||(car.mileage===0?'New':car.mileage.toLocaleString()+' mi')],['Color',p.color||car.color],['VIN',car.vin]];
+      const specRows=specs.map(function(s){return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f8;font-size:13px"><span style="color:#888">'+s[0]+'</span><span style="font-weight:500;color:#1a1a2e">'+s[1]+'</span></div>';}).join('');
+      if(vi===1) return '<div class="cb cb-row-between" style="padding:16px 24px;background:#fff;border:1px solid #e8e8f0;border-radius:10px;margin:12px 20px;flex-wrap:wrap;gap:10px"><div class="cb-row"><div style="width:80px;height:60px;background:linear-gradient(135deg,#1a1a2e,#2a2a4e);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0">&#x1F697;</div><div><div style="font-family:Syne,sans-serif;font-weight:700;color:#1a1a2e">'+(p.year||car.year)+' '+(p.make||car.make)+' '+(p.model||car.model)+'</div><div style="font-family:Syne,sans-serif;font-weight:700;color:#7c6eff;font-size:16px">$'+((p.price||car.price)*1).toLocaleString()+'</div></div></div><button class="cb-btn-primary" style="width:auto">Schedule Test Drive</button></div>';
+      return '<div class="cb cb-pad" style="background:#fff"><div class="cb-detail-grid"><div><div class="cb-detail-img">&#x1F697;</div><div class="cb-detail-thumbs">'+['Front','Side','Interior','Detail'].map(function(v){return '<div style="height:50px;background:#f0f0f8;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#888;cursor:pointer">'+v+'</div>';}).join('')+'</div></div><div><div style="color:#7c6eff;font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">'+(car.mileage===0?'New Vehicle':'Pre-Owned')+'</div><h2 class="cb-h2" style="color:#1a1a2e;font-size:26px;font-weight:800">'+(p.year||car.year)+' '+(p.make||car.make)+' '+(p.model||car.model)+'</h2><div style="font-family:Syne,sans-serif;font-size:28px;font-weight:700;color:#7c6eff;margin-bottom:16px">$'+((p.price||car.price)*1).toLocaleString()+'</div><div style="margin-bottom:18px">'+specRows+'</div><div class="cb-hero-btns" style="justify-content:flex-start"><button class="cb-btn-primary" style="flex:1;width:auto">Schedule Test Drive</button><button style="flex:1;background:#f0f0f8;color:#1a1a2e;border:none;padding:12px;border-radius:7px;cursor:pointer;font-size:13px">Get Financing</button></div></div></div></div>';
+    }
+
+    case 'compare':{
+      const c1=CARS[0],c2=CARS[1];
+      const rows=['Year','Price','Mileage','Color','Status'].map(function(k){
+        const v1=k==='Price'?'$'+c1.price.toLocaleString():k==='Mileage'?(c1.mileage===0?'New':c1.mileage.toLocaleString()+' mi'):c1[k.toLowerCase()]||'—';
+        const v2=k==='Price'?'$'+c2.price.toLocaleString():k==='Mileage'?(c2.mileage===0?'New':c2.mileage.toLocaleString()+' mi'):c2[k.toLowerCase()]||'—';
+        return '<tr><td style="padding:10px 14px;font-size:12px;color:#888;background:#fafaff;border-bottom:1px solid #f0f0f8;font-weight:600;text-transform:uppercase">'+k+'</td><td style="padding:10px 14px;font-size:13px;color:#1a1a2e;border-bottom:1px solid #f0f0f8;text-align:center">'+v1+'</td><td style="padding:10px 14px;font-size:13px;color:#1a1a2e;border-bottom:1px solid #f0f0f8;text-align:center">'+v2+'</td></tr>';
+      }).join('');
+      return '<div class="cb cb-pad" style="background:#f8f9ff"><h2 class="cb-h2" style="color:#1a1a2e;text-align:center;margin-bottom:20px">'+(p.heading||'Compare Vehicles')+'</h2><div style="overflow-x:auto"><table style="width:100%;min-width:340px;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e8e8f0"><thead><tr><th style="padding:14px;background:#1a1a2e;color:#fff;font-size:12px;text-align:left">Spec</th><th style="padding:14px;background:#1a1a2e;color:#7c6eff;font-size:13px;text-align:center">'+c1.year+' '+c1.make+' '+c1.model+'</th><th style="padding:14px;background:#1a1a2e;color:#7c6eff;font-size:13px;text-align:center">'+c2.year+' '+c2.make+' '+c2.model+'</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+    }
+
+    case 'promo_banner':{
+      const grad=p.bgColor==='gradient'?'linear-gradient(135deg,#7c6eff,#ff5272)':p.bgColor==='#0f0f1a'?'linear-gradient(135deg,#0f0f1a,#1a1a2e)':'linear-gradient(135deg,'+(p.bgColor||'#c0392b')+',#a93226)';
+      return '<div class="cb cb-pad" style="background:'+grad+';text-align:center"><div style="display:inline-block;background:rgba(255,255,255,.15);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em">'+(p.tag||'SPECIAL OFFER')+'</div><h2 class="cb-h2" style="color:#fff;font-size:32px;font-weight:800;margin-bottom:10px">'+(p.heading||'Save Up to $5,000')+'</h2><p style="color:rgba(255,255,255,.8);font-size:14px;margin-bottom:22px">'+(p.subtext||'On select vehicles.')+'</p><button class="cb-btn-light">'+(p.btnText||'Shop Deals')+'</button></div>';
+    }
+
+    case 'promo_cards':{
+      const cards=vi===0
+        ?[[p.card1Icon||'&#x1F381;',p.card1Title||'Holiday Special',p.card1Body||'$1,500 off any CPO vehicle.'],[p.card2Icon||'&#x1F4B0;',p.card2Title||'0% Financing',p.card2Body||'60-month special financing.'],[p.card3Icon||'&#x1F511;',p.card3Title||'Free First Service',p.card3Body||'Complimentary oil change.']]
+        :[[p.card1Icon||'&#x1F384;',p.card1Title||'Season Savings',p.card1Body||'Up to $3,000 off select models.'],[p.card2Icon||'&#x1F4B3;',p.card2Title||'No Payments 90 Days',p.card2Body||'Drive now, pay later.']];
+      const gridClass=cards.length===3?'cb-grid-3':'cb-grid-2';
+      return '<div class="cb cb-pad" style="background:#f8f9ff"><div class="'+gridClass+'">'+cards.map(function(c){return '<div class="cb-card" style="padding:24px;text-align:center"><div style="font-size:36px;margin-bottom:14px">'+c[0]+'</div><h3 style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:8px">'+c[1]+'</h3><p style="font-size:13px;color:#666;line-height:1.6">'+c[2]+'</p></div>';}).join('')+'</div></div>';
+    }
+
+    case 'financing':{
+      if(vi===1) return '<div class="cb cb-pad" style="background:#fff;border-top:3px solid #7c6eff"><h2 class="cb-h2" style="color:#1a1a2e;font-size:22px;text-align:center;margin-bottom:24px">'+(p.heading||'Estimate Your Payment')+'</h2><div class="cb-stats-3"><div style="text-align:center;padding:18px;background:#f8f8ff;border-radius:10px"><div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:#7c6eff">'+(p.monthly||'$299')+'</div><div style="font-size:12px;color:#888;margin-top:4px">/month</div></div><div style="text-align:center;padding:18px;background:#f8f8ff;border-radius:10px"><div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:#7c6eff">'+(p.apr||'2.9%')+'</div><div style="font-size:12px;color:#888;margin-top:4px">APR</div></div><div style="text-align:center;padding:18px;background:#f8f8ff;border-radius:10px"><div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:#7c6eff">$'+(p.down||'0')+'</div><div style="font-size:12px;color:#888;margin-top:4px">Down</div></div></div><div style="text-align:center"><button class="cb-btn-primary" style="width:auto">'+(p.btnText||'Calculate My Payment')+'</button></div></div>';
+      if(vi===2) return '<div class="cb" style="background:#f8f9ff"><div class="cb-pad"><div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;border:1px solid #e8e8f0"><h2 class="cb-h2" style="color:#1a1a2e;font-size:22px;margin-bottom:8px">'+(p.heading||"What\'s Your Trade Worth?")+'</h2><p style="color:#666;font-size:14px;margin-bottom:20px">'+(p.subtext||'Get an instant estimate.')+'</p><div class="cb-form-grid"><input placeholder="Year" class="cb-input" style="border:1px solid #e0e0f0"/><input placeholder="Make" class="cb-input" style="border:1px solid #e0e0f0"/><input placeholder="Model" class="cb-input" style="border:1px solid #e0e0f0"/><input placeholder="Mileage" class="cb-input" style="border:1px solid #e0e0f0"/></div><button class="cb-btn-green">'+(p.btnText||'Get My Value')+'</button></div></div></div>';
+      return '<div class="cb cb-pad" style="background:linear-gradient(135deg,#0f3460,#0f0f1a);text-align:center"><div style="font-size:56px;font-weight:800;color:#7c6eff;font-family:Syne,sans-serif;margin-bottom:6px">'+(p.rate||'0%')+'</div><div style="color:rgba(255,255,255,.6);font-size:14px;margin-bottom:4px">APR for '+(p.term||'60')+' months</div><h2 class="cb-h2" style="color:#fff;font-size:24px;font-weight:700;margin-bottom:10px">'+(p.heading||'Special Financing Offer')+'</h2><p style="color:rgba(255,255,255,.55);font-size:14px;margin-bottom:22px">'+(p.subtext||'On select 2024 models this month only.')+'</p><button class="cb-btn-primary" style="width:auto">'+(p.btnText||'Pre-Qualify Online')+'</button></div>';
+    }
+
+    case 'countdown':{
+      const dark=vi===0;
+      const bg=dark?'linear-gradient(135deg,#c0392b,#e74c3c)':'linear-gradient(135deg,#0f0f1a,#1a1a2e)';
+      const nb=dark?'rgba(0,0,0,.25)':'rgba(124,110,255,.2)';
+      const nc=dark?'#fff':'#7c6eff';
+      return '<div class="cb cb-pad" style="background:'+bg+';text-align:center"><p style="color:rgba(255,255,255,.7);font-size:13px;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">'+(p.heading||'Sale Ends In')+'</p><div class="cb-countdown">'+['02','14','38','22'].map(function(v,i){return '<div><div class="cb-countdown-num" style="background:'+nb+';color:'+nc+'">'+v+'</div><div style="color:rgba(255,255,255,.5);font-size:10px;margin-top:5px;text-transform:uppercase">'+['Days','Hours','Mins','Secs'][i]+'</div></div>';}).join('')+'</div><p style="color:rgba(255,255,255,.6);font-size:13px;margin-top:12px">'+(p.event||'End of Month Clearance')+'</p></div>';
+    }
+
+    case 'service_dept':{
+      const svcs=(p.services||'Oil Change,Tire Rotation,Brake Service,Battery Check,Detailing,Inspection').split(',');
+      const svcIcons=['&#x1F6E2;','&#x1F6DE;','&#x1F527;','&#x1F50B;','&#x1F6BF;','&#x1F50D;'];
+      if(vi===1) return '<div class="cb cb-pad" style="background:#fff"><div class="cb-detail-grid"><div style="height:260px;background:linear-gradient(135deg,#1a1a2e,#2a2a4e);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:70px">&#x1F527;</div><div><div style="color:#7c6eff;font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Service Center</div><h2 class="cb-h2" style="color:#1a1a2e">'+(p.heading||'Certified Service')+'</h2><p class="cb-body" style="color:#555;margin-bottom:18px">'+(p.subtext||'Factory-certified technicians, genuine parts.')+'</p><div class="cb-hero-btns" style="justify-content:flex-start"><button class="cb-btn-primary" style="width:auto">Schedule Service</button><button style="background:#f0f0f8;color:#1a1a2e;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;white-space:nowrap">View Specials</button></div></div></div></div>';
+      return '<div class="cb cb-pad" style="background:#0f0f1a"><h2 class="cb-h2" style="color:#fff;text-align:center;margin-bottom:8px">'+(p.heading||'Our Service Center')+'</h2><p style="color:rgba(255,255,255,.5);text-align:center;font-size:14px;margin-bottom:24px">'+(p.subtext||'Factory-certified, genuine parts.')+'</p><div class="cb-grid-3" style="margin-bottom:24px">'+svcs.slice(0,6).map(function(s,i){return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:18px;text-align:center"><div style="font-size:28px;margin-bottom:8px">'+(svcIcons[i]||'&#x1F527;')+'</div><div style="font-size:13px;font-weight:500;color:#fff">'+s.trim()+'</div></div>';}).join('')+'</div><div style="text-align:center"><button class="cb-btn-primary" style="width:auto">Schedule Service</button></div></div>';
+    }
+
+    case 'schedule_svc':{
+      const carOpts=CARS.map(function(c){return '<option>'+c.year+' '+c.make+' '+c.model+'</option>';}).join('');
+      const timeOpts=['8:00 AM','10:00 AM','12:00 PM','2:00 PM','4:00 PM'].map(function(t){return '<option>'+t+'</option>';}).join('');
+      if(vi===1) return '<div class="cb cb-pad" style="background:#1a1a2e"><h2 class="cb-h2" style="color:#fff;margin-bottom:20px">'+(p.heading||'Quick Service Request')+'</h2><div class="cb-sched-grid"><select class="cb-select"><option>Select Your Vehicle</option>'+carOpts+'</select><select class="cb-select"><option>Service Type</option><option>Oil Change</option><option>Tire Rotation</option></select><input type="date" class="cb-input cb-select"/><select class="cb-select"><option>Preferred Time</option>'+timeOpts+'</select></div><button class="cb-btn-acc">'+(p.btnText||'Check Availability')+'</button></div>';
+      return '<div class="cb cb-pad" style="background:#fff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:6px">'+(p.heading||'Schedule Your Service')+'</h2><p style="color:#666;font-size:14px;margin-bottom:22px">Quick and easy online booking</p><div class="cb-sched-grid"><select class="cb-input" style="border:1px solid #e0e0f0;background:#fff;cursor:pointer"><option>Select Your Vehicle</option>'+carOpts+'</select><select class="cb-input" style="border:1px solid #e0e0f0;background:#fff;cursor:pointer"><option>Service Type</option><option>Oil Change — $29.99</option><option>Tire Rotation</option><option>Brake Inspection</option></select><input placeholder="Your Name" class="cb-input" style="border:1px solid #e0e0f0"/><input type="tel" placeholder="Phone Number" class="cb-input" style="border:1px solid #e0e0f0"/><input type="date" class="cb-input" style="border:1px solid #e0e0f0"/><select class="cb-input" style="border:1px solid #e0e0f0;background:#fff;cursor:pointer"><option>Preferred Time</option>'+timeOpts+'</select></div><button class="cb-btn-acc">'+(p.btnText||'Book Appointment')+'</button></div>';
+    }
+
+    case 'svc_specials':{
+      const sp=[[p.special1Icon||'&#x1F6E2;',p.special1Title||'Oil Change Special',p.special1Price||'$29.99'],[p.special2Icon||'&#x1F6DE;',p.special2Title||'Tire Rotation',p.special2Price||'$15.99'],[p.special3Icon||'&#x1F50B;',p.special3Title||'Battery Check',p.special3Price||'FREE']];
+      if(vi===1) return '<div class="cb cb-pad" style="background:#f8f9ff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:16px">Service Specials</h2>'+sp.slice(0,2).map(function(s){return '<div class="cb-row-between" style="background:#fff;border:1px solid #e8e8f0;border-radius:10px;padding:16px;margin-bottom:10px;flex-wrap:wrap;gap:8px"><div class="cb-row"><div style="font-size:28px">'+s[0]+'</div><div style="font-weight:600;font-size:14px;color:#1a1a2e">'+s[1]+'</div></div><div class="cb-row" style="gap:8px"><div style="font-family:Syne,sans-serif;font-weight:700;font-size:18px;color:#1fd6a0">'+s[2]+'</div><button class="cb-btn-primary" style="font-size:12px;padding:7px 14px;width:auto">Claim</button></div></div>';}).join('')+'</div>';
+      return '<div class="cb cb-pad" style="background:#f8f9ff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:16px">Current Service Specials</h2><div class="cb-grid-3">'+sp.map(function(s){return '<div class="cb-card" style="padding:20px;text-align:center"><div style="font-size:32px;margin-bottom:10px">'+s[0]+'</div><h3 style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px">'+s[1]+'</h3><div style="font-family:Syne,sans-serif;font-size:20px;font-weight:700;color:#1fd6a0;margin-bottom:12px">'+s[2]+'</div><button class="cb-btn-acc" style="font-size:12px;padding:7px">Claim Offer</button></div>';}).join('')+'</div></div>';
+    }
+
+    case 'svc_brands':{
+      const brands=(p.brands||'Tesla,BMW,Mercedes,Audi,Porsche,Ford').split(',');
+      if(vi===1) return '<div class="cb cb-pad" style="background:#fff"><h2 class="cb-h2" style="color:#1a1a2e;text-align:center;margin-bottom:20px">'+(p.heading||'Factory Authorized')+'</h2><div class="cb-grid-4">'+brands.map(function(b){return '<div style="border:1px solid #e8e8f0;border-radius:9px;padding:16px;text-align:center"><div style="font-family:Syne,sans-serif;font-weight:700;font-size:14px;color:#1a1a2e">'+b.trim()+'</div><div style="font-size:10px;color:#888;margin-top:4px">Certified</div></div>';}).join('')+'</div></div>';
+      return '<div class="cb cb-pad-sm" style="background:#fff;border-bottom:1px solid #eee"><p style="text-align:center;font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px">'+(p.heading||'Certified For')+'</p><div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">'+brands.map(function(b){return '<div style="background:#f8f8ff;border:1px solid #e8e8f0;border-radius:6px;padding:8px 16px;font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:#1a1a2e">'+b.trim()+'</div>';}).join('')+'</div></div>';
+    }
+
+    case 'testimonials':{
+      const revs=p.reviews||[{name:'Jennifer M.',rating:5,text:'Incredible experience from start to finish. Transparent and found exactly what I needed.'},{name:'Robert T.',rating:5,text:'Best car buying experience of my life. No pressure, fair price.'},{name:'Amy K.',rating:5,text:'Service department is outstanding. Quick, honest, always on time.'}];
+      if(vi===1) return '<div class="cb cb-pad" style="background:#0f0f1a;text-align:center"><div style="color:rgba(255,255,255,.5);font-size:12px;text-transform:uppercase;letter-spacing:3px;margin-bottom:16px">What Our Customers Say</div><div style="font-size:22px;color:#ffab4c;margin-bottom:16px">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p style="color:rgba(255,255,255,.75);font-size:17px;font-style:italic;max-width:580px;margin:0 auto 16px;line-height:1.7">&ldquo;'+(p.quote||revs[0].text)+'&rdquo;</p><div style="color:rgba(255,255,255,.4);font-size:13px">&mdash; '+(p.author||revs[0].name+', verified buyer')+'</div></div>';
+      if(vi===2) return '<div class="cb cb-pad" style="background:#f8f9ff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:20px">'+(p.heading||'Customer Reviews')+'</h2>'+revs.slice(0,1).map(function(r){return '<div class="cb-card cb-row" style="padding:22px;align-items:flex-start"><div class="cb-avatar-sm" style="background:#7c6eff22;color:#7c6eff">'+r.name[0]+'</div><div><div style="font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:4px">'+r.name+'</div><div style="color:#ffab4c;font-size:14px;margin-bottom:8px">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p style="font-size:14px;color:#555;line-height:1.6">&ldquo;'+r.text+'&rdquo;</p></div></div>';}).join('')+'</div>';
+      return '<div class="cb cb-pad" style="background:#f8f9ff"><h2 class="cb-h2" style="color:#1a1a2e;text-align:center;margin-bottom:20px">'+(p.heading||'What Our Customers Say')+'</h2><div class="cb-grid-3">'+revs.slice(0,3).map(function(r){return '<div class="cb-card" style="padding:20px"><div style="color:#ffab4c;font-size:15px;margin-bottom:10px">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:12px">&ldquo;'+r.text+'&rdquo;</p><div style="font-size:12px;font-weight:600;color:#1a1a2e">&mdash; '+r.name+'</div></div>';}).join('')+'</div></div>';
+    }
+
+    case 'why_us':{
+      const wtItems=(p.items||'No Hidden Fees|Transparent pricing always,500+ Vehicles|New and pre-owned in stock,5-Star Service|Award-winning team,Easy Financing|Rates from all top lenders').split(',').map(function(i){return i.split('|');});
+      const wtIcons=['&#x1F4AF;','&#x1F697;','&#x1F3C6;','&#x1F4B3;'];
+      if(vi===1) return '<div class="cb cb-pad" style="background:#f8f9ff"><div class="cb-detail-grid"><div style="height:260px;background:linear-gradient(135deg,#1a1a2e,#2a2a4e);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:70px">&#x1F3C6;</div><div><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:8px">'+(p.heading||'The Premium Motors Difference')+'</h2><p class="cb-body" style="color:#555;margin-bottom:18px">'+(p.text||'We believe buying a car should be exciting, not stressful.')+'</p>'+wtItems.slice(0,3).map(function(it,i){return '<div class="cb-row" style="margin-bottom:12px;align-items:flex-start"><div style="font-size:20px;flex-shrink:0">'+wtIcons[i%4]+'</div><div><div style="font-weight:600;font-size:13px;color:#1a1a2e">'+it[0]+'</div><div style="font-size:12px;color:#666">'+(it[1]||'')+'</div></div></div>';}).join('')+'</div></div></div>';
+      return '<div class="cb cb-pad" style="background:#fff"><h2 class="cb-h2" style="color:#1a1a2e;text-align:center;margin-bottom:24px">'+(p.heading||'Why Choose Us')+'</h2><div class="cb-grid-4">'+wtItems.map(function(it,i){return '<div style="text-align:center;padding:20px 12px"><div style="font-size:32px;margin-bottom:10px">'+wtIcons[i%4]+'</div><h3 style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:6px">'+it[0]+'</h3><p style="font-size:12px;color:#666;line-height:1.6">'+(it[1]||'')+'</p></div>';}).join('')+'</div></div>';
+    }
+
+    case 'awards':{
+      const awrds=(p.awards||'Best Dealership 2024,5-Star Google Rating,JD Power Certified,Top Performer').split(',');
+      if(vi===1) return '<div class="cb cb-pad-sm" style="background:#0f0f1a;border-top:1px solid rgba(255,255,255,.06)"><p style="text-align:center;font-size:11px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px">'+(p.heading||'Awards')+'</p><div class="cb-grid-4">'+awrds.map(function(a){return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px;text-align:center"><div style="font-size:18px;margin-bottom:5px">&#x1F3C6;</div><div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.6)">'+a.trim()+'</div></div>';}).join('')+'</div></div>';
+      return '<div class="cb cb-pad-sm" style="background:#fff;border-top:2px solid #f0f0f0"><p style="text-align:center;font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px">'+(p.heading||'Awards')+'</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">'+awrds.map(function(a){return '<div style="background:#f8f8ff;border:1px solid #e8e8f0;border-radius:7px;padding:10px 18px;display:flex;align-items:center;gap:7px"><span>&#x1F3C6;</span><span style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:#1a1a2e">'+a.trim()+'</span></div>';}).join('')+'</div></div>';
+    }
+
+    case 'team':{
+      const members=(p.members||'Alex Thompson|Sales Manager,Maria Garcia|Finance Director,David Kim|Lead Sales,Lisa Chen|Service Advisor').split(',').map(function(m){return m.split('|');});
+      const mColors=['#7c6eff','#1fd6a0','#f87171','#ffab4c'];
+      if(vi===1) return '<div class="cb cb-pad" style="background:#fff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:16px">'+(p.heading||'Your Sales Team')+'</h2>'+members.map(function(m,i){return '<div class="cb-row-between" style="padding:14px;border:1px solid #e8e8f0;border-radius:9px;margin-bottom:8px"><div class="cb-row"><div class="cb-avatar-sm" style="background:'+mColors[i%4]+'22;color:'+mColors[i%4]+'">'+m[0][0]+'</div><div><div style="font-weight:600;font-size:14px;color:#1a1a2e">'+m[0]+'</div><div style="font-size:12px;color:#888">'+(m[1]||'Sales')+'</div></div></div><button style="background:#f0f0f8;border:none;padding:6px 13px;border-radius:6px;font-size:12px;cursor:pointer">Contact</button></div>';}).join('')+'</div>';
+      return '<div class="cb cb-pad" style="background:#f8f9ff"><h2 class="cb-h2" style="color:#1a1a2e;text-align:center;margin-bottom:20px">'+(p.heading||'Meet Our Team')+'</h2><div class="cb-grid-4">'+members.map(function(m,i){return '<div class="cb-card" style="padding:20px;text-align:center"><div class="cb-avatar" style="background:'+mColors[i%4]+'22;color:'+mColors[i%4]+'">'+m[0][0]+'</div><div style="font-weight:700;font-size:13px;color:#1a1a2e;margin-bottom:4px">'+m[0]+'</div><div style="font-size:12px;color:#888">'+(m[1]||'Sales')+'</div></div>';}).join('')+'</div></div>';
+    }
+
+    case 'text': return vi===1
+      ?'<div class="cb" style="background:#f8f9ff;border-left:4px solid #7c6eff;padding:20px 40px;font-size:15px;color:#333;line-height:1.8;font-style:italic">&ldquo;'+(p.content||'Quote.')+'&rdquo;</div>'
+      :'<div class="cb" style="padding:20px 40px;background:#fff;font-size:14px;color:#333;line-height:1.8">'+(p.content||'Paragraph text.')+'</div>';
+
+    case 'image': return vi===1
+      ?'<div class="cb" style="height:280px;background:linear-gradient(135deg,#e8e8f8,#d0d0ee);display:flex;align-items:center;justify-content:center;color:#9090c0;font-size:13px;gap:8px">&#x1F5BC; Full Width Image</div>'
+      :'<div class="cb cb-pad" style="background:#f8f9ff"><div style="height:200px;background:linear-gradient(135deg,#e8e8f8,#d0d0ee);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9090c0;font-size:13px;gap:8px">&#x1F5BC; Click to add image</div>'+(p.caption?'<p style="margin-top:8px;font-size:12px;color:#888;text-align:center">'+p.caption+'</p>':'')+'</div>';
+
+    case 'form':{
+      const dark=vi===1;
+      const bg=dark?'#1a1a2e':'#fff';
+      const inpStyle=dark?'background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7)':'border:1px solid #e8e8f0;background:#f8f8ff;color:#333';
+      return '<div class="cb cb-pad" style="background:'+bg+'"><h3 style="font-family:Syne,sans-serif;font-size:20px;font-weight:700;color:'+(dark?'#fff':'#1a1a2e')+';margin-bottom:18px">'+(p.heading||'Contact Our Team')+'</h3><div class="cb-form-grid"><input placeholder="First Name" class="cb-input" style="'+inpStyle+'"/><input placeholder="Last Name" class="cb-input" style="'+inpStyle+'"/><input placeholder="Email" class="cb-input" style="'+inpStyle+'"/><input placeholder="Phone" class="cb-input" style="'+inpStyle+'"/></div><textarea placeholder="What vehicle are you interested in?" rows="3" class="cb-input" style="'+inpStyle+';resize:vertical;margin-bottom:10px;font-family:inherit;display:block"></textarea><button class="cb-btn-acc">Send Message</button></div>';
+    }
+
+    case 'map_hours':{
+      const hrs=(p.hours||'Mon-Fri: 8am-8pm|Sat: 9am-7pm|Sun: 11am-5pm').split('|');
+      const hrRows=hrs.map(function(h){const parts=h.split(': ');return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f8;font-size:14px"><span style="color:#666">'+parts[0]+'</span><span style="font-weight:600;color:#1a1a2e">'+(parts[1]||'')+'</span></div>';}).join('');
+      if(vi===1) return '<div class="cb cb-pad" style="background:#fff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:20px">'+(p.heading||'Hours of Operation')+'</h2><div style="max-width:320px">'+hrRows+'</div></div>';
+      return '<div class="cb cb-pad" style="background:#fff"><h2 class="cb-h2" style="color:#1a1a2e;margin-bottom:20px">'+(p.heading||'Visit Us')+'</h2><div class="cb-map-grid"><div class="cb-map-img"><div style="font-size:32px">&#x1F4CD;</div><div>'+(p.address||'1234 Motor Mile Blvd')+'</div></div><div><div style="font-weight:600;font-size:14px;color:#1a1a2e;margin-bottom:14px">&#x1F4DE; '+(p.phone||'(555) 234-5678')+'</div>'+hrRows+'</div></div></div>';
+    }
+
+    default: return '<div class="cb" style="padding:20px;text-align:center;color:#888;background:#f8f9ff;font-size:13px">Block: '+type+'</div>';
+  }
+}
+
+/* ─ Properties panel ─ */
+const PROP_FIELDS={
+  navbar:       [{k:'logoText',l:'Logo Text'},{k:'links',l:'Nav Links (comma-separated)'},{k:'ctaText',l:'CTA Button'}],
+  hero:         [{k:'heading',l:'Heading'},{k:'subtext',l:'Subtext',ta:true},{k:'btnText',l:'Primary Button'},{k:'btn2Text',l:'Secondary Button'},{k:'bgColor',l:'Background',color:true}],
+  section:      [{k:'heading',l:'Heading'},{k:'body',l:'Body',ta:true},{k:'colLeft',l:'Left Column',ta:true},{k:'colRight',l:'Right Column',ta:true},{k:'bgColor',l:'Background',color:true}],
+  cta:          [{k:'heading',l:'Heading'},{k:'subtext',l:'Subtext'},{k:'btnText',l:'Button Text'}],
+  footer:       [{k:'logoText',l:'Logo Text'},{k:'copyright',l:'Copyright'},{k:'col1',l:'About Text',ta:true},{k:'col2Links',l:'Col 2 Links'},{k:'col3Links',l:'Col 3 Links'}],
+  divider:      [],
+  inv_grid:     [{k:'heading',l:'Section Heading'}],
+  inv_featured: [{k:'heading',l:'Heading'},{k:'year',l:'Year'},{k:'make',l:'Make'},{k:'model',l:'Model'},{k:'price',l:'Price'}],
+  inv_search:   [{k:'heading',l:'Heading'},{k:'placeholder',l:'Search Placeholder'}],
+  car_detail:   [{k:'make',l:'Make'},{k:'model',l:'Model'},{k:'year',l:'Year'},{k:'price',l:'Price'},{k:'mileage',l:'Mileage'},{k:'color',l:'Color'}],
+  compare:      [{k:'heading',l:'Heading'}],
+  promo_banner: [{k:'tag',l:'Tag Label'},{k:'heading',l:'Heading'},{k:'subtext',l:'Subtext'},{k:'btnText',l:'Button Text'},{k:'bgColor',l:'Background',color:true}],
+  promo_cards:  [{k:'card1Icon',l:'Card 1 Icon'},{k:'card1Title',l:'Card 1 Title'},{k:'card1Body',l:'Card 1 Body'},{k:'card2Icon',l:'Card 2 Icon'},{k:'card2Title',l:'Card 2 Title'},{k:'card2Body',l:'Card 2 Body'},{k:'card3Icon',l:'Card 3 Icon'},{k:'card3Title',l:'Card 3 Title'},{k:'card3Body',l:'Card 3 Body'}],
+  financing:    [{k:'heading',l:'Heading'},{k:'subtext',l:'Subtext'},{k:'rate',l:'APR Rate'},{k:'term',l:'Term (months)'},{k:'monthly',l:'Monthly $'},{k:'apr',l:'APR %'},{k:'btnText',l:'Button Text'}],
+  countdown:    [{k:'heading',l:'Label'},{k:'event',l:'Event Name'}],
+  service_dept: [{k:'heading',l:'Heading'},{k:'subtext',l:'Subtext',ta:true},{k:'services',l:'Services (comma-sep)'}],
+  schedule_svc: [{k:'heading',l:'Heading'},{k:'btnText',l:'Button Text'}],
+  svc_specials: [{k:'special1Icon',l:'Icon 1'},{k:'special1Title',l:'Title 1'},{k:'special1Price',l:'Price 1'},{k:'special2Icon',l:'Icon 2'},{k:'special2Title',l:'Title 2'},{k:'special2Price',l:'Price 2'},{k:'special3Icon',l:'Icon 3'},{k:'special3Title',l:'Title 3'},{k:'special3Price',l:'Price 3'}],
+  svc_brands:   [{k:'heading',l:'Heading'},{k:'brands',l:'Brands (comma-sep)'}],
+  testimonials: [{k:'heading',l:'Heading'},{k:'quote',l:'Featured Quote',ta:true},{k:'author',l:'Quote Author'}],
+  why_us:       [{k:'heading',l:'Heading'},{k:'items',l:'Items (Title|Desc,…)',ta:true},{k:'text',l:'Body Text',ta:true}],
+  awards:       [{k:'heading',l:'Heading'},{k:'awards',l:'Awards (comma-sep)'}],
+  team:         [{k:'heading',l:'Heading'},{k:'members',l:'Members (Name|Role,…)',ta:true}],
+  text:         [{k:'content',l:'Content',ta:true}],
+  image:        [{k:'alt',l:'Alt Text'},{k:'caption',l:'Caption'}],
+  form:         [{k:'heading',l:'Form Heading'}],
+  map_hours:    [{k:'heading',l:'Heading'},{k:'address',l:'Address'},{k:'phone',l:'Phone'},{k:'hours',l:'Hours (Day: Time|…)'}],
+};
+
+function renderPropsPanel(el){
+  const body=document.getElementById('bl-props-body');
+  if(!body) return;
+  const fields=PROP_FIELDS[el.type]||[];
+  const catalog=BLOCK_CATALOG.flatMap(g=>g.blocks).find(b=>b.type===el.type);
+  let html=`<div style="font-size:11px;color:var(--acc);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:4px">${el.type}</div>`;
+  if(catalog) html+=`<div style="font-size:11px;color:var(--tx3);margin-bottom:14px">Variant: ${catalog.variants[el.variantIdx]||'Default'}</div>`;
+  if(fields.length===0) html+='<div style="font-size:12px;color:var(--tx3)">No editable properties.</div>';
+  fields.forEach(f=>{
+    const val=el.props[f.k]??'';
+    html+=`<div class="prop-row"><div class="prop-label">${f.l}</div>`;
+    if(f.color){
+      html+=`<input type="color" value="${val||'#ffffff'}" oninput="updateProp('${el.id}','${f.k}',this.value)"/>`;
+    } else if(f.ta){
+      html+=`<textarea oninput="updateProp('${el.id}','${f.k}',this.value)">${val}</textarea>`;
+    } else {
+      html+=`<input type="text" value="${val}" oninput="updateProp('${el.id}','${f.k}',this.value)"/>`;
+    }
+    html+='</div>';
+  });
+  body.innerHTML=html;
+}
+function renderPropsEmpty(){
+  const body=document.getElementById('bl-props-body');
+  if(body) body.innerHTML='<div class="no-sel">'+svgIcon('panels',24)+'<br/>Click a block on the canvas to edit its properties</div>';
+}
+function updateProp(elId,key,val){
+  const el=canvasEls.find(e=>e.id===elId);
+  if(!el) return;
+  el.props[key]=val;
+  const wrapper=document.getElementById('wrapper-'+elId);
+  if(wrapper){
+    const actBar=wrapper.querySelector('.bl-el-actions');
+    wrapper.innerHTML='';
+    if(actBar) wrapper.appendChild(actBar);
+    const tmp=document.createElement('div');
+    tmp.innerHTML=renderBlockHTML(el.type,el.variantIdx,el.props);
+    while(tmp.firstChild) wrapper.appendChild(tmp.firstChild);
+  }
+}
+
+
+/* ══════════════════════════════════════════
+   VEHICLE EDITOR
+══════════════════════════════════════════ */
+let veCarId = null;
+let veInitData = {}; // null = add, number = edit
+let vePhotos = ['','','','','','']; // up to 6 slots
+let veVideoUrl = '';
+let veTags = [];
+
+const VE_QUICK = ['Sunroof','Navigation','Heated Seats','Backup Camera',
+  'Bluetooth','Apple CarPlay','Android Auto','Leather Seats','Third Row',
+  'Tow Package','Remote Start','Keyless Entry'];
+
+function openAddCar(){
+  veCarId = null;
+  vePhotos = ['','','','','',''];
+  veVideoUrl = '';
+  veTags = [];
+  veInitData = {
+    year:new Date().getFullYear(), make:'',model:'',trim:'',
+    body:'Sedan',color:'',interior:'',vin:'',price:'',msrp:'',
+    mileage:0,engine:'',transmission:'Automatic',drive:'FWD',
+    fuel:'Gasoline',mpgCity:'',mpgHwy:'',desc:'',condition:'New',
+    stock:'STK-'+String(Date.now()).slice(-4),doors:'4',seats:'5',notes:'',status:'Available'
+  };
+  currentPage = 'vehicle-editor';
+  navigate('vehicle-editor');
+}
+
+function openEditCar(id){
+  const car = CARS.find(c=>c.id===id); if(!car) return;
+  veCarId = id;
+  vePhotos = car.photos ? [...car.photos] : ['','','','','',''];
+  veVideoUrl = car.videoUrl || '';
+  veTags = car.features ? [...car.features] : [];
+  veInitData = car;
+  currentPage = 'vehicle-editor';
+  navigate('vehicle-editor');
+}
+
+function closeVehicleEditor(){
+  currentPage = 'inventory';
+  navigate('inventory');
+}
+
+function _veRender(car){
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+  set('ve-year',   car.year);
+  set('ve-make',   car.make);
+  set('ve-model',  car.model);
+  set('ve-trim',   car.trim||'');
+  set('ve-color',  car.color);
+  set('ve-interior',car.interior||'');
+  set('ve-vin',    car.vin);
+  set('ve-price',  car.price);
+  set('ve-msrp',   car.msrp||'');
+  set('ve-mileage',car.mileage);
+  set('ve-engine', car.engine||'');
+  set('ve-mpg-city',car.mpgCity||'');
+  set('ve-mpg-hwy',car.mpgHwy||'');
+  set('ve-desc',   car.desc||'');
+  set('ve-stock',  car.stock||'');
+  set('ve-notes',  car.notes||'');
+  const setSelect=(id,val)=>{const el=document.getElementById(id);if(el&&val){[...el.options].forEach((o,i)=>{if(o.value===val||o.text===val)el.selectedIndex=i;});}};
+  setSelect('ve-status',    car.status||'Available');
+  setSelect('ve-body',      car.body||'Sedan');
+  setSelect('ve-transmission',car.transmission||'Automatic');
+  setSelect('ve-drive',     car.drive||'FWD');
+  setSelect('ve-fuel',      car.fuel||'Gasoline');
+  setSelect('ve-condition', car.condition||'New');
+  setSelect('ve-doors',     String(car.doors||4));
+  setSelect('ve-seats',     String(car.seats||5));
+  // Gallery
+  _veRenderGallery();
+  // Video
+  document.getElementById('ve-video-label').textContent = veVideoUrl ? veVideoUrl.slice(0,36)+'…' : 'Add Video URL';
+  // Tags
+  _veRenderTags();
+  // Quick-add chips
+  const qw = document.getElementById('ve-quick-features');
+  if(qw) qw.innerHTML = VE_QUICK.map(function(f){return '<span style="background:var(--b1);border:1px solid var(--b2);border-radius:4px;padding:3px 9px;font-size:10px;color:var(--tx3);cursor:pointer" onclick="veQuickAdd(this.dataset.f)" data-f="'+f+'" title="Add '+f+'">+ '+f+'</span>';}).join('');
+}
+
+function _veRenderGallery(){
+  const el = document.getElementById('ve-gallery'); if(!el) return;
+  el.innerHTML = vePhotos.map((url,i)=>{
+    const filled = !!url;
+    const isPrimary = i===0;
+    return '<div class="ve-media-slot'+(filled?' filled':'')+(isPrimary&&filled?' primary':'')+'" onclick="veSetPhoto('+i+')">'
+      +(filled
+        ? '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--s3)">&#x1F5BC;</div>'
+          +(isPrimary?'<div class="ve-slot-badge">Primary</div>':'')
+          +'<div class="ve-slot-actions"><button style="background:var(--red);border:none;color:#fff;font-size:9px;padding:2px 5px;border-radius:3px;cursor:pointer" onclick="event.stopPropagation();veRemovePhoto('+i+')">✕</button></div>'
+        : '<div class="ve-slot-emoji">'+(i===0?'&#x1F4F7;':'&#x2795;')+'</div>'
+          +'<div class="ve-slot-label">'+(i===0?'Primary<br>Photo':'Photo '+(i+1))+'</div>')
+      +'</div>';
+  }).join('');
+}
+
+function veSetPhoto(idx){
+  const url = prompt('Enter photo URL (or paste a direct image link):', vePhotos[idx]||'');
+  if(url===null) return;
+  vePhotos[idx] = url.trim();
+  _veRenderGallery();
+}
+function veRemovePhoto(idx){ vePhotos[idx]=''; _veRenderGallery(); }
+
+function veSetVideo(){
+  const url = prompt('Enter video URL (YouTube, Vimeo, or direct):', veVideoUrl);
+  if(url===null) return;
+  veVideoUrl = url.trim();
+  document.getElementById('ve-video-label').textContent = veVideoUrl ? veVideoUrl.slice(0,36)+'…' : 'Add Video URL';
+}
+
+function _veRenderTags(){
+  const el=document.getElementById('ve-tags-wrap'); if(!el) return;
+  el.innerHTML = veTags.map((t,i)=>'<span class="ve-tag">'+t+'<span class="ve-tag-x" onclick="veRemoveTag('+i+')">×</span></span>').join('');
+}
+function veAddTag(){
+  const inp=document.getElementById('ve-tag-input');
+  const val=inp.value.trim().replace(/,$/,'');
+  if(val && !veTags.includes(val)){ veTags.push(val); _veRenderTags(); }
+  inp.value='';
+}
+function veRemoveTag(i){ veTags.splice(i,1); _veRenderTags(); }
+function veQuickAdd(f){ if(!veTags.includes(f)){ veTags.push(f); _veRenderTags(); } }
+function veStatusChange(){}
+
+// Auto-init: called by router after injecting this HTML
+(function() {
+  const ct = document.getElementById('main-ct');
+  if (ct) ct.innerHTML = renderWebsite();
+})();
+
+</script>

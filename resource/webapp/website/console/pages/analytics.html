@@ -1,15 +1,109 @@
-<!-- pages/analytics.html -->
-<div class="ph"><h1>Analytics</h1><p>Traffic, conversions and visitor insights</p></div>
-<div class="sr" style="grid-template-columns:repeat(4,1fr)">
-  <div class="sc"><div class="sc-l">Visitors (30d)</div><div class="sc-v" style="color:var(--acc)">14,920</div><div class="sc-c">+32%</div></div>
-  <div class="sc"><div class="sc-l">VDP Views</div><div class="sc-v">3,847</div><div class="sc-c">+18%</div></div>
-  <div class="sc"><div class="sc-l">Lead Forms</div><div class="sc-v" style="color:var(--grn)">214</div><div class="sc-c">+41%</div></div>
-  <div class="sc"><div class="sc-l">Conv. Rate</div><div class="sc-v">5.6%</div><div class="sc-c">+0.8pp</div></div>
-</div>
-<div class="cs" style="padding:24px">
-  <div style="text-align:center;padding:60px 0;color:var(--tx3)">
-    <div style="font-size:48px;margin-bottom:12px">📊</div>
-    <div style="font-size:15px;color:var(--tx);margin-bottom:8px">Analytics Dashboard</div>
-    <div style="font-size:13px">Connect Google Analytics or your data source to see live charts.</div>
+<!-- fragment: pages/analytics.html -->
+<style>
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-lbl{font-size:12px;color:var(--text-2);width:72px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:10px;background:var(--bg);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px}
+.bar-val{font-size:12px;font-weight:600;color:var(--text);width:40px;text-align:right;flex-shrink:0}
+.sparkline{height:56px;background:linear-gradient(180deg,rgba(0,128,96,.08) 0%,transparent 100%);border-radius:var(--radius-sm);display:flex;align-items:flex-end;gap:3px;padding:0 4px 4px;margin-top:10px}
+.spark-bar{flex:1;border-radius:2px 2px 0 0;min-height:4px}
+.top-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light)}
+.top-row:last-child{border-bottom:none}
+.top-path{font-size:13px;font-weight:500;flex:1;font-family:monospace;color:var(--blue)}
+.top-bar-track{width:80px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;flex-shrink:0}
+.top-bar-fill{height:100%;background:var(--green);border-radius:3px}
+.top-views{font-size:13px;font-weight:600;color:var(--text);width:40px;text-align:right;flex-shrink:0}
+.range-tabs{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.rtab{padding:5px 12px;font-size:12px;font-weight:500;border:none;background:var(--surface);color:var(--text-2);cursor:pointer;border-right:1px solid var(--border);font-family:var(--font);transition:background .12s}
+.rtab:last-child{border-right:none}
+.rtab.active{background:var(--bg);color:var(--text);font-weight:600}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
+</style>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Analytics</div>
+      <div class="page-sub">Website performance and visitor insights</div>
+    </div>
+    <div class="page-header-actions">
+      <div class="range-tabs">
+        <button class="rtab">7d</button>
+        <button class="rtab active">30d</button>
+        <button class="rtab">90d</button>
+        <button class="rtab">1y</button>
+      </div>
+      <button class="btn btn-secondary btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Visits</div><div class="stat-value">5,821</div><div class="stat-delta up">↑ 8% vs last period</div>
+        <div class="sparkline"><div class="spark-bar" style="height:30%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:45%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:35%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:60%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:55%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:80%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:65%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:90%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:75%;background:var(--green);opacity:.6"></div><div class="spark-bar" style="height:100%;background:var(--green);opacity:.6"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Unique Visitors</div><div class="stat-value">3,244</div><div class="stat-delta up">↑ 12% vs last period</div>
+        <div class="sparkline"><div class="spark-bar" style="height:40%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:55%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:45%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:70%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:55%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:85%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:70%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:95%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:80%;background:var(--blue);opacity:.6"></div><div class="spark-bar" style="height:100%;background:var(--blue);opacity:.6"></div></div>
+      </div>
+      <div class="stat-card"><div class="stat-label">Avg. Session</div><div class="stat-value">3:42</div><div class="stat-delta up">↑ 18s longer</div></div>
+      <div class="stat-card"><div class="stat-label">Bounce Rate</div><div class="stat-value">38%</div><div class="stat-delta down">↑ 2% vs last period</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Traffic Sources</div></div>
+        <div class="card-body">
+          <div class="bar-row"><span class="bar-lbl">Direct</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--green)"></div></div><span class="bar-val">2,191</span></div>
+          <div class="bar-row"><span class="bar-lbl">Google</span><div class="bar-track"><div class="bar-fill" style="width:54%;background:var(--blue)"></div></div><span class="bar-val">1,643</span></div>
+          <div class="bar-row"><span class="bar-lbl">Social</span><div class="bar-track"><div class="bar-fill" style="width:28%;background:#8b5cf6"></div></div><span class="bar-val">852</span></div>
+          <div class="bar-row"><span class="bar-lbl">Referral</span><div class="bar-track"><div class="bar-fill" style="width:18%;background:#f59e0b"></div></div><span class="bar-val">548</span></div>
+          <div class="bar-row" style="margin-bottom:0"><span class="bar-lbl">Email</span><div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--text-3)"></div></div><span class="bar-val">304</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Top Pages</div></div>
+        <div class="card-body" style="padding:12px 20px">
+          <div class="top-row"><span class="top-path">/</span><div class="top-bar-track"><div class="top-bar-fill" style="width:100%"></div></div><span class="top-views">2,840</span></div>
+          <div class="top-row"><span class="top-path">/inventory</span><div class="top-bar-track"><div class="top-bar-fill" style="width:72%"></div></div><span class="top-views">2,045</span></div>
+          <div class="top-row"><span class="top-path">/contact</span><div class="top-bar-track"><div class="top-bar-fill" style="width:32%"></div></div><span class="top-views">908</span></div>
+          <div class="top-row"><span class="top-path">/about</span><div class="top-bar-track"><div class="top-bar-fill" style="width:10%"></div></div><span class="top-views">284</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Devices</div></div>
+        <div class="card-body">
+          <div class="bar-row"><span class="bar-lbl">Mobile</span><div class="bar-track"><div class="bar-fill" style="width:62%;background:var(--green)"></div></div><span class="bar-val">62%</span></div>
+          <div class="bar-row"><span class="bar-lbl">Desktop</span><div class="bar-track"><div class="bar-fill" style="width:32%;background:var(--blue)"></div></div><span class="bar-val">32%</span></div>
+          <div class="bar-row" style="margin-bottom:0"><span class="bar-lbl">Tablet</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#8b5cf6"></div></div><span class="bar-val">6%</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Leads from Website</div></div>
+        <div class="card-body">
+          <div style="font-size:26px;font-weight:700;color:var(--text)">248</div>
+          <div style="font-size:12px;color:var(--text-2);margin-bottom:16px">Total leads · ↑ 14% vs last period</div>
+          <div class="bar-row"><span class="bar-lbl">Contact</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--green)"></div></div><span class="bar-val">161</span></div>
+          <div class="bar-row" style="margin-bottom:0"><span class="bar-lbl">Inventory</span><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--blue)"></div></div><span class="bar-val">87</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<script>
+document.querySelectorAll('.rtab').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>

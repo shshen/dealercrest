@@ -65,11 +65,12 @@ async function loadPage(page) {
   try {
     // 1. Fetch HTML (cached)
     if (!_htmlCache[page]) {
-      const res = await fetch(`pages/${page}.html`);
-      if (!res.ok) throw new Error(`pages/${page}.html — HTTP ${res.status}`);
+      const res = await fetch(`pages/${page}`);
+      if (!res.ok) throw new Error(`pages/${page} — HTTP ${res.status}`);
       _htmlCache[page] = await res.text();
     }
     ct.innerHTML = _htmlCache[page];
+    runEmbeddedScripts(ct);
 
     // 2. Load the companion JS (always fresh — busts cache so re-init runs)
     await loadScript(`pages/${page}.js`);
@@ -95,6 +96,18 @@ async function loadPage(page) {
   }
 }
 
+/* ── Execute scripts from fetched HTML fragments ── */
+function runEmbeddedScripts(root) {
+  root.querySelectorAll('script').forEach(oldScript => {
+    const script = document.createElement('script');
+    for (const attr of oldScript.attributes) {
+      script.setAttribute(attr.name, attr.value);
+    }
+    script.textContent = oldScript.textContent;
+    oldScript.replaceWith(script);
+  });
+}
+
 /* ── Dynamically load a script (returns promise) ── */
 function loadScript(src) {
   return new Promise((resolve) => {
@@ -114,8 +127,8 @@ function loadScript(src) {
 /* ── Update sidebar active item ── */
 function updateSidebarActive(page) {
   const activeNav = SUB_PAGE_PARENT[page] || page;
-  document.querySelectorAll('.ni').forEach(el => {
-    el.classList.toggle('active', el.dataset.id === activeNav);
+  document.querySelectorAll('[data-nav-id]').forEach(el => {
+    el.classList.toggle('on', el.dataset.navId === activeNav);
   });
   const titleEl = document.getElementById('page-title');
   if (titleEl) titleEl.textContent = PAGE_TITLES[page] || page;
@@ -126,10 +139,10 @@ function buildSidebar() {
   const nav = document.getElementById('sidebar-nav');
   if (!nav) return;
   nav.innerHTML = NAV_ITEMS.map(item => `
-    <div class="ni" data-id="${item.id}" onclick="navigate('${item.id}')">
-      <span class="ni-ic">${svgIcon(item.icon, 16)}</span>
-      <span class="ni-lb">${item.label}</span>
-    </div>`).join('');
+    <button class="sb-btn" type="button" data-nav-id="${item.id}" onclick="navigate('${item.id}')" aria-label="${item.label}">
+      ${svgIcon(item.icon, 16)}
+      <span class="sb-tip">${item.label}</span>
+    </button>`).join('');
 }
 
 /* ── Init ── */

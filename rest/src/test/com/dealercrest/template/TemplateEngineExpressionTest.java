@@ -50,11 +50,11 @@ public class TemplateEngineExpressionTest {
         engine = new TemplateEngine(reg);
     }
 
-    private String render(String tmpl, DataModel ctx) {
+    private String render(String tmpl, Model ctx) {
         return engine.render(tmpl, tmpl, ctx);
     }
 
-    private DataModel ctx() { return new DataModel(); }
+    private Model ctx() { return new Model(); }
 
     // ------------------------------------------------------------------ plain text
 
@@ -72,7 +72,7 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testSingleVariableSubstitution() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("title", "Hello");
         assertEquals("<h1>Hello</h1>", render("<h1>${title}</h1>", ctx));
     }
@@ -84,14 +84,14 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testNullVariableRendersEmpty() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("val", null);
         assertEquals("<p></p>", render("<p>${val}</p>", ctx));
     }
 
     @Test
     public void testIntegerVariable() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("count", 42);
         assertEquals("<span>42</span>", render("<span>${count}</span>", ctx));
     }
@@ -100,7 +100,7 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testTwoVariablesOnOneLine() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("a", "foo");
         ctx.set("b", "bar");
         assertEquals("<p>foo bar</p>", render("<p>${a} ${b}</p>", ctx));
@@ -108,7 +108,7 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testThreeVariablesInText() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("x", "1");
         ctx.set("y", "2");
         ctx.set("z", "3");
@@ -119,14 +119,14 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testPublicFieldDotPath() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("car", new Car("Toyota", "Corolla", 2022));
         assertEquals("<p>Toyota</p>", render("<p>${car.brand}</p>", ctx));
     }
 
     @Test
     public void testMultipleFieldsOnSamePojo() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("car", new Car("Honda", "Civic", 2020));
         assertEquals("<span>Honda Civic</span>",
                 render("<span>${car.brand} ${car.model}</span>", ctx));
@@ -134,7 +134,7 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testPrivateFieldViaGetter() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("d", new Driver("Ada", "Lovelace"));
         assertEquals("<p>Ada Lovelace</p>",
                 render("<p>${d.firstName} ${d.lastName}</p>", ctx));
@@ -150,7 +150,7 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testAttributeValueExpression() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("cls", "highlight");
         assertEquals("<div class=\"highlight\">x</div>",
                 render("<div class=\"${cls}\">x</div>", ctx));
@@ -166,8 +166,8 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testSameTemplateRenderedTwiceGivesSameOutput() {
-        DataModel c1 = ctx(); c1.set("v", "first");
-        DataModel c2 = ctx(); c2.set("v", "second");
+        Model c1 = ctx(); c1.set("v", "first");
+        Model c2 = ctx(); c2.set("v", "second");
         String tmpl = "<p>${v}</p>";
         assertEquals("<p>first</p>",  render(tmpl, c1));
         assertEquals("<p>second</p>", render(tmpl, c2));
@@ -175,7 +175,7 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testClearCacheDoesNotBreakSubsequentRenders() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("x", "val");
         String tmpl = "<p>${x}</p>";
         render(tmpl, ctx);        // populate cache
@@ -187,8 +187,8 @@ public class TemplateEngineExpressionTest {
 
     @Test
     public void testSequentialRendersDoNotBleedOver() {
-        DataModel c1 = ctx(); c1.set("v", "AAA");
-        DataModel c2 = ctx(); c2.set("v", "BBB");
+        Model c1 = ctx(); c1.set("v", "AAA");
+        Model c2 = ctx(); c2.set("v", "BBB");
         String tmpl = "<span>${v}</span>";
         assertEquals("<span>AAA</span>", render(tmpl, c1));
         assertEquals("<span>BBB</span>", render(tmpl, c2));

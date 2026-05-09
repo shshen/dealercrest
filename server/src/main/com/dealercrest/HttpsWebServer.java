@@ -42,7 +42,6 @@ import com.dealercrest.storage.LocalStorage;
 import com.dealercrest.storage.Storage;
 import com.dealercrest.template.DirectiveRegistry;
 import com.dealercrest.template.EachDirective;
-import com.dealercrest.template.FragmentRegistry;
 import com.dealercrest.template.IfDirective;
 import com.dealercrest.template.ReplaceDirective;
 import com.dealercrest.template.TemplateEngine;
@@ -68,9 +67,9 @@ public class HttpsWebServer extends NettyServer {
         this.httpsPort = httpsPort;
         this.dataSource = DataSourceFactory.build(jdbcUrl, "dealerbase_app", "zhu88jie");
         // Configure the bootstrap.
-        this.bossGroup = new MultiThreadIoEventLoopGroup(1, new PrefixThreadFactory("HttpsWebServer:" + httpsPort),
+        this.bossGroup = new MultiThreadIoEventLoopGroup(1, new PrefixThreadFactory("DealerCrestBossGroup"),
                 KQueueIoHandler.newFactory());
-        this.workerGroup = new MultiThreadIoEventLoopGroup(1, new PrefixThreadFactory("HttpsWebServer:" + httpsPort),
+        this.workerGroup = new MultiThreadIoEventLoopGroup(1, new PrefixThreadFactory("DealerCrestWorkerGroup"),
                 KQueueIoHandler.newFactory());
     }
 
@@ -104,16 +103,15 @@ public class HttpsWebServer extends NettyServer {
     }
 
     private NettyRouters buildRouters() throws IOException, URISyntaxException {
-        ThreadFactory factory = new PrefixThreadFactory("HttpExecutor");
+        AppConfig appConfig = new AppConfig();
+        ThreadFactory factory = new PrefixThreadFactory("DealerCrestExecutor");
         ScheduledExecutorService scheduledExecutor =  Executors.newScheduledThreadPool(1, factory);
-        DealerCacheTask dealerTask = new DealerCacheTask(dataSource);
-        scheduledExecutor.scheduleWithFixedDelay(dealerTask, 60, 60, TimeUnit.SECONDS);
+        DealerCacheTask dealerTask = new DealerCacheTask(dataSource, appConfig.getDomain());
+        scheduledExecutor.scheduleWithFixedDelay(dealerTask, 60, 60, TimeUnit.MINUTES);
 
         Storage storage = new LocalStorage();
-        AppConfig appConfig = new AppConfig();
-        FragmentRegistry fragments = new FragmentRegistry();
         DirectiveRegistry reg = new DirectiveRegistry();
-        reg.register(new ReplaceDirective(fragments));
+        reg.register(new ReplaceDirective());
         reg.register(new IfDirective());
         reg.register(new EachDirective());
         TemplateEngine templateEngine = new TemplateEngine(reg);
@@ -179,7 +177,6 @@ public class HttpsWebServer extends NettyServer {
 
     @Override
     public void startAndWait() throws Exception {
-        Thread.currentThread().setName("HttpsWebServer");
         start();
         block();
     }

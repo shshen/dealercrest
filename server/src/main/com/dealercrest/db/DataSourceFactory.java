@@ -75,7 +75,7 @@ public class DataSourceFactory {
         config.setInitializationFailTimeout(1);
 
         // Pool name — useful in logs and JMX
-        config.setPoolName("DealerPool");
+        config.setPoolName("DealerCrestPool");
 
         return new HikariDataSource(config);
     }

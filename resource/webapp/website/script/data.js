@@ -64,23 +64,6 @@ const FEATURES=[
   {id:'tasks',      label:'Tasks',        desc:'Daily to-dos, follow-ups and team assignments', icon:'task', color:'#f87171',bg:'rgba(248,113,113,.12)',badge:'3 due today',bc:'bg-red'},
   {id:'listings',   label:'Listings',     desc:'Push inventory to Autotrader, Cars.com, KSL and more', icon:'cast',color:'#1fd6a0',bg:'rgba(31,214,160,.12)', badge:'5 portals', bc:'bg-grn'},
 ];
-const NAV_ITEMS=[
-  {id:'home',       icon:'home',  label:'Home'},
-  {id:'inventory',  icon:'car',   label:'Inventory'},
-  {id:'leads',      icon:'leads', label:'Leads'},
-  {id:'website',    icon:'globe', label:'Website'},
-  {id:'analytics',  icon:'chart', label:'Analytics'},
-  {id:'advertising',icon:'zap',   label:'Advertising'},
-  {id:'marketing',  icon:'mail',  label:'Marketing'},
-  {id:'social',     icon:'share', label:'Social'},
-  {id:'finance',    icon:'dollar',label:'Finance'},
-  {id:'service',    icon:'wrench',label:'Service'},
-  {id:'reports',    icon:'report',label:'Reports'},
-  {id:'tasks',      icon:'task',  label:'Tasks'},
-  {id:'listings',   icon:'cast',  label:'Listings'},
-  {id:'config',     icon:'cog',   label:'Config'},
-];
-const PAGE_TITLES={home:'Dashboard',inventory:'Inventory','vehicle-editor':'Vehicle',leads:'Leads','lead-detail':'Lead Detail',website:'Website',analytics:'Analytics',advertising:'Advertising',marketing:'Marketing',social:'Social',finance:'Finance & Desking',service:'Service',reports:'Reports',tasks:'Tasks',listings:'Listings',config:'Configuration',vdp:'Vehicle Detail'};
 let TOGGLES={notif:true,tfa:false,analytics:true,maintenance:false,backup:true};
 let INV_FEED={url:'',token:'',format:'JSON',status:''}; // inventory feed config
 

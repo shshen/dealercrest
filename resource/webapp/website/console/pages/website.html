@@ -1,0 +1,158 @@
+<!-- fragment: pages/website.html -->
+<style>
+.pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.page-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s}
+.page-card:hover{border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}
+.page-thumb{height:150px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.thumb-inner{width:78%;height:78%;background:#fff;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.1);overflow:hidden;display:flex;flex-direction:column;pointer-events:none}
+.ti-header{height:14px;background:#1a1c1e;flex-shrink:0}
+.ti-body{flex:1;padding:6px;display:flex;flex-direction:column;gap:4px}
+.ti-bar{height:5px;border-radius:2px;background:var(--border)}
+.ti-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;margin-top:2px}
+.ti-block{height:24px;background:var(--bg);border-radius:2px}
+.ti-hero{flex:1;background:linear-gradient(135deg,#667eea 60%,#764ba2);border-radius:2px}
+.status-pip{position:absolute;top:10px;right:10px}
+.page-card-body{padding:14px 16px;flex:1}
+.page-card-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+.page-card-url{font-size:12px;color:var(--text-3);font-family:monospace;margin-bottom:8px}
+.page-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.page-card-date{font-size:12px;color:var(--text-3)}
+.page-card-footer{padding:10px 16px;border-top:1px solid var(--border-light);background:var(--bg);display:flex;align-items:center;gap:8px}
+.page-card-footer .btn{flex:1;justify-content:center}
+.icon-btn{width:34px;height:34px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s,color .12s;flex-shrink:0}
+.icon-btn:hover{background:var(--bg);color:var(--text)}
+.icon-btn svg{width:14px;height:14px;display:block}
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap svg{position:absolute;left:10px;width:14px;height:14px;color:var(--text-3);pointer-events:none}
+.search-wrap input{padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;width:220px}
+.search-wrap input:focus{border-color:var(--green)}
+.page-count{margin-left:auto;font-size:13px;color:var(--text-3);font-weight:500}
+@media(max-width:600px){.pages-grid{grid-template-columns:1fr}.search-wrap input{width:160px}}
+</style>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Website</div>
+      <div class="page-sub">Manage your dealer website pages</div>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View live site
+      </button>
+      <button class="btn btn-primary btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add page
+      </button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search pages…" oninput="filterPages(this.value)">
+      </div>
+      <span class="page-count" id="pageCount">4 pages</span>
+    </div>
+
+    <div class="pages-grid" id="pagesGrid">
+
+      <div class="page-card" data-name="Home">
+        <div class="page-thumb">
+          <div class="thumb-inner"><div class="ti-header"></div><div class="ti-body"><div class="ti-hero"></div><div class="ti-grid"><div class="ti-block"></div><div class="ti-block"></div><div class="ti-block"></div></div></div></div>
+          <span class="status-pip"><span class="badge badge-green">Published</span></span>
+        </div>
+        <div class="page-card-body">
+          <div class="page-card-name">Home</div>
+          <div class="page-card-url">/</div>
+          <div class="page-card-meta"><span class="badge badge-green">Published</span><span class="page-card-date">Updated 2h ago</span></div>
+        </div>
+        <div class="page-card-footer">
+          <button class="btn btn-primary btn-sm" onclick="navigateEditor('home','Home','/')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit page
+          </button>
+          <button class="icon-btn" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="icon-btn" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+        </div>
+      </div>
+
+      <div class="page-card" data-name="Inventory">
+        <div class="page-thumb">
+          <div class="thumb-inner"><div class="ti-header"></div><div class="ti-body"><div class="ti-bar" style="width:40%"></div><div class="ti-grid"><div class="ti-block"></div><div class="ti-block"></div><div class="ti-block"></div><div class="ti-block"></div><div class="ti-block"></div><div class="ti-block"></div></div></div></div>
+          <span class="status-pip"><span class="badge badge-green">Published</span></span>
+        </div>
+        <div class="page-card-body">
+          <div class="page-card-name">Inventory</div>
+          <div class="page-card-url">/inventory</div>
+          <div class="page-card-meta"><span class="badge badge-green">Published</span><span class="page-card-date">Updated yesterday</span></div>
+        </div>
+        <div class="page-card-footer">
+          <button class="btn btn-primary btn-sm" onclick="navigateEditor('inventory-page','Inventory','/inventory')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit page
+          </button>
+          <button class="icon-btn" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="icon-btn" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+        </div>
+      </div>
+
+      <div class="page-card" data-name="Contact">
+        <div class="page-thumb">
+          <div class="thumb-inner"><div class="ti-header"></div><div class="ti-body"><div class="ti-bar" style="width:35%"></div><div class="ti-bar" style="width:100%;height:8px;background:var(--bg)"></div><div class="ti-bar" style="width:100%;height:8px;background:var(--bg)"></div><div class="ti-bar" style="width:50%;height:12px;background:var(--green);border-radius:3px;margin-top:4px"></div></div></div>
+          <span class="status-pip"><span class="badge badge-green">Published</span></span>
+        </div>
+        <div class="page-card-body">
+          <div class="page-card-name">Contact Us</div>
+          <div class="page-card-url">/contact</div>
+          <div class="page-card-meta"><span class="badge badge-green">Published</span><span class="page-card-date">Updated 3 days ago</span></div>
+        </div>
+        <div class="page-card-footer">
+          <button class="btn btn-primary btn-sm" onclick="navigateEditor('contact','Contact Us','/contact')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit page
+          </button>
+          <button class="icon-btn" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="icon-btn" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+        </div>
+      </div>
+
+      <div class="page-card" data-name="About">
+        <div class="page-thumb">
+          <div class="thumb-inner"><div class="ti-header"></div><div class="ti-body"><div class="ti-bar" style="width:50%"></div><div class="ti-bar" style="width:100%;background:var(--bg)"></div><div class="ti-bar" style="width:80%;background:var(--bg)"></div><div class="ti-bar" style="width:90%;background:var(--bg)"></div></div></div>
+          <span class="status-pip"><span class="badge badge-yellow">Draft</span></span>
+        </div>
+        <div class="page-card-body">
+          <div class="page-card-name">About Us</div>
+          <div class="page-card-url">/about</div>
+          <div class="page-card-meta"><span class="badge badge-yellow">Draft</span><span class="page-card-date">Updated 1 week ago</span></div>
+        </div>
+        <div class="page-card-footer">
+          <button class="btn btn-primary btn-sm" onclick="navigateEditor('about','About Us','/about')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit page
+          </button>
+          <button class="icon-btn" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="icon-btn" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function filterPages(q) {
+  const cards = document.querySelectorAll('#pagesGrid .page-card');
+  let n = 0;
+  cards.forEach(c => {
+    const show = c.dataset.name.toLowerCase().includes(q.toLowerCase());
+    c.style.display = show ? '' : 'none';
+    if (show) n++;
+  });
+  document.getElementById('pageCount').textContent = n + ' page' + (n !== 1 ? 's' : '');
+}
+</script>

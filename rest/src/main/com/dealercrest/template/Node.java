@@ -24,7 +24,7 @@ public abstract class Node {
      * Render phase: produces final HTML output into the provided StringBuilder.
      * Must not modify the node itself (compiled AST is shared across renders).
      */
-    public abstract void render(DataModel ctx, StringBuilder out);
+    public abstract void render(Model ctx, StringBuilder out);
 
     /**
      * Compile phase: transforms raw AST into executable AST.

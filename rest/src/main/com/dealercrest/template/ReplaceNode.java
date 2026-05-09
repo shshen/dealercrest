@@ -1,83 +1,92 @@
 package com.dealercrest.template;
 
 /**
- * Replaces the element entirely with a named fragment from FragmentRegistry.
+ * Replaces the element entirely with a named fragment from the Model's
+ * per-page FragmentRegistry.
  *
  * th:replace="fragmentName"
  *
  * The original element (its tag, attributes, and children) is discarded.
  * The fragment's compiled AST is rendered in its place.
  *
- * If the named fragment is not found in the registry, nothing is rendered.
+ * CHANGE: The FragmentRegistry is no longer baked in at compile time.
+ * It is fetched from the Model at render time via model.getFragments().
+ * This means each render call can supply a completely different set of
+ * fragments simply by attaching a different FragmentRegistry to the Model.
+ *
+ * Behaviour when no registry is available:
+ *   - model.getFragments() returns null  → silent skip (render nothing)
+ *   - fragment name not found in registry → silent skip (render nothing)
+ *
+ * Fragment compilation:
+ *   Fragment ASTs are compiled and cached inside FragmentRegistry on first
+ *   use.  The DirectiveRegistry needed for compilation is captured once
+ *   during compile() and stored for use at render time.
  *
  * Example:
- *   Registration:
- *     fragRegistry.register("nav", "<nav><a href='/'>Home</a></nav>");
+ *   Page A:
+ *     FragmentRegistry fr = new FragmentRegistry();
+ *     fr.register("nav", "<nav><a href='/vehicles'>Vehicles</a></nav>");
+ *     model.setFragments(fr);
  *
- *   Template:
+ *   Page B (same engine, different fragments):
+ *     FragmentRegistry fr = new FragmentRegistry();
+ *     fr.register("nav", "<nav><a href='/profile'>Profile</a></nav>");
+ *     model.setFragments(fr);
+ *
+ *   Template (shared, cached):
  *     <div th:replace="nav"></div>
- *
- *   Output:
- *     <nav><a href='/'>Home</a></nav>
+ *     → each page gets its own nav output
  */
 public class ReplaceNode extends Node {
 
-    private final String          fragmentName;
-    private final FragmentRegistry fragmentRegistry;
+    private final String fragmentName;
 
-    // Set during compile() when the DirectiveRegistry becomes available.
+    /**
+     * Captured during compile() — needed to compile fragment HTML into an AST
+     * the first time a given FragmentRegistry encounters this fragment name.
+     */
     private DirectiveRegistry directiveRegistry;
 
-    // The compiled fragment — resolved once and cached here.
-    private Node resolvedFragment = null;
-    private boolean resolved      = false;
-
-    public ReplaceNode(String fragmentName, FragmentRegistry fragmentRegistry) {
-        this.fragmentName     = fragmentName;
-        this.fragmentRegistry = fragmentRegistry;
+    public ReplaceNode(String fragmentName) {
+        this.fragmentName = fragmentName;
     }
 
     /**
-     * compile() is where we first have access to the DirectiveRegistry.
-     * We capture it for lazy fragment resolution, and attempt early resolution
-     * in case the fragment is already registered.
+     * Capture the DirectiveRegistry for use when compiling fragments at
+     * render time.  No early fragment resolution here — the registry comes
+     * from the Model, which is not available until render().
      */
     @Override
     public Node compile(DirectiveRegistry registry) {
         this.directiveRegistry = registry;
-
-        // Try to resolve now; fragment may not be registered yet (that is fine)
-        Node frag = fragmentRegistry.get(fragmentName, registry);
-        if (frag != null) {
-            resolvedFragment = frag;
-            resolved = true;
-        }
-
         return this;
     }
 
     @Override
-    public void render(DataModel ctx, StringBuilder out) {
+    public void render(Model model, StringBuilder out) {
 
-        // Lazy resolution for fragments registered after compile time
-        if (!resolved) {
-            resolvedFragment = fragmentRegistry.get(fragmentName, directiveRegistry);
-            resolved = true;
+        // Fetch the per-page registry from the model
+        FragmentRegistry registry = model.getFragments();
+        if (registry == null) {
+            return; // no fragments attached to this model — silent skip
         }
 
-        if (resolvedFragment == null) {
-            return; // fragment not found — silent skip
+        // Resolve (and cache inside the FragmentRegistry) on first use
+        Node fragment = registry.get(fragmentName, directiveRegistry);
+        if (fragment == null) {
+            return; // fragment name not found — silent skip
         }
 
-        // FragmentRegistry.get() returns the compiled <root> wrapper.
+        // FragmentRegistry.get() returns a compiled <root> wrapper.
         // Render only its children to avoid emitting <root>...</root>.
-        if (resolvedFragment instanceof ElementNode) {
-            ElementNode root = (ElementNode) resolvedFragment;
+        if (fragment instanceof ElementNode) {
+            ElementNode root = (ElementNode) fragment;
             for (int i = 0; i < root.children.size(); i++) {
-                root.children.get(i).render(ctx, out);
+                root.children.get(i).render(model, out);
             }
         } else {
-            resolvedFragment.render(ctx, out);
+            fragment.render(model, out);
         }
     }
 }

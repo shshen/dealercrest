@@ -41,7 +41,7 @@ public class TemplateEngine {
 
     /** Compiled AST cache — parse+compile runs at most once per template string. */
     private final ConcurrentHashMap<String, Node> cache =
-            new ConcurrentHashMap<String, Node>();
+            new ConcurrentHashMap<>();
 
     /**
      * Reusable StringBuilder per thread.
@@ -49,7 +49,7 @@ public class TemplateEngine {
      * to fit the largest template on each thread and stays there.
      */
     private static final ThreadLocal<StringBuilder> BUFFER =
-            new ThreadLocal<StringBuilder>() {
+            new ThreadLocal<>() {
                 protected StringBuilder initialValue() {
                     return new StringBuilder(4096);
                 }
@@ -68,7 +68,7 @@ public class TemplateEngine {
      * @param ctx      runtime data context (variables, objects, lists)
      * @return final rendered HTML output
      */
-    public String render(String templateKey, String templateContent, DataModel ctx) {
+    public String render(String templateKey, String templateContent, Model ctx) {
 
         Node compiledAst = cache.get(templateKey);
         if (compiledAst == null) {

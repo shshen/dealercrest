@@ -71,7 +71,7 @@ public class PageController {
      */
     @Route(path = "{path**}")
     public HttpResult fallback(
-            @ContextParam("host") String host,
+            @HeaderParam("Host") String host,
             @PathParam("path") String path, 
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @MapParam MultiValueMap queryParams) {

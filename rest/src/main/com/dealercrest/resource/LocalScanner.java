@@ -44,7 +44,10 @@ public class LocalScanner {
                     HtmlPageSource pageSource = HtmlPageSource.parse(content, lastModified.toMillis());
                     if (pageSource == null) {
                         String pp = websiteRoot.relativize(p).toString();
-                        StaticPage page = new StaticPage(domain, pp, lastModified.toMillis(), content);
+                        if ( !pp.startsWith("/") ) {
+                            pp = "/" + pp;
+                        }
+                        StaticPage page = new StaticPage(pp, lastModified.toMillis(), content);
                         appPages.addPage(page);
                     } else {
                         String pp = websiteRoot.relativize(p).toString();
@@ -67,7 +70,7 @@ public class LocalScanner {
                                 throw new IllegalArgumentException("layout " + layoutPath + " is not found for page " + pp);
                             }
                         }
-                        StaticPage page = new StaticPage(domain, pp, pageSource, layout, templateEngine);
+                        StaticPage page = new StaticPage(pp, pageSource, layout, templateEngine);
                         appPages.addPage(page);
                     }
                 }
@@ -89,7 +92,11 @@ public class LocalScanner {
                 if (Files.isRegularFile(p)) {
                     FileTime lastModified = Files.getLastModifiedTime(p);
                     String content = Files.readString(p, StandardCharsets.UTF_8);
-                    StaticPage page = new StaticPage(null, null, lastModified.toMillis(), content);
+                    String pp = errorRoot.relativize(p).toString();
+                    if ( !pp.startsWith("/") ) {
+                        pp = "/" + pp;
+                    }
+                    StaticPage page = new StaticPage(pp, lastModified.toMillis(), content);
                     String fileName = p.getFileName().toString();
                     if (fileName.endsWith(".html")) {
                         String statusCodeStr = fileName.substring(0, fileName.length() - 5);

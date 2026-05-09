@@ -1,12 +1,14 @@
 package com.dealercrest.resource;
 
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.JarFile;
 
 import com.dealercrest.page.Page;
 import com.dealercrest.page.SitePages;
@@ -54,7 +56,10 @@ public class WebResources {
             LocalScanner localResource = new LocalScanner();
             return localResource.scan(localWebApp, domain, templateEngine);
         } else {
-            throw new IllegalStateException("Unsupported protocol: " + url.getProtocol());
+            JarURLConnection conn = (JarURLConnection) url.openConnection();
+            JarFile jar = conn.getJarFile();
+            JarScanner jarResource = new JarScanner();
+            return jarResource.scan(jar, domain, templateEngine);
         }
         // Path localWebApp = localBase.resolve("webapp");
         // if (Files.isDirectory(localWebApp)) {

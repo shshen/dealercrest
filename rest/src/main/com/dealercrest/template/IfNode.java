@@ -43,7 +43,7 @@ public class IfNode extends Node {
     }
 
     @Override
-    public void render(DataModel ctx, StringBuilder out) {
+    public void render(Model ctx, StringBuilder out) {
         Object val = expr.evaluate(ctx);
 
         boolean result;

@@ -37,7 +37,7 @@ public class VariableExpression implements CompiledExpression {
     }
 
     @Override
-    public Object evaluate(DataModel ctx) {
+    public Object evaluate(Model ctx) {
         Object obj = ctx.get(path[0]);
 
         for (int i = 1; i < path.length; i++) {

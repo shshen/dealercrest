@@ -33,7 +33,7 @@ public class ClassAppendNode extends Node {
     }
 
     @Override
-    public void render(DataModel ctx, StringBuilder out) {
+    public void render(Model ctx, StringBuilder out) {
 
         Object appended = appendExpr.evaluate(ctx);
         String appendStr = (appended == null) ? null : appended.toString().trim();

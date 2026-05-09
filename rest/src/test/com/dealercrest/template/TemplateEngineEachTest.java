@@ -41,17 +41,17 @@ public class TemplateEngineEachTest {
         engine = new TemplateEngine(reg);
     }
 
-    private String render(String tmpl, DataModel ctx) {
+    private String render(String tmpl, Model ctx) {
         return engine.render(tmpl, tmpl, ctx);
     }
 
-    private DataModel ctx() { return new DataModel(); }
+    private Model ctx() { return new Model(); }
 
     // ------------------------------------------------------------------ basic iteration
 
     @Test
     public void testEachOverStringList() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<String> items = new ArrayList<String>();
         items.add("Alpha");
         items.add("Beta");
@@ -62,7 +62,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachProducesCorrectCount() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<String> items = new ArrayList<String>();
         items.add("A"); items.add("B"); items.add("C");
         ctx.set("items", items);
@@ -76,7 +76,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachEmptyListProducesNoChildren() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("items", new ArrayList<String>());
         assertEquals("<ul></ul>",
                 render("<ul><li th:each=\"i:items\">${i}</li></ul>", ctx));
@@ -84,7 +84,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachWithNullListDoesNotThrow() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("items", null);
         // Should render the wrapper but no iterations
         String out = render("<ul><li th:each=\"i:items\">${i}</li></ul>", ctx);
@@ -95,7 +95,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachPreservesLiTag() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<String> items = new ArrayList<String>();
         items.add("X");
         ctx.set("items", items);
@@ -105,7 +105,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachPreservesTrTag() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<String> rows = new ArrayList<String>();
         rows.add("R1"); rows.add("R2");
         ctx.set("rows", rows);
@@ -115,7 +115,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachPreservesAttributesOnWrapperTag() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<String> items = new ArrayList<String>();
         items.add("item");
         ctx.set("items", items);
@@ -127,7 +127,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachWithObjectDotPath() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<Product> products = new ArrayList<Product>();
         products.add(new Product("Apple", 1.5));
         products.add(new Product("Banana", 0.75));
@@ -138,7 +138,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachWithMultipleFieldsInBody() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<Product> products = new ArrayList<Product>();
         products.add(new Product("Apple", 1.5));
         ctx.set("products", products);
@@ -151,7 +151,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testLoopVariableDoesNotLeakAfterLoop() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<String> items = new ArrayList<String>();
         items.add("X");
         ctx.set("items", items);
@@ -165,7 +165,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testOuterContextAccessibleInsideLoop() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<String> items = new ArrayList<String>();
         items.add("item");
         ctx.set("items", items);
@@ -180,7 +180,7 @@ public class TemplateEngineEachTest {
 
     @Test
     public void testEachPreservesListOrder() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         List<String> items = new ArrayList<String>();
         items.add("first");
         items.add("second");

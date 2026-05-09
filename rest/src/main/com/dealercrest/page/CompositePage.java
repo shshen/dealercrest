@@ -23,9 +23,9 @@ public class CompositePage extends Page {
     private final RenderContext renderContext;
     private static final Logger logger = Logger.getLogger(CompositePage.class.getName());
 
-    public CompositePage(String dealerId, String resourcePath, ThemeFiles themeFiles, DealerSiteJson siteDefinitin,
+    public CompositePage(String resourcePath, ThemeFiles themeFiles, DealerSiteJson siteDefinitin,
             RenderContext renderContext) throws Exception {
-        super(dealerId, resourcePath, 0l);
+        super(resourcePath, 0l);
         this.themeFiles = themeFiles;
         this.siteDefinition = siteDefinitin;
         this.renderContext = renderContext;

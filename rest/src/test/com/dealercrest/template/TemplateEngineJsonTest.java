@@ -29,11 +29,11 @@ public class TemplateEngineJsonTest {
         engine = new TemplateEngine(reg);
     }
 
-    private String render(String tmpl, DataModel ctx) {
+    private String render(String tmpl, Model ctx) {
         return engine.render(tmpl, tmpl, ctx);
     }
 
-    private DataModel ctx() { return new DataModel(); }
+    private Model ctx() { return new Model(); }
 
     // ------------------------------------------------------------------ JSONObject property access
 
@@ -41,7 +41,7 @@ public class TemplateEngineJsonTest {
     public void testJsonObjectStringProperty() {
         JSONObject obj = new JSONObject();
         obj.put("city", "Tokyo");
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("place", obj);
         assertEquals("<p>Tokyo</p>", render("<p>${place.city}</p>", ctx));
     }
@@ -50,7 +50,7 @@ public class TemplateEngineJsonTest {
     public void testJsonObjectIntegerProperty() {
         JSONObject obj = new JSONObject();
         obj.put("count", 5);
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("data", obj);
         assertEquals("<p>5</p>", render("<p>${data.count}</p>", ctx));
     }
@@ -58,7 +58,7 @@ public class TemplateEngineJsonTest {
     @Test
     public void testJsonObjectMissingPropertyRendersEmpty() {
         JSONObject obj = new JSONObject();
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("data", obj);
         assertEquals("<p></p>", render("<p>${data.missing}</p>", ctx));
     }
@@ -74,7 +74,7 @@ public class TemplateEngineJsonTest {
         person.put("name",    "Alice");
         person.put("address", address);
 
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("person", person);
 
         assertEquals("<p>Alice</p>",
@@ -94,7 +94,7 @@ public class TemplateEngineJsonTest {
         list.add(v1);
         list.add(v2);
 
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("vehicles", list);
 
         assertEquals("<ul><li>Toyota</li><li>Honda</li></ul>",
@@ -110,7 +110,7 @@ public class TemplateEngineJsonTest {
         List<JSONObject> rows = new ArrayList<JSONObject>();
         rows.add(row);
 
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("rows", rows);
 
         String out = render(
@@ -129,7 +129,7 @@ public class TemplateEngineJsonTest {
         arr.put(v1);
         arr.put(v2);
 
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("vehicles", arr);
 
         assertEquals("<ul><li>Ford</li><li>Chevy</li></ul>",
@@ -138,7 +138,7 @@ public class TemplateEngineJsonTest {
 
     @Test
     public void testEmptyJsonArrayProducesNoChildren() {
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("items", new JSONArray());
         assertEquals("<ul></ul>",
                 render("<ul><li th:each=\"i:items\">${i}</li></ul>", ctx));
@@ -151,7 +151,7 @@ public class TemplateEngineJsonTest {
         arr.put("second");
         arr.put("third");
 
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("words", arr);
 
         String out = render(
@@ -170,7 +170,7 @@ public class TemplateEngineJsonTest {
         JSONObject obj = new JSONObject();
         obj.put("active", Boolean.TRUE);
 
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("item", obj);
 
         assertEquals("<div>Active</div>",
@@ -182,7 +182,7 @@ public class TemplateEngineJsonTest {
         JSONObject obj = new JSONObject();
         obj.put("active", Boolean.FALSE);
 
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("item", obj);
 
         assertEquals("",
@@ -194,7 +194,7 @@ public class TemplateEngineJsonTest {
         JSONObject obj = new JSONObject();
         // "status" not set → opt() returns null
 
-        DataModel ctx = ctx();
+        Model ctx = ctx();
         ctx.set("item", obj);
 
         assertEquals("",

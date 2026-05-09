@@ -90,7 +90,7 @@ public class ElementNode extends Node {
     }
 
     @Override
-    public void render(DataModel ctx, StringBuilder out) {
+    public void render(Model ctx, StringBuilder out) {
         out.append("<").append(tag);
 
         for (Map.Entry<String, String> entry : attributes.entrySet()) {

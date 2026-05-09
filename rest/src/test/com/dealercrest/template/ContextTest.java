@@ -12,11 +12,11 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ContextTest {
 
-    private DataModel ctx;
+    private Model ctx;
 
     @Before
     public void setUp() {
-        ctx = new DataModel();
+        ctx = new Model();
     }
 
     // ------------------------------------------------------------------ set / get
@@ -56,7 +56,7 @@ public class ContextTest {
     @Test
     public void testSaveAndSetReturnsNonNull() {
         ctx.set("item", "original");
-        DataModel.SavedValue saved = ctx.saveAndSet("item", "override");
+        Model.SavedValue saved = ctx.saveAndSet("item", "override");
         assertNotNull(saved);
     }
 
@@ -70,7 +70,7 @@ public class ContextTest {
     @Test
     public void testRestoreReturnsOriginalValue() {
         ctx.set("item", "original");
-        DataModel.SavedValue saved = ctx.saveAndSet("item", "override");
+        Model.SavedValue saved = ctx.saveAndSet("item", "override");
         ctx.restore(saved);
         assertEquals("original", ctx.get("item"));
     }
@@ -78,7 +78,7 @@ public class ContextTest {
     @Test
     public void testRestoreWhenKeyDidNotExistRemovesIt() {
         // "item" was never set — after restore it should be absent (null)
-        DataModel.SavedValue saved = ctx.saveAndSet("item", "temp");
+        Model.SavedValue saved = ctx.saveAndSet("item", "temp");
         assertEquals("temp", ctx.get("item"));
         ctx.restore(saved);
         assertNull(ctx.get("item"));
@@ -88,10 +88,10 @@ public class ContextTest {
     public void testNestedSaveRestoreIsIndependent() {
         ctx.set("x", "outer");
 
-        DataModel.SavedValue s1 = ctx.saveAndSet("x", "inner1");
+        Model.SavedValue s1 = ctx.saveAndSet("x", "inner1");
         assertEquals("inner1", ctx.get("x"));
 
-        DataModel.SavedValue s2 = ctx.saveAndSet("x", "inner2");
+        Model.SavedValue s2 = ctx.saveAndSet("x", "inner2");
         assertEquals("inner2", ctx.get("x"));
 
         ctx.restore(s2);
@@ -106,7 +106,7 @@ public class ContextTest {
         ctx.set("a", "A");
         ctx.set("b", "B");
 
-        DataModel.SavedValue savedA = ctx.saveAndSet("a", "A2");
+        Model.SavedValue savedA = ctx.saveAndSet("a", "A2");
         assertEquals("A2", ctx.get("a"));
         assertEquals("B",  ctx.get("b")); // b must be unaffected
 

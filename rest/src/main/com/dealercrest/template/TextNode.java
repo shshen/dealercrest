@@ -19,7 +19,7 @@ public class TextNode extends Node {
     }
 
     @Override
-    public void render(DataModel ctx, StringBuilder out) {
+    public void render(Model ctx, StringBuilder out) {
         Object val = compiled.evaluate(ctx);
         if (val != null) {
             out.append(val.toString());
