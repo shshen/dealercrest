@@ -30,15 +30,19 @@ public class StaticPage extends Page {
         dataModel.setFragments(fr);
 
         String output = templateEngine.render(layout.getPath(), layout.getContent(), dataModel);
-        this.byteBuf = Unpooled.copiedBuffer(output, StandardCharsets.UTF_8).asReadOnly();
+        byte[] bytes = output.getBytes(StandardCharsets.UTF_8);
+        ByteBuf xxx = Unpooled.wrappedBuffer(bytes);
+        this.byteBuf = Unpooled.unreleasableBuffer(xxx);
     }
 
     public StaticPage(String path, long lastModified, String content) {
         super(path, lastModified);
-        this.byteBuf = Unpooled.copiedBuffer(content, StandardCharsets.UTF_8).asReadOnly();
+        byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
+        ByteBuf xxx = Unpooled.wrappedBuffer(bytes);
+        this.byteBuf = Unpooled.unreleasableBuffer(xxx);
     }
 
-    public StaticPage(String path, ThemeFiles themeTemplate, DealerSiteJson siteDefinitin,
+    public StaticPage(String path, DealerTheme themeTemplate, DealerSiteJson siteDefinitin,
             TemplateEngine engine) {
         super(path, 0l);
         this.byteBuf = null;
@@ -46,7 +50,7 @@ public class StaticPage extends Page {
 
     @Override
     public HttpResult render(QueryRequest queryRequest) {
-        ByteBuf viewByteBuf = byteBuf.retainedDuplicate();
+        ByteBuf viewByteBuf = byteBuf.duplicate();
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, viewByteBuf);
         response.headers().set("Content-Length", viewByteBuf.readableBytes());
         response.headers().set("Content-Type", getContentType());

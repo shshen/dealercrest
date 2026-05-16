@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project default="package" basedir=".">
+<project default="combine-jars" basedir=".">
     <property name="lib.dir" value="libs" />
     <property name="version" value="0.8.2"/>
     <path id="src.dir">
@@ -7,7 +7,7 @@
         <pathelement location="rest/src/main" />
     </path>
     <path id="classPath">
-        <pathelement location="${lib.dir}/netty-all-4.2.9.jar" />
+        <pathelement location="${lib.dir}/netty-all-4.2.14.jar" />
         <pathelement location="${lib.dir}/ext/hamcrest-all-1.3.jar" />
         <pathelement location="${lib.dir}/ext/junit-4.12.jar" />
         <pathelement location="${lib.dir}/ext/guava-33.4.9-jre.jar" />
@@ -57,18 +57,17 @@
         </jar>
     </target>
     <target name="combine-jars">
-        <unzip dest="libs/netty-4.2.9/temp">
-            <fileset dir="libs/netty-4.2.9">
-                <include name="netty-buff-*.jar" />
+        <unzip dest="libs/netty-4.2.14/temp">
+            <fileset dir="libs/netty-4.2.14">
+                <include name="netty-buffer-*.jar" />
                 <include name="netty-codec-*.jar" />
                 <include name="netty-common-*.jar" />
                 <include name="netty-handler-*.jar" />
                 <include name="netty-transport-*.jar" />
-                <include name="netty-transport-native-unix-*.jar" />
             </fileset>
         </unzip>
-        <jar destfile="target/netty-all-4.2.9.jar">
-            <fileset dir="libs/netty-4.2.9/temp">
+        <jar destfile="target/netty-all-4.2.14.jar">
+            <fileset dir="libs/netty-4.2.14/temp">
                 <include name="**/*" />
                 <exclude name="**/http/websocketx/**/*" />
                 <!--        <exclude name="**/codec/compression/**/*" />-->

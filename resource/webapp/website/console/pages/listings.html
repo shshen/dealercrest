@@ -1,0 +1,362 @@
+<!-- fragment: pages/listings.html -->
+<style>
+/* Platform card grid */
+.platform-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:28px}
+.platform-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .15s}
+.platform-card.connected{border-color:var(--green-border)}
+.platform-head{padding:16px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border-light)}
+.platform-logo{width:44px;height:44px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border)}
+.platform-info{flex:1;min-width:0}
+.platform-name{font-size:14px;font-weight:700;color:var(--text)}
+.platform-meta{font-size:12px;color:var(--text-3);margin-top:2px}
+.platform-toggle{flex-shrink:0}
+
+/* Toggle switch (larger) */
+.big-toggle{position:relative;width:48px;height:26px;display:inline-block;cursor:pointer}
+.big-toggle input{opacity:0;width:0;height:0;position:absolute}
+.big-toggle-track{position:absolute;inset:0;background:var(--border);border-radius:13px;transition:background .2s}
+.big-toggle input:checked+.big-toggle-track{background:var(--green)}
+.big-toggle-thumb{position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.big-toggle input:checked~.big-toggle-thumb{transform:translateX(22px)}
+
+.platform-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border-light)}
+.ps-item{padding:12px 16px;text-align:center;border-right:1px solid var(--border-light)}
+.ps-item:last-child{border-right:none}
+.ps-val{font-size:18px;font-weight:700;color:var(--text)}
+.ps-lbl{font-size:11px;color:var(--text-3);margin-top:2px}
+
+.platform-foot{padding:12px 20px;display:flex;align-items:center;gap:8px;background:var(--bg)}
+.sync-time{font-size:12px;color:var(--text-3);flex:1}
+.sync-status{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
+.sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Inventory sync table */
+.sync-filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap svg{position:absolute;left:10px;width:14px;height:14px;color:var(--text-3);pointer-events:none;display:block}
+.search-wrap input{padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;width:200px}
+.search-wrap input:focus{border-color:var(--green)}
+
+.platform-badges{display:flex;gap:4px;flex-wrap:wrap}
+.platform-badge{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.pb-live{background:#dcfce7;color:#16a34a}
+.pb-pending{background:#fef9c3;color:#b45309}
+.pb-off{background:#f1f1f1;color:var(--text-3)}
+.pb-error{background:var(--danger-bg);color:var(--danger)}
+
+@media(max-width:600px){
+  .platform-grid{grid-template-columns:1fr}
+  .platform-stats{grid-template-columns:1fr 1fr}
+  .ps-item:last-child{display:none}
+  .search-wrap input{width:150px}
+}
+</style>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-title">
+      <div class="page-title">Listings</div>
+      <div class="page-sub">Sync your inventory to external marketplaces</div>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary">
+        <svg width="15" height="15"><use href="#icon-sync"/></svg>
+        <span class="btn-label">Sync all now</span>
+      </button>
+      <button class="btn btn-primary" onclick="navigate('inventory-add')">
+        <svg width="15" height="15"><use href="#icon-plus"/></svg>
+        <span class="btn-label">Add vehicle</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Platform cards -->
+    <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Connected Platforms</div>
+    <div class="platform-grid">
+
+      <!-- Facebook Marketplace -->
+      <div class="platform-card connected">
+        <div class="platform-head">
+          <div class="platform-logo" style="background:#1877f2;border-color:#1877f2;color:#fff;font-size:20px">f</div>
+          <div class="platform-info">
+            <div class="platform-name">Facebook Marketplace</div>
+            <div class="platform-meta">Auto-syncs every 6 hours · Free</div>
+          </div>
+          <label class="big-toggle platform-toggle" title="Enable Facebook Marketplace">
+            <input type="checkbox" checked onchange="togglePlatform(this,'Facebook')">
+            <span class="big-toggle-track"></span><span class="big-toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-val">118</div><div class="ps-lbl">Listed</div></div>
+          <div class="ps-item"><div class="ps-val">12</div><div class="ps-lbl">Pending</div></div>
+          <div class="ps-item"><div class="ps-val">4</div><div class="ps-lbl">Errors</div></div>
+        </div>
+        <div class="platform-foot">
+          <span class="sync-time">Last synced 14 min ago</span>
+          <span class="sync-status">
+            <span class="sync-dot" style="background:var(--green)"></span>
+            Active
+          </span>
+          <button class="btn btn-ghost btn-sm">
+            <svg width="13" height="13"><use href="#icon-sync"/></svg>
+            Sync now
+          </button>
+        </div>
+      </div>
+
+      <!-- KSL Cars -->
+      <div class="platform-card connected">
+        <div class="platform-head">
+          <div class="platform-logo" style="background:#e8f4fd;font-size:13px;font-weight:900;color:#0070cc;letter-spacing:-1px">KSL</div>
+          <div class="platform-info">
+            <div class="platform-name">KSL Cars</div>
+            <div class="platform-meta">Auto-syncs every 12 hours · $49/mo</div>
+          </div>
+          <label class="big-toggle platform-toggle">
+            <input type="checkbox" checked onchange="togglePlatform(this,'KSL')">
+            <span class="big-toggle-track"></span><span class="big-toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-val">98</div><div class="ps-lbl">Listed</div></div>
+          <div class="ps-item"><div class="ps-val">3</div><div class="ps-lbl">Pending</div></div>
+          <div class="ps-item"><div class="ps-val">0</div><div class="ps-lbl">Errors</div></div>
+        </div>
+        <div class="platform-foot">
+          <span class="sync-time">Last synced 2h ago</span>
+          <span class="sync-status">
+            <span class="sync-dot" style="background:var(--green)"></span>
+            Active
+          </span>
+          <button class="btn btn-ghost btn-sm">
+            <svg width="13" height="13"><use href="#icon-sync"/></svg>
+            Sync now
+          </button>
+        </div>
+      </div>
+
+      <!-- Cars.com -->
+      <div class="platform-card connected">
+        <div class="platform-head">
+          <div class="platform-logo" style="background:#fff3e0;font-size:11px;font-weight:900;color:#e65100">Cars.com</div>
+          <div class="platform-info">
+            <div class="platform-name">Cars.com</div>
+            <div class="platform-meta">Auto-syncs every 24 hours · $199/mo</div>
+          </div>
+          <label class="big-toggle platform-toggle">
+            <input type="checkbox" checked onchange="togglePlatform(this,'Cars.com')">
+            <span class="big-toggle-track"></span><span class="big-toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-val">134</div><div class="ps-lbl">Listed</div></div>
+          <div class="ps-item"><div class="ps-val">0</div><div class="ps-lbl">Pending</div></div>
+          <div class="ps-item"><div class="ps-val">1</div><div class="ps-lbl">Errors</div></div>
+        </div>
+        <div class="platform-foot">
+          <span class="sync-time">Last synced 18h ago</span>
+          <span class="sync-status">
+            <span class="sync-dot" style="background:var(--warning)"></span>
+            Warning
+          </span>
+          <button class="btn btn-ghost btn-sm">
+            <svg width="13" height="13"><use href="#icon-sync"/></svg>
+            Sync now
+          </button>
+        </div>
+      </div>
+
+      <!-- AutoTrader — not connected -->
+      <div class="platform-card">
+        <div class="platform-head">
+          <div class="platform-logo" style="background:#fff9e6;font-size:9px;font-weight:900;color:#f2a900;letter-spacing:-.5px">AutoTrader</div>
+          <div class="platform-info">
+            <div class="platform-name">AutoTrader</div>
+            <div class="platform-meta">Not connected · From $299/mo</div>
+          </div>
+          <label class="big-toggle platform-toggle">
+            <input type="checkbox" onchange="togglePlatform(this,'AutoTrader')">
+            <span class="big-toggle-track"></span><span class="big-toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Listed</div></div>
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Pending</div></div>
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Errors</div></div>
+        </div>
+        <div class="platform-foot">
+          <span class="sync-time">Connect to start listing</span>
+          <button class="btn btn-secondary btn-sm">Connect</button>
+        </div>
+      </div>
+
+      <!-- CarGurus — not connected -->
+      <div class="platform-card">
+        <div class="platform-head">
+          <div class="platform-logo" style="background:#e8f5e9;font-size:10px;font-weight:900;color:#2e7d32">CarGurus</div>
+          <div class="platform-info">
+            <div class="platform-name">CarGurus</div>
+            <div class="platform-meta">Not connected · From $149/mo</div>
+          </div>
+          <label class="big-toggle platform-toggle">
+            <input type="checkbox" onchange="togglePlatform(this,'CarGurus')">
+            <span class="big-toggle-track"></span><span class="big-toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Listed</div></div>
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Pending</div></div>
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Errors</div></div>
+        </div>
+        <div class="platform-foot">
+          <span class="sync-time">Connect to start listing</span>
+          <button class="btn btn-secondary btn-sm">Connect</button>
+        </div>
+      </div>
+
+      <!-- Craigslist -->
+      <div class="platform-card">
+        <div class="platform-head">
+          <div class="platform-logo" style="background:#fff0f0;font-size:20px">📋</div>
+          <div class="platform-info">
+            <div class="platform-name">Craigslist</div>
+            <div class="platform-meta">Manual posting · Free</div>
+          </div>
+          <label class="big-toggle platform-toggle">
+            <input type="checkbox" onchange="togglePlatform(this,'Craigslist')">
+            <span class="big-toggle-track"></span><span class="big-toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="platform-stats">
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Listed</div></div>
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Pending</div></div>
+          <div class="ps-item"><div class="ps-val" style="color:var(--text-3)">—</div><div class="ps-lbl">Errors</div></div>
+        </div>
+        <div class="platform-foot">
+          <span class="sync-time">Connect to start listing</span>
+          <button class="btn btn-secondary btn-sm">Connect</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Per-vehicle listing status -->
+    <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Vehicle Listing Status</div>
+
+    <div class="sync-filter-bar">
+      <div class="search-wrap">
+        <svg><use href="#icon-search"/></svg>
+        <input type="text" placeholder="Search vehicles…">
+      </div>
+      <select style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;cursor:pointer">
+        <option>All platforms</option><option>Facebook</option><option>KSL</option><option>Cars.com</option>
+      </select>
+      <select style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;cursor:pointer">
+        <option>All statuses</option><option>Live</option><option>Pending</option><option>Error</option><option>Off</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Vehicle</th>
+            <th>Price</th>
+            <th>Facebook</th>
+            <th>KSL</th>
+            <th>Cars.com</th>
+            <th>Last sync</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>2023 Toyota Camry LE</strong><br><span style="font-size:12px;color:var(--text-3)">12,400 mi · Silver · Used</span></td>
+            <td style="font-weight:600;color:var(--green)">$27,500</td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td style="font-size:12px;color:var(--text-3)">14m ago</td>
+            <td><button class="btn btn-ghost btn-sm"><svg width="13" height="13"><use href="#icon-sync"/></svg></button></td>
+          </tr>
+          <tr>
+            <td><strong>2022 Honda CR-V EX-L</strong><br><span style="font-size:12px;color:var(--text-3)">8,100 mi · Blue · CPO</span></td>
+            <td style="font-weight:600;color:var(--green)">$31,200</td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-pending">⏳ Pending</span></td>
+            <td style="font-size:12px;color:var(--text-3)">2h ago</td>
+            <td><button class="btn btn-ghost btn-sm"><svg width="13" height="13"><use href="#icon-sync"/></svg></button></td>
+          </tr>
+          <tr>
+            <td><strong>2024 Ford Mustang GT</strong><br><span style="font-size:12px;color:var(--text-3)">1,200 mi · Red · New</span></td>
+            <td style="font-weight:600;color:var(--green)">$44,900</td>
+            <td><span class="platform-badge pb-pending">⏳ Pending</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-error">✗ Error</span></td>
+            <td style="font-size:12px;color:var(--text-3)">18h ago</td>
+            <td><button class="btn btn-ghost btn-sm"><svg width="13" height="13"><use href="#icon-sync"/></svg></button></td>
+          </tr>
+          <tr>
+            <td><strong>2021 Toyota RAV4 XLE</strong><br><span style="font-size:12px;color:var(--text-3)">22,000 mi · White · Used</span></td>
+            <td style="font-weight:600;color:var(--green)">$29,800</td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-off">○ Off</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td style="font-size:12px;color:var(--text-3)">14m ago</td>
+            <td><button class="btn btn-ghost btn-sm"><svg width="13" height="13"><use href="#icon-sync"/></svg></button></td>
+          </tr>
+          <tr>
+            <td><strong>2024 Ford F-150 XLT</strong><br><span style="font-size:12px;color:var(--text-3)">340 mi · Black · New</span></td>
+            <td style="font-weight:600;color:var(--green)">$52,100</td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td style="font-size:12px;color:var(--text-3)">14m ago</td>
+            <td><button class="btn btn-ghost btn-sm"><svg width="13" height="13"><use href="#icon-sync"/></svg></button></td>
+          </tr>
+          <tr>
+            <td><strong>2022 Tesla Model 3</strong><br><span style="font-size:12px;color:var(--text-3)">18,400 mi · White · Used</span></td>
+            <td style="font-weight:600;color:var(--green)">$34,900</td>
+            <td><span class="platform-badge pb-error">✗ Error</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td><span class="platform-badge pb-live">● Live</span></td>
+            <td style="font-size:12px;color:var(--text-3)">14m ago</td>
+            <td><button class="btn btn-ghost btn-sm"><svg width="13" height="13"><use href="#icon-sync"/></svg></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" style="margin-top:16px">
+      <span class="pagination-info">Showing 6 of 134 vehicles</span>
+      <div class="pagination-btns">
+        <button class="btn btn-secondary btn-sm">← Previous</button>
+        <button class="btn btn-secondary btn-sm">Next →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function togglePlatform(chk, name) {
+  const card = chk.closest('.platform-card');
+  const foot = card.querySelector('.platform-foot');
+  if (chk.checked) {
+    card.classList.add('connected');
+    foot.querySelector('.sync-time').textContent = 'Connecting…';
+    setTimeout(() => {
+      foot.querySelector('.sync-time').textContent = 'Just connected';
+    }, 1200);
+  } else {
+    card.classList.remove('connected');
+    foot.querySelector('.sync-time').textContent = 'Paused — toggle to resume';
+  }
+}
+</script>

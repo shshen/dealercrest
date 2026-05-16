@@ -18,6 +18,10 @@ public class NettyResult extends HttpResult {
     public void write(ChannelHandlerContext ctx) {
         try {
             ChannelFuture future = ctx.writeAndFlush(response);
+            // if (!keepAlive) {
+            //     future.addListener(ChannelFutureListener.CLOSE);
+            // }
+
             future.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture f) {
@@ -33,7 +37,7 @@ public class NettyResult extends HttpResult {
         }
     }
     
-    static void safeRelease(Object obj) {
+    private static void safeRelease(Object obj) {
         if (obj instanceof ReferenceCounted rc) {
             rc.release();
         }

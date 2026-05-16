@@ -5,14 +5,14 @@ import java.util.Map;
 
 import com.dealercrest.http.HttpResult;
 
-public class ThemeFiles {
+public class DealerTheme {
 
     private final String themeName;
     private final Map<String, BlockTemplate> blocks;
     private final Map<String, Layout> layouts;
     private final Map<String, StaticPage> staticResources;
 
-    public ThemeFiles(String themeName) {
+    public DealerTheme(String themeName) {
         this.themeName = themeName;
         this.blocks = new HashMap<>();
         this.layouts = new HashMap<>();

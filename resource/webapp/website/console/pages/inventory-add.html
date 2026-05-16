@@ -1,0 +1,317 @@
+<!-- fragment: pages/inventory-add.html -->
+<style>
+.form-section{margin-bottom:24px}
+.form-section-title{font-size:13px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border-light)}
+
+/* Photo upload area */
+.photo-upload-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:8px}
+.photo-slot{aspect-ratio:4/3;border:2px dashed var(--border);border-radius:var(--radius-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,background .15s;color:var(--text-3);font-size:12px;gap:6px;background:var(--bg)}
+.photo-slot:hover{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.photo-slot svg{width:22px;height:22px;display:block}
+.photo-slot.filled{border-style:solid;border-color:var(--border);background:var(--bg);position:relative;overflow:hidden}
+.photo-slot.filled .photo-label{font-size:11px;font-weight:500}
+.photo-primary-badge{position:absolute;top:6px;left:6px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;pointer-events:none}
+
+/* Condition toggle */
+.condition-group{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.condition-btn{flex:1;padding:9px 8px;border:none;background:var(--surface);color:var(--text-2);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:background .12s,color .12s;border-right:1px solid var(--border)}
+.condition-btn:last-child{border-right:none}
+.condition-btn.active{background:var(--green);color:#fff;font-weight:600}
+
+/* Sticky footer bar */
+.form-footer{
+  position:sticky;
+  bottom:0;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:14px 28px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-shrink:0;
+}
+.form-footer-hint{font-size:13px;color:var(--text-3);margin-left:auto}
+
+@media(max-width:600px){
+  .photo-upload-grid{grid-template-columns:repeat(3,1fr)}
+  .form-footer{padding:12px 16px;flex-wrap:wrap}
+  .form-footer-hint{display:none}
+}
+</style>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-nav">
+      <button class="back-btn" onclick="navigate('inventory')">
+        <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
+        Inventory
+      </button>
+      <span class="detail-title">Add Vehicle</span>
+    </div>
+  </div>
+
+  <div class="page-body" id="addVehicleBody">
+    <div style="max-width:800px">
+
+      <!-- Photos -->
+      <div class="form-section">
+        <div class="form-section-title">Photos</div>
+        <div class="photo-upload-grid">
+          <div class="photo-slot filled">
+            <svg><use href="#icon-block-image"/></svg>
+            <span class="photo-label">Main photo</span>
+            <span class="photo-primary-badge">Primary</span>
+          </div>
+          <div class="photo-slot" onclick="this.classList.add('filled')">
+            <svg><use href="#icon-plus"/></svg>
+            <span>Add photo</span>
+          </div>
+          <div class="photo-slot" onclick="this.classList.add('filled')">
+            <svg><use href="#icon-plus"/></svg>
+            <span>Add photo</span>
+          </div>
+          <div class="photo-slot" onclick="this.classList.add('filled')">
+            <svg><use href="#icon-plus"/></svg>
+            <span>Add photo</span>
+          </div>
+          <div class="photo-slot" onclick="this.classList.add('filled')">
+            <svg><use href="#icon-plus"/></svg>
+            <span>Add photo</span>
+          </div>
+          <div class="photo-slot" onclick="this.classList.add('filled')">
+            <svg><use href="#icon-plus"/></svg>
+            <span>Add photo</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-3)">Upload up to 20 photos. First photo is the primary listing image. JPG or PNG, max 8MB each.</div>
+      </div>
+
+      <!-- Basic info -->
+      <div class="form-section">
+        <div class="form-section-title">Basic Information</div>
+
+        <!-- Condition toggle -->
+        <div class="form-group">
+          <label class="form-label">Condition</label>
+          <div class="condition-group">
+            <button class="condition-btn active" onclick="setCondition(this,'New')">New</button>
+            <button class="condition-btn" onclick="setCondition(this,'Used')">Used</button>
+            <button class="condition-btn" onclick="setCondition(this,'CPO')">Certified Pre-Owned</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Year <span style="color:var(--danger)">*</span></label>
+            <select class="form-select" id="vYear">
+              <option value="">Select year</option>
+              <option>2026</option><option selected>2025</option><option>2024</option>
+              <option>2023</option><option>2022</option><option>2021</option>
+              <option>2020</option><option>2019</option><option>2018</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Make <span style="color:var(--danger)">*</span></label>
+            <select class="form-select" id="vMake" onchange="updateModel()">
+              <option value="">Select make</option>
+              <option>Toyota</option><option>Honda</option><option>Ford</option>
+              <option>Chevrolet</option><option>BMW</option><option>Mercedes-Benz</option>
+              <option>Audi</option><option>Hyundai</option><option>Kia</option>
+              <option>Nissan</option><option>Subaru</option><option>Tesla</option>
+              <option>Volkswagen</option><option>Jeep</option><option>Ram</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Model <span style="color:var(--danger)">*</span></label>
+            <input type="text" class="form-input" id="vModel" placeholder="e.g. Camry, F-150, Model 3">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Trim</label>
+            <input type="text" class="form-input" id="vTrim" placeholder="e.g. LE, XLT, Sport">
+          </div>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="form-section">
+        <div class="form-section-title">Details</div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Mileage</label>
+            <div style="position:relative">
+              <input type="number" class="form-input" id="vMileage" placeholder="0" style="padding-right:36px">
+              <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-3);pointer-events:none">mi</span>
+            </div>
+            <div class="form-hint">Leave at 0 for new vehicles</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">VIN</label>
+            <input type="text" class="form-input" id="vVin" placeholder="17-character VIN" maxlength="17" style="font-family:monospace;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Exterior Color</label>
+            <input type="text" class="form-input" id="vColor" placeholder="e.g. Pearl White, Midnight Blue">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Interior Color</label>
+            <input type="text" class="form-input" id="vInterior" placeholder="e.g. Black Leather">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Transmission</label>
+            <select class="form-select" id="vTransmission">
+              <option>Automatic</option>
+              <option>Manual</option>
+              <option>CVT</option>
+              <option>Dual-Clutch</option>
+              <option>Single-Speed (EV)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Drivetrain</label>
+            <select class="form-select" id="vDrive">
+              <option>FWD</option>
+              <option>RWD</option>
+              <option>AWD</option>
+              <option>4WD</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Engine</label>
+            <input type="text" class="form-input" id="vEngine" placeholder="e.g. 2.5L 4-Cylinder, 5.0L V8">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fuel Type</label>
+            <select class="form-select" id="vFuel">
+              <option>Gasoline</option>
+              <option>Electric</option>
+              <option>Hybrid</option>
+              <option>Plug-in Hybrid</option>
+              <option>Diesel</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="form-section">
+        <div class="form-section-title">Pricing</div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Asking Price <span style="color:var(--danger)">*</span></label>
+            <div style="position:relative">
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text-3);pointer-events:none">$</span>
+              <input type="number" class="form-input" id="vPrice" placeholder="0" style="padding-left:24px">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">MSRP / Book Value</label>
+            <div style="position:relative">
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text-3);pointer-events:none">$</span>
+              <input type="number" class="form-input" id="vMsrp" placeholder="0" style="padding-left:24px">
+            </div>
+            <div class="form-hint">Shown as "was" price if higher than asking price</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--text)">
+            <input type="checkbox" id="vCallForPrice"> Show "Call for price" instead of listing price
+          </label>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-section">
+        <div class="form-section-title">Description</div>
+        <div class="form-group">
+          <label class="form-label">Vehicle Description</label>
+          <textarea class="form-textarea" id="vDesc" rows="5" placeholder="Describe the vehicle's condition, features, history, and anything that makes it stand out…"></textarea>
+          <div class="form-hint">Tip: mention notable features, recent service, and any included extras.</div>
+        </div>
+      </div>
+
+      <!-- Features checklist -->
+      <div class="form-section">
+        <div class="form-section-title">Features &amp; Options</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+          <label class="feature-check"><input type="checkbox"> Navigation System</label>
+          <label class="feature-check"><input type="checkbox"> Backup Camera</label>
+          <label class="feature-check"><input type="checkbox"> Blind Spot Monitor</label>
+          <label class="feature-check"><input type="checkbox"> Heated Seats</label>
+          <label class="feature-check"><input type="checkbox"> Sunroof / Moonroof</label>
+          <label class="feature-check"><input type="checkbox"> Apple CarPlay</label>
+          <label class="feature-check"><input type="checkbox"> Android Auto</label>
+          <label class="feature-check"><input type="checkbox"> Remote Start</label>
+          <label class="feature-check"><input type="checkbox"> Lane Keep Assist</label>
+          <label class="feature-check"><input type="checkbox"> Adaptive Cruise</label>
+          <label class="feature-check"><input type="checkbox"> Leather Seats</label>
+          <label class="feature-check"><input type="checkbox"> Third Row Seating</label>
+          <label class="feature-check"><input type="checkbox"> Tow Package</label>
+          <label class="feature-check"><input type="checkbox"> Parking Sensors</label>
+          <label class="feature-check"><input type="checkbox"> Wireless Charging</label>
+          <label class="feature-check"><input type="checkbox"> Premium Audio</label>
+        </div>
+      </div>
+
+      <!-- Spacer for sticky footer -->
+      <div style="height:16px"></div>
+    </div>
+  </div>
+
+  <!-- Sticky save bar -->
+  <div class="form-footer">
+    <button class="btn btn-secondary" onclick="navigate('inventory')">Discard</button>
+    <button class="btn btn-secondary" onclick="saveVehicle('draft')">Save as draft</button>
+    <button class="btn btn-primary" onclick="saveVehicle('active')">
+      <svg width="15" height="15"><use href="#icon-check"/></svg>
+      Publish listing
+    </button>
+    <span class="form-footer-hint">Required fields: Year, Make, Model, Price</span>
+  </div>
+</div>
+
+<style>
+.feature-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;padding:4px 0}
+.feature-check input{accent-color:var(--green);width:15px;height:15px;flex-shrink:0}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13px;font-weight:500;cursor:pointer;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);transition:background .12s;font-family:var(--font);white-space:nowrap}
+.back-btn:hover{background:var(--bg);color:var(--text)}
+</style>
+
+<script>
+function setCondition(btn, val) {
+  document.querySelectorAll('.condition-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Hide mileage for new vehicles
+  const mileageGroup = document.getElementById('vMileage').closest('.form-group');
+  mileageGroup.style.opacity = val === 'New' ? '.5' : '1';
+  if (val === 'New') document.getElementById('vMileage').value = '0';
+}
+
+function saveVehicle(status) {
+  const year  = document.getElementById('vYear').value;
+  const make  = document.getElementById('vMake').value;
+  const model = document.getElementById('vModel').value.trim();
+  const price = document.getElementById('vPrice').value;
+
+  if (!year || !make || !model || !price) {
+    // Highlight missing fields
+    [['vYear','form-select'],['vMake','form-select'],['vModel','form-input'],['vPrice','form-input']].forEach(([id]) => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.style.borderColor = 'var(--danger)';
+        el.addEventListener('input', () => el.style.borderColor = '', {once:true});
+      }
+    });
+    return;
+  }
+
+  const btn = event.currentTarget;
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = status === 'active' ? 'Publishing…' : 'Saving…';
+
+  setTimeout(() => {
+    // Return to inventory list
+    navigate('inventory');
+  }, 800);
+}
+</script>

@@ -1,15 +1,11 @@
 <!-- fragment: pages/dashboard.html -->
 <style>
+/* change 2: no quick-links block */
 .activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-light)}
 .activity-item:last-child{border-bottom:none}
 .activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .activity-text{font-size:13px;color:var(--text);line-height:1.5}
 .activity-time{font-size:12px;color:var(--text-3);margin-top:2px}
-.quick-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px}
-.quick-link{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 12px;text-align:center;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:8px}
-.quick-link:hover{border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}
-.quick-link-icon{font-size:22px}
-.quick-link-label{font-size:13px;font-weight:500;color:var(--text-2)}
 .two-col{display:grid;grid-template-columns:2fr 1fr;gap:20px}
 .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .bar-lbl{font-size:12px;color:var(--text-2);width:60px;text-align:right;flex-shrink:0}
@@ -17,24 +13,24 @@
 .bar-fill{height:100%;border-radius:4px}
 .bar-val{font-size:12px;font-weight:600;color:var(--text);width:32px;text-align:right;flex-shrink:0}
 @media(max-width:900px){.two-col{grid-template-columns:1fr}}
-@media(max-width:600px){.quick-links{grid-template-columns:1fr 1fr}}
 </style>
 
 <div class="page">
   <div class="page-header">
-    <div>
+    <div class="page-header-title">
       <div class="page-title">Dashboard</div>
       <div class="page-sub">Good morning — here's what's happening today.</div>
     </div>
     <div class="page-header-actions">
-      <button class="btn btn-secondary btn-sm">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-        Refresh
-      </button>
+      <!-- change 1: btn not btn-sm -->
+      <button class="btn btn-secondary">
+        <svg width="15" height="15"><use href="#icon-refresh"/></svg>
+        <span class="btn-label">Refresh</span></button>
     </div>
   </div>
 
   <div class="page-body">
+    <!-- Stats -->
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-label">Total Leads</div><div class="stat-value">248</div><div class="stat-delta up">↑ 14% this month</div></div>
       <div class="stat-card"><div class="stat-label">Website Visits</div><div class="stat-value">5,821</div><div class="stat-delta up">↑ 8% this week</div></div>
@@ -42,13 +38,7 @@
       <div class="stat-card"><div class="stat-label">Avg. Response</div><div class="stat-value">1.4h</div><div class="stat-delta down">↓ Slower than last week</div></div>
     </div>
 
-    <div class="quick-links">
-      <div class="quick-link" onclick="navigate('website')"><span class="quick-link-icon">🌐</span><span class="quick-link-label">Edit Website</span></div>
-      <div class="quick-link" onclick="navigate('inventory')"><span class="quick-link-icon">🚗</span><span class="quick-link-label">Add Vehicle</span></div>
-      <div class="quick-link" onclick="navigate('leads')"><span class="quick-link-icon">👥</span><span class="quick-link-label">View Leads</span></div>
-      <div class="quick-link" onclick="navigate('analytics')"><span class="quick-link-icon">📊</span><span class="quick-link-label">Analytics</span></div>
-    </div>
-
+    <!-- Two-column: leads table + sidebar cards -->
     <div class="two-col">
       <div class="card">
         <div class="card-header">
@@ -59,10 +49,26 @@
           <table>
             <thead><tr><th>Name</th><th>Interest</th><th>Time</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td><strong>James Harper</strong><br><span style="font-size:12px;color:var(--text-3)">james@email.com</span></td><td>2023 Camry</td><td>12 min ago</td><td><span class="badge badge-yellow">New</span></td></tr>
-              <tr><td><strong>Sara Chen</strong><br><span style="font-size:12px;color:var(--text-3)">s.chen@mail.com</span></td><td>2022 CR-V</td><td>1h ago</td><td><span class="badge badge-blue">Contacted</span></td></tr>
-              <tr><td><strong>Mike Torres</strong><br><span style="font-size:12px;color:var(--text-3)">mtorres@mail.com</span></td><td>2024 F-150</td><td>3h ago</td><td><span class="badge badge-green">Qualified</span></td></tr>
-              <tr><td><strong>Linda Park</strong><br><span style="font-size:12px;color:var(--text-3)">lpark@mail.com</span></td><td>2021 RAV4</td><td>Yesterday</td><td><span class="badge badge-gray">Closed</span></td></tr>
+              <tr>
+                <td><strong>James Harper</strong><br><span style="font-size:12px;color:var(--text-3)">james@email.com</span></td>
+                <td>2023 Camry</td><td>12 min ago</td>
+                <td><span class="badge badge-yellow">New</span></td>
+              </tr>
+              <tr>
+                <td><strong>Sara Chen</strong><br><span style="font-size:12px;color:var(--text-3)">s.chen@mail.com</span></td>
+                <td>2022 CR-V</td><td>1h ago</td>
+                <td><span class="badge badge-blue">Contacted</span></td>
+              </tr>
+              <tr>
+                <td><strong>Mike Torres</strong><br><span style="font-size:12px;color:var(--text-3)">mtorres@mail.com</span></td>
+                <td>2024 F-150</td><td>3h ago</td>
+                <td><span class="badge badge-green">Qualified</span></td>
+              </tr>
+              <tr>
+                <td><strong>Linda Park</strong><br><span style="font-size:12px;color:var(--text-3)">lpark@mail.com</span></td>
+                <td>2021 RAV4</td><td>Yesterday</td>
+                <td><span class="badge badge-gray">Closed</span></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -82,9 +88,18 @@
         <div class="card">
           <div class="card-header"><div class="card-title">Recent Activity</div></div>
           <div class="card-body" style="padding:8px 20px">
-            <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">Home page published successfully</div><div class="activity-time">Today, 9:14 AM</div></div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:var(--blue)"></div><div><div class="activity-text">12 new leads from inventory page</div><div class="activity-time">Today, 7:30 AM</div></div></div>
-            <div class="activity-item"><div class="activity-dot" style="background:#f59e0b"></div><div><div class="activity-text">SSL certificate renewed</div><div class="activity-time">Yesterday, 11:02 PM</div></div></div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--green)"></div>
+              <div><div class="activity-text">Home page published successfully</div><div class="activity-time">Today, 9:14 AM</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--blue)"></div>
+              <div><div class="activity-text">12 new leads from inventory page</div><div class="activity-time">Today, 7:30 AM</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:#f59e0b"></div>
+              <div><div class="activity-text">SSL certificate renewed</div><div class="activity-time">Yesterday, 11:02 PM</div></div>
+            </div>
           </div>
         </div>
       </div>

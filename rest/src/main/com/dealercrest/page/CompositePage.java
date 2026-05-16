@@ -18,12 +18,12 @@ import io.netty.handler.codec.http.HttpResponse;
 public class CompositePage extends Page {
 
     private final List<PreparedBlock> preparedBlocks;
-    private final ThemeFiles themeFiles;
+    private final DealerTheme themeFiles;
     private final DealerSiteJson siteDefinition;
     private final RenderContext renderContext;
     private static final Logger logger = Logger.getLogger(CompositePage.class.getName());
 
-    public CompositePage(String resourcePath, ThemeFiles themeFiles, DealerSiteJson siteDefinitin,
+    public CompositePage(String resourcePath, DealerTheme themeFiles, DealerSiteJson siteDefinitin,
             RenderContext renderContext) throws Exception {
         super(resourcePath, 0l);
         this.themeFiles = themeFiles;

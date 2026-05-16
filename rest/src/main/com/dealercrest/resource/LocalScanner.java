@@ -7,25 +7,24 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.dealercrest.page.HtmlPageSource;
 import com.dealercrest.page.Layout;
 import com.dealercrest.page.SitePages;
 import com.dealercrest.page.StaticPage;
-import com.dealercrest.page.ThemeFiles;
+import com.dealercrest.page.ThemeStore;
+import com.dealercrest.page.DealerTheme;
 import com.dealercrest.template.TemplateEngine;
 
 public class LocalScanner {
 
     public WebResources scan(Path webappRoot, String domain, TemplateEngine templateEngine) throws IOException {
-        Map<String, ThemeFiles> themesMap = scanThemes(webappRoot);
+        ThemeStore themeStore = scanThemes(webappRoot);
         SitePages appPages = scanWebsite(webappRoot, domain, templateEngine);
         ErrorPages errorPages = scanErrorPages(webappRoot);
-        return new WebResources(appPages, errorPages, themesMap);
+        return new WebResources(appPages, errorPages, themeStore);
     }
 
     private SitePages scanWebsite(Path webappRoot, String domain, TemplateEngine templateEngine) throws IOException {
@@ -115,7 +114,7 @@ public class LocalScanner {
         return errorPages;
     }
 
-    private Map<String, ThemeFiles> scanThemes(Path webappRoot) throws IOException {
+    private ThemeStore scanThemes(Path webappRoot) throws IOException {
         Path themesRoot = webappRoot.resolve("themes");
         if ( !Files.isDirectory(themesRoot) ) {
             throw new IllegalArgumentException("themes are not found");
@@ -130,10 +129,11 @@ public class LocalScanner {
                 }
             }
         }
-        Map<String, ThemeFiles> themesMap = new LinkedHashMap<>();
+        ThemeStore themeStore = new ThemeStore();
+        // Map<String, DealerTheme> themesMap = new LinkedHashMap<>();
         for (Path themeDir : themeDirs) {
             String themeName = themeDir.getFileName().toString();
-            ThemeFiles themeBlocks = new ThemeFiles(themeName);
+            DealerTheme themeBlocks = new DealerTheme(themeName);
             try (Stream<Path> all = Files.walk(themeDir)) {
                 Iterator<Path> it = all.iterator();
                 while (it.hasNext()) {
@@ -146,8 +146,9 @@ public class LocalScanner {
                     }
                 }
             }
-            themesMap.put(themeName, themeBlocks);
+            themeStore.addTheme(themeBlocks);
+            // themesMap.put(themeName, themeBlocks);
         }
-        return themesMap;
+        return themeStore;
     }
 }

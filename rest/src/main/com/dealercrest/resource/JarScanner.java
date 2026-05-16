@@ -4,26 +4,52 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.dealercrest.page.HtmlPageSource;
+import com.dealercrest.page.SitePages;
+import com.dealercrest.page.ThemeStore;
 import com.dealercrest.template.TemplateEngine;
 
 public class JarScanner {
 
-    public WebResources scan(JarFile jar, String domain, TemplateEngine templateEngine) {
-        
-        Enumeration<JarEntry> entries = jar.entries();
+    public WebResources scan(JarFile jarFile, String domain, TemplateEngine templateEngine) {
+        SitePages websitePages = new SitePages(domain);
+        ErrorPages errorPages = new ErrorPages();
+        ThemeStore themeStore = new ThemeStore();
+
+        Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             String entryName = entry.getName();
             if (entryName.startsWith("website/")) {
-                // process webapp entry
+                addWebSite(websitePages, jarFile, entry, templateEngine);
             } else if (entryName.startsWith("themes/")) {
-                // process themes entry
+                addTheme(themeStore, jarFile, entry, templateEngine);
             } else if (entryName.startsWith("errors/")) {
-                // process error-pages entry
+                addErrorPage(errorPages, jarFile, entry);
             }
         }
+        return new WebResources(websitePages, errorPages, themeStore);
+    }
 
-        throw new UnsupportedOperationException("Unimplemented method 'scan'");
+    private void addWebSite(SitePages website, JarFile jarFile, JarEntry entry, TemplateEngine templateEngine) {
+        if (entry.isDirectory()) {
+            return;
+        }
+        String entryName = entry.getName();
+        String pagePath = entryName.substring("website/".length());
+        // read content from jar entry and add to website
+        String content = ""; // read content from jar entry
+        long lastModified = entry.getTime();
+        HtmlPageSource pageSource = HtmlPageSource.parse(content, lastModified);
+        
+    }
+
+    private void addErrorPage(ErrorPages errorPages, JarFile jarFile, JarEntry entry) {
+        // read content from jar entry and add to errorPages
+    }
+
+    private void addTheme(ThemeStore themeStore, JarFile jarFile, JarEntry entry, TemplateEngine templateEngine) {
+        // read content from jar entry and add to themeStore
     }
     
 }

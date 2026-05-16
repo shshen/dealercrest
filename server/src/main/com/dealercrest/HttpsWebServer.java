@@ -48,8 +48,7 @@ import com.dealercrest.template.TemplateEngine;
 
 public class HttpsWebServer extends NettyServer {
 
-    private final int httpPort;
-    private final int httpsPort;
+    private final AppConfig appConfig;
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
     private final DataSource dataSource;
@@ -59,12 +58,11 @@ public class HttpsWebServer extends NettyServer {
     private static final Logger logger = Logger.getLogger(HttpsWebServer.class.getName());
 
     public HttpsWebServer() throws UnknownHostException {
-        this(80, 443);
+        this(new AppConfig());
     }
 
-    public HttpsWebServer(int httpPort, int httpsPort) throws UnknownHostException {
-        this.httpPort = httpPort;
-        this.httpsPort = httpsPort;
+    public HttpsWebServer(AppConfig appConfig) throws UnknownHostException {
+        this.appConfig = appConfig;
         this.dataSource = DataSourceFactory.build(jdbcUrl, "dealerbase_app", "zhu88jie");
         // Configure the bootstrap.
         this.bossGroup = new MultiThreadIoEventLoopGroup(1, new PrefixThreadFactory("DealerCrestBossGroup"),
@@ -75,6 +73,8 @@ public class HttpsWebServer extends NettyServer {
 
     @Override
     public void start() throws Exception {
+        int httpPort = appConfig.getHttpPort();
+        int httpsPort = appConfig.getHttpsPort();
         startHttpServer(httpPort);
         startHttpsServer(httpsPort);
         logger.log(Level.INFO, "console server started at http port {0},https port {1}",

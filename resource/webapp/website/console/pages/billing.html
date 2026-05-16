@@ -1,9 +1,9 @@
 <!-- fragment: pages/billing.html -->
 <style>
 .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:28px}
-.plan-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;transition:border-color .15s}
-.plan-card.current{border-color:var(--green)}
-.plan-current-tag{position:absolute;top:-1px;right:16px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:0 0 6px 6px;letter-spacing:.4px;text-transform:uppercase}
+.pricing-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;transition:border-color .15s}
+.pricing-card.current{border-color:var(--green)}
+.pricing-current-tag{position:absolute;top:-1px;right:16px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:0 0 6px 6px;letter-spacing:.4px;text-transform:uppercase}
 .plan-name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
 .plan-price{font-size:28px;font-weight:700;color:var(--text);margin-bottom:2px}
 .plan-price span{font-size:13px;font-weight:400;color:var(--text-2)}
@@ -29,12 +29,12 @@
 
 <div class="page">
   <div class="page-header">
-    <div>
+    <div class="page-header-title">
       <div class="page-title">Billing</div>
       <div class="page-sub">Manage your plan, payment method, and invoices</div>
     </div>
     <div class="page-header-actions">
-      <button class="btn btn-secondary btn-sm">Download all invoices</button>
+      <button class="btn btn-secondary"><span class="btn-label">Download all invoices</span></button>
     </div>
   </div>
 
@@ -58,7 +58,7 @@
     <!-- Plan options -->
     <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Available Plans</div>
     <div class="plan-grid">
-      <div class="plan-card">
+      <div class="pricing-card">
         <div class="plan-name">Starter</div>
         <div class="plan-price">$29<span>/month</span></div>
         <div class="plan-desc">For new dealerships getting started</div>
@@ -70,8 +70,8 @@
         </ul>
         <button class="btn btn-secondary" style="width:100%;justify-content:center">Downgrade</button>
       </div>
-      <div class="plan-card current">
-        <div class="plan-current-tag">Current</div>
+      <div class="pricing-card current">
+        <div class="pricing-current-tag">Current</div>
         <div class="plan-name">Growth</div>
         <div class="plan-price">$79<span>/month</span></div>
         <div class="plan-desc">For growing dealers with multiple sites</div>
@@ -84,7 +84,7 @@
         </ul>
         <button class="btn btn-secondary" disabled style="width:100%;justify-content:center;opacity:.5">Current plan</button>
       </div>
-      <div class="plan-card">
+      <div class="pricing-card">
         <div class="plan-name">Enterprise</div>
         <div class="plan-price">$199<span>/month</span></div>
         <div class="plan-desc">For dealer groups and high-volume ops</div>

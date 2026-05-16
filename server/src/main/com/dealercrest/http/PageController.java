@@ -3,7 +3,7 @@ package com.dealercrest.http;
 import com.dealercrest.db.DealerCacheTask;
 import com.dealercrest.page.Page;
 import com.dealercrest.page.SitePages;
-import com.dealercrest.page.ThemeFiles;
+import com.dealercrest.page.DealerTheme;
 import com.dealercrest.resource.WebResources;
 import com.dealercrest.rest.ContextParam;
 import com.dealercrest.rest.HeaderParam;
@@ -27,7 +27,7 @@ public class PageController {
     public HttpResult themes(@PathParam("path") String path, 
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         String themeName = "";
-        ThemeFiles themeTemplate = webResource.getTheme(themeName);
+        DealerTheme themeTemplate = webResource.getTheme(themeName);
         return themeTemplate.buildHttpResult(path, ifModifiedSince);
     }
 

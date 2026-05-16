@@ -1,0 +1,373 @@
+<!-- fragment: pages/appointments.html -->
+<style>
+/* Calendar grid */
+.cal-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+.cal-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.cal-header{display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);gap:10px}
+.cal-title{font-size:15px;font-weight:700;color:var(--text);flex:1}
+.cal-nav-btn{width:32px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s}
+.cal-nav-btn:hover{background:var(--bg)}
+.cal-nav-btn svg{width:14px;height:14px;display:block}
+.cal-view-toggle{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.cal-view-btn{padding:5px 12px;font-size:12px;font-weight:500;border:none;background:var(--surface);color:var(--text-2);cursor:pointer;font-family:var(--font);border-right:1px solid var(--border);transition:background .12s}
+.cal-view-btn:last-child{border-right:none}
+.cal-view-btn.active{background:var(--bg);color:var(--text);font-weight:600}
+
+/* Day-of-week headers */
+.cal-days-head{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border)}
+.cal-day-lbl{padding:8px 0;text-align:center;font-size:11.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px}
+
+/* Calendar cells */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-cell{min-height:90px;border-right:1px solid var(--border-light);border-bottom:1px solid var(--border-light);padding:6px;cursor:pointer;transition:background .12s;position:relative}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-cell:hover{background:var(--bg)}
+.cal-cell.other-month{background:var(--bg)}
+.cal-cell.other-month .cal-cell-num{color:var(--text-3)}
+.cal-cell.today{background:var(--blue-light)}
+.cal-cell.today .cal-cell-num{background:var(--blue);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-cell.selected{background:var(--green-light)}
+.cal-cell-num{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:4px;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-appt{border-radius:3px;padding:2px 5px;font-size:11px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.appt-test-drive{background:#dbeafe;color:#1d4ed8}
+.appt-service{background:#dcfce7;color:#15803d}
+.appt-call{background:#fef9c3;color:#b45309}
+.appt-more{font-size:10.5px;color:var(--text-3);padding:1px 5px}
+
+/* Right panel: day view + add form */
+.day-panel{display:flex;flex-direction:column;gap:16px}
+.day-panel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.dp-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.dp-title{font-size:13px;font-weight:700;color:var(--text)}
+.dp-date{font-size:12px;color:var(--text-3)}
+
+/* Day appointments list */
+.day-appt-list{display:flex;flex-direction:column}
+.day-appt{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border-light);cursor:pointer;transition:background .12s}
+.day-appt:last-child{border-bottom:none}
+.day-appt:hover{background:var(--bg)}
+.da-time{font-size:12px;font-weight:700;color:var(--text-2);width:48px;flex-shrink:0;padding-top:1px}
+.da-bar{width:3px;border-radius:2px;flex-shrink:0;min-height:36px;margin-top:2px}
+.da-info{flex:1;min-width:0}
+.da-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.da-meta{font-size:12px;color:var(--text-3)}
+.da-badge{flex-shrink:0;align-self:center}
+
+/* Add appointment inline form */
+.add-appt-wrap{overflow:hidden;max-height:0;opacity:0;transition:max-height .3s ease,opacity .22s ease}
+.add-appt-wrap.open{max-height:500px;opacity:1}
+.add-appt-form{padding:16px}
+
+/* Type selector */
+.appt-type-group{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.appt-type-btn{padding:6px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-weight:500;color:var(--text-2);cursor:pointer;background:var(--bg);font-family:var(--font);transition:all .12s}
+.appt-type-btn.active{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:600}
+
+/* Time slots */
+.time-slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.time-slot{padding:7px 4px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-weight:500;text-align:center;cursor:pointer;background:var(--bg);color:var(--text-2);transition:all .12s}
+.time-slot:hover{border-color:var(--green);color:var(--green)}
+.time-slot.active{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:600}
+.time-slot.taken{background:var(--bg);color:var(--text-3);cursor:not-allowed;opacity:.5;text-decoration:line-through}
+
+@media(max-width:900px){.cal-layout{grid-template-columns:1fr}.day-panel{display:none}}
+@media(max-width:600px){.cal-cell{min-height:60px}.cal-appt{display:none}}
+</style>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-title">
+      <div class="page-title">Appointments</div>
+      <div class="page-sub">Test drives, calls, and service visits</div>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" onclick="navigate('leads')">
+        <svg width="15" height="15"><use href="#icon-leads"/></svg>
+        <span class="btn-label">View leads</span>
+      </button>
+      <button class="btn btn-primary" onclick="openAddAppt()">
+        <svg width="15" height="15"><use href="#icon-plus"/></svg>
+        <span class="btn-label">New appointment</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="cal-layout">
+
+      <!-- ── Left: Monthly calendar ── -->
+      <div class="cal-wrap">
+        <div class="cal-header">
+          <button class="cal-nav-btn" onclick="changeMonth(-1)">
+            <svg><use href="#icon-chevron-left"/></svg>
+          </button>
+          <div class="cal-title" id="calTitle">May 2026</div>
+          <button class="cal-nav-btn" onclick="changeMonth(1)">
+            <svg><use href="#icon-chevron-right"/></svg>
+          </button>
+          <div class="cal-view-toggle">
+            <button class="cal-view-btn active">Month</button>
+            <button class="cal-view-btn">Week</button>
+            <button class="cal-view-btn">Day</button>
+          </div>
+        </div>
+
+        <div class="cal-days-head">
+          <div class="cal-day-lbl">Sun</div>
+          <div class="cal-day-lbl">Mon</div>
+          <div class="cal-day-lbl">Tue</div>
+          <div class="cal-day-lbl">Wed</div>
+          <div class="cal-day-lbl">Thu</div>
+          <div class="cal-day-lbl">Fri</div>
+          <div class="cal-day-lbl">Sat</div>
+        </div>
+
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <!-- ── Right: Day panel ── -->
+      <div class="day-panel">
+
+        <!-- Today's appointments -->
+        <div class="day-panel-card">
+          <div class="dp-head">
+            <div class="dp-title">Wednesday, May 20</div>
+            <button class="btn btn-ghost btn-sm" onclick="openAddAppt()">
+              <svg width="13" height="13"><use href="#icon-plus"/></svg>
+              Add
+            </button>
+          </div>
+
+          <!-- Add appointment form -->
+          <div class="add-appt-wrap" id="addApptWrap">
+            <div class="add-appt-form">
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Type</label>
+                <div class="appt-type-group">
+                  <button class="appt-type-btn active" onclick="setApptType(this)">🚗 Test Drive</button>
+                  <button class="appt-type-btn" onclick="setApptType(this)">📞 Call</button>
+                  <button class="appt-type-btn" onclick="setApptType(this)">🔧 Service</button>
+                  <button class="appt-type-btn" onclick="setApptType(this)">👋 Walk-in</button>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Customer / Lead</label>
+                <input type="text" class="form-input" id="apptLead" placeholder="Search leads…" autocomplete="off">
+              </div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Vehicle (optional)</label>
+                <input type="text" class="form-input" id="apptVehicle" placeholder="e.g. 2023 Toyota Camry">
+              </div>
+              <div class="form-group" style="margin-bottom:4px">
+                <label class="form-label">Time</label>
+                <div class="time-slot-grid">
+                  <div class="time-slot taken">9:00 AM</div>
+                  <div class="time-slot" onclick="selectTime(this)">9:30 AM</div>
+                  <div class="time-slot" onclick="selectTime(this)">10:00 AM</div>
+                  <div class="time-slot active" onclick="selectTime(this)">10:30 AM</div>
+                  <div class="time-slot taken">11:00 AM</div>
+                  <div class="time-slot" onclick="selectTime(this)">11:30 AM</div>
+                  <div class="time-slot" onclick="selectTime(this)">1:00 PM</div>
+                  <div class="time-slot" onclick="selectTime(this)">1:30 PM</div>
+                  <div class="time-slot" onclick="selectTime(this)">2:00 PM</div>
+                  <div class="time-slot taken">2:30 PM</div>
+                  <div class="time-slot" onclick="selectTime(this)">3:00 PM</div>
+                  <div class="time-slot" onclick="selectTime(this)">3:30 PM</div>
+                </div>
+              </div>
+              <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Greyed slots are already booked</div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Notes</label>
+                <textarea class="form-textarea" rows="2" style="min-height:60px" placeholder="Any special requests or prep notes…"></textarea>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="saveAppt()">
+                  <svg width="14" height="14"><use href="#icon-check"/></svg>
+                  Book appointment
+                </button>
+                <button class="btn btn-secondary" onclick="closeAddAppt()">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="day-appt-list" id="dayApptList">
+            <div class="day-appt">
+              <div class="da-time">9:00</div>
+              <div class="da-bar" style="background:#3b82f6"></div>
+              <div class="da-info">
+                <div class="da-title">Test Drive — James Harper</div>
+                <div class="da-meta">2023 Toyota Camry · 45 min</div>
+              </div>
+              <div class="da-badge"><span class="badge badge-blue">Confirmed</span></div>
+            </div>
+            <div class="day-appt">
+              <div class="da-time">11:00</div>
+              <div class="da-bar" style="background:#f59e0b"></div>
+              <div class="da-info">
+                <div class="da-title">Call — David Kim</div>
+                <div class="da-meta">Price negotiation · 30 min</div>
+              </div>
+              <div class="da-badge"><span class="badge badge-yellow">Pending</span></div>
+            </div>
+            <div class="day-appt">
+              <div class="da-time">2:30</div>
+              <div class="da-bar" style="background:#10b981"></div>
+              <div class="da-info">
+                <div class="da-title">Test Drive — Sara Chen</div>
+                <div class="da-meta">2022 Honda CR-V · 45 min</div>
+              </div>
+              <div class="da-badge"><span class="badge badge-green">Confirmed</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming summary -->
+        <div class="day-panel-card">
+          <div class="dp-head">
+            <div class="dp-title">This week</div>
+            <div class="dp-date">May 18–24</div>
+          </div>
+          <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:13px;color:var(--text-2)">Test drives</span>
+              <strong style="font-size:13px;color:var(--text)">8</strong>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:13px;color:var(--text-2)">Calls scheduled</span>
+              <strong style="font-size:13px;color:var(--text)">5</strong>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:13px;color:var(--text-2)">Service visits</span>
+              <strong style="font-size:13px;color:var(--text)">3</strong>
+            </div>
+            <div class="divider" style="margin:4px 0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:13px;font-weight:600;color:var(--text)">Total</span>
+              <strong style="font-size:14px;color:var(--text)">16 appointments</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Calendar ── */
+let currentYear = 2026, currentMonth = 4; // May = 4 (0-indexed)
+
+// Sample appointments data
+const appts = {
+  '2026-5-20': [{type:'test-drive',label:'James Harper',time:'9:00'},{type:'call',label:'David Kim',time:'11:00'},{type:'test-drive',label:'Sara Chen',time:'2:30'}],
+  '2026-5-21': [{type:'test-drive',label:'Mike Torres',time:'10:00'}],
+  '2026-5-22': [{type:'service',label:'Linda Park',time:'9:00'},{type:'call',label:'Rachel Moore',time:'2:00'}],
+  '2026-5-26': [{type:'test-drive',label:'New Lead',time:'1:00'},{type:'test-drive',label:'Walk-in',time:'3:00'},{type:'service',label:'Return visit',time:'4:00'}],
+  '2026-5-27': [{type:'call',label:'Follow-up',time:'9:30'}],
+};
+const typeClass = {'test-drive':'appt-test-drive','service':'appt-service','call':'appt-call'};
+const typeLabel = {'test-drive':'🚗','service':'🔧','call':'📞'};
+
+function renderCalendar() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calTitle').textContent = months[currentMonth] + ' ' + currentYear;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
+  const daysInPrev  = new Date(currentYear, currentMonth, 0).getDate();
+  const today = new Date();
+
+  // Previous month filler
+  for (let i = firstDay-1; i >= 0; i--) {
+    const cell = makeCell(daysInPrev-i, currentMonth-1, true);
+    grid.appendChild(cell);
+  }
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = today.getFullYear()===currentYear && today.getMonth()===currentMonth && today.getDate()===d;
+    const key = `${currentYear}-${currentMonth+1}-${d}`;
+    const cell = makeCell(d, currentMonth, false, isToday, appts[key]);
+    cell.onclick = () => selectDay(d);
+    grid.appendChild(cell);
+  }
+  // Next month filler
+  const remaining = 42 - (firstDay + daysInMonth);
+  for (let d = 1; d <= remaining; d++) {
+    grid.appendChild(makeCell(d, currentMonth+1, true));
+  }
+}
+
+function makeCell(day, month, otherMonth, isToday=false, dayAppts=[]) {
+  const cell = document.createElement('div');
+  cell.className = 'cal-cell' + (otherMonth?' other-month':'') + (isToday?' today':'');
+  let html = `<div class="cal-cell-num">${day}</div>`;
+  if (dayAppts) {
+    dayAppts.slice(0,2).forEach(a => {
+      html += `<div class="cal-appt ${typeClass[a.type]||''}">${typeLabel[a.type]||''} ${a.label}</div>`;
+    });
+    if (dayAppts.length > 2) html += `<div class="appt-more">+${dayAppts.length-2} more</div>`;
+  }
+  cell.innerHTML = html;
+  return cell;
+}
+
+function selectDay(d) {
+  document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+}
+
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth > 11) { currentMonth=0; currentYear++; }
+  if (currentMonth < 0)  { currentMonth=11; currentYear--; }
+  renderCalendar();
+}
+
+/* ── Add appointment ── */
+function openAddAppt() {
+  document.getElementById('addApptWrap').classList.add('open');
+  setTimeout(() => document.getElementById('apptLead').focus(), 50);
+}
+function closeAddAppt() {
+  document.getElementById('addApptWrap').classList.remove('open');
+}
+function setApptType(btn) {
+  document.querySelectorAll('.appt-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function selectTime(slot) {
+  if (slot.classList.contains('taken')) return;
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('active'));
+  slot.classList.add('active');
+}
+function saveAppt() {
+  const lead    = document.getElementById('apptLead').value.trim();
+  const vehicle = document.getElementById('apptVehicle').value.trim();
+  const time    = document.querySelector('.time-slot.active')?.textContent || '—';
+  const type    = document.querySelector('.appt-type-btn.active')?.textContent || 'Appointment';
+  if (!lead) { document.getElementById('apptLead').style.borderColor='var(--danger)'; return; }
+
+  const list = document.getElementById('dayApptList');
+  const row  = document.createElement('div');
+  row.className = 'day-appt';
+  row.innerHTML = `
+    <div class="da-time">${time.replace(' AM','').replace(' PM','')}</div>
+    <div class="da-bar" style="background:var(--green)"></div>
+    <div class="da-info">
+      <div class="da-title">${type} — ${lead}</div>
+      <div class="da-meta">${vehicle||'No vehicle specified'} · 45 min</div>
+    </div>
+    <div class="da-badge"><span class="badge badge-green">Confirmed</span></div>
+  `;
+  list.appendChild(row);
+  closeAddAppt();
+  row.style.background = 'var(--green-light)';
+  setTimeout(() => row.style.background = '', 1200);
+}
+
+// Init
+renderCalendar();
+</script>

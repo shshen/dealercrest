@@ -1,36 +1,124 @@
 <!-- fragment: pages/leads.html -->
 <style>
 .search-wrap{position:relative;display:flex;align-items:center}
-.search-wrap svg{position:absolute;left:10px;width:14px;height:14px;color:var(--text-3);pointer-events:none}
-.search-wrap input{padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;width:220px}
+.search-wrap svg{position:absolute;left:10px;width:14px;height:14px;color:var(--text-3);pointer-events:none;display:block}
+.search-wrap input{padding:9px 12px 9px 34px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;width:220px}
 .search-wrap input:focus{border-color:var(--green)}
-.filter-sel{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;cursor:pointer}
+.filter-sel{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;cursor:pointer}
 .filter-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
 .lead-name{font-weight:600;font-size:13.5px}
 .lead-email{font-size:12px;color:var(--text-3);margin-top:1px}
 .interest-tag{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:2px 9px;color:var(--text-2);white-space:nowrap}
+
+/* conversation activity link */
+.conv-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11.5px;color:var(--text-3);cursor:pointer;
+  padding:2px 0; margin-top:3px;
+  transition:color .12s;
+  white-space:nowrap;
+  text-decoration:none;
+}
+.conv-link:hover{color:var(--blue)}
+.conv-link svg{width:11px;height:11px;display:block;flex-shrink:0}
+.conv-link.has-unread{color:var(--green);font-weight:600}
+.conv-link.has-unread svg{color:var(--green)}
+
+/* ── Add lead inline form ── */
+.add-lead-wrap{overflow:hidden;max-height:0;opacity:0;transition:max-height .32s ease,opacity .22s ease;margin-bottom:0}
+.add-lead-wrap.open{max-height:600px;opacity:1;margin-bottom:20px}
+.add-lead-form{background:var(--surface);border:2px solid var(--green);border-radius:var(--radius);padding:24px}
+.add-lead-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.add-lead-sub{font-size:13px;color:var(--text-2);margin-bottom:20px}
+.source-group{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.source-pill{padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:12.5px;font-weight:500;color:var(--text-2);cursor:pointer;background:var(--bg);transition:border-color .12s,background .12s,color .12s}
+.source-pill:hover{border-color:var(--green);color:var(--green)}
+.source-pill.active{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:600}
+.status-group{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.status-opt{flex:1;padding:8px 6px;border:none;background:var(--surface);color:var(--text-2);font-family:var(--font);font-size:12.5px;font-weight:500;cursor:pointer;transition:background .12s,color .12s;border-right:1px solid var(--border);text-align:center}
+.status-opt:last-child{border-right:none}
+.status-opt.active{background:var(--green);color:#fff;font-weight:600}
+
 @media(max-width:700px){.hide-sm{display:none}.search-wrap input{width:160px}}
 </style>
 
 <div class="page">
   <div class="page-header">
-    <div>
+    <div class="page-header-title">
       <div class="page-title">Leads</div>
-      <div class="page-sub">248 total leads · 12 new this week</div>
+      <div class="page-sub">248 total · 12 new this week</div>
     </div>
     <div class="page-header-actions">
-      <button class="btn btn-secondary btn-sm">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export CSV
+      <button class="btn btn-secondary">
+        <svg width="15" height="15"><use href="#icon-download"/></svg>
+        <span class="btn-label">Export CSV</span>
       </button>
-      <button class="btn btn-primary btn-sm">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add lead
+      <button class="btn btn-primary" id="addLeadBtn" onclick="toggleAddLead()">
+        <svg width="15" height="15"><use href="#icon-plus"/></svg>
+        <span class="btn-label" id="addLeadBtnLabel">Add lead</span>
       </button>
     </div>
   </div>
 
   <div class="page-body">
+
+    <!-- Add lead form -->
+    <div class="add-lead-wrap" id="addLeadWrap">
+      <div class="add-lead-form">
+        <div class="add-lead-title">Add a lead</div>
+        <div class="add-lead-sub">Manually enter a lead from a phone call, walk-in, or any other source.</div>
+        <div class="grid-2" style="gap:16px;margin-bottom:16px">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Full Name <span style="color:var(--danger)">*</span></label>
+            <input type="text" class="form-input" id="lName" placeholder="e.g. James Harper" autocomplete="off" oninput="document.getElementById('saveLeadBtn').disabled=!this.value.trim()">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="lEmail" placeholder="email@example.com" autocomplete="off">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-input" id="lPhone" placeholder="(801) 555-0000" autocomplete="off">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Vehicle Interest</label>
+            <input type="text" class="form-input" id="lInterest" placeholder="e.g. 2023 Toyota Camry" autocomplete="off">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label">Source</label>
+          <div class="source-group" id="sourceGroup">
+            <button class="source-pill active" data-source="Website" onclick="selectSource(this)">Website form</button>
+            <button class="source-pill" data-source="Phone" onclick="selectSource(this)">Phone call</button>
+            <button class="source-pill" data-source="Walk-in" onclick="selectSource(this)">Walk-in</button>
+            <button class="source-pill" data-source="Referral" onclick="selectSource(this)">Referral</button>
+            <button class="source-pill" data-source="Social" onclick="selectSource(this)">Social media</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label">Initial Status</label>
+          <div class="status-group">
+            <button class="status-opt active" data-status="New" onclick="selectStatus(this)">New</button>
+            <button class="status-opt" data-status="Contacted" onclick="selectStatus(this)">Contacted</button>
+            <button class="status-opt" data-status="Qualified" onclick="selectStatus(this)">Qualified</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" id="lNotes" rows="2" placeholder="Context from the conversation, budget, timeline…" style="min-height:72px"></textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap">
+          <button class="btn btn-primary" id="saveLeadBtn" onclick="saveLead()" disabled>
+            <svg width="15" height="15"><use href="#icon-check"/></svg>
+            Save lead
+          </button>
+          <button class="btn btn-secondary" onclick="toggleAddLead()">Cancel</button>
+          <span style="font-size:12px;color:var(--text-3);margin-left:auto">Name is required</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
     <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
       <div class="stat-card"><div class="stat-label">New</div><div class="stat-value">12</div><div class="stat-delta up">↑ 4 today</div></div>
       <div class="stat-card"><div class="stat-label">Contacted</div><div class="stat-value">47</div><div class="stat-delta">Awaiting reply</div></div>
@@ -38,71 +126,126 @@
       <div class="stat-card"><div class="stat-label">Closed</div><div class="stat-value">100</div><div class="stat-delta">All time</div></div>
     </div>
 
+    <!-- Filters -->
     <div class="filter-row">
       <div class="search-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" placeholder="Search leads…">
+        <svg><use href="#icon-search"/></svg>
+        <input type="text" placeholder="Search leads…" oninput="filterLeads(this.value)">
       </div>
       <select class="filter-sel">
         <option>All statuses</option><option>New</option><option>Contacted</option><option>Qualified</option><option>Closed</option>
       </select>
       <select class="filter-sel hide-sm">
-        <option>All sources</option><option>Website form</option><option>Phone</option><option>Walk-in</option>
+        <option>All sources</option><option>Website</option><option>Phone</option><option>Walk-in</option>
       </select>
-      <span style="margin-left:auto;font-size:13px;color:var(--text-3);font-weight:500">248 leads</span>
+      <span style="margin-left:auto;font-size:13px;color:var(--text-3);font-weight:500" id="leadsCount">248 leads</span>
     </div>
 
+    <!-- Table -->
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Name</th><th>Interest</th><th class="hide-sm">Source</th><th>Status</th><th class="hide-sm">Date</th><th></th></tr></thead>
-        <tbody>
+        <thead>
           <tr>
-            <td><div class="lead-name">James Harper</div><div class="lead-email">james@email.com · (801) 555-0182</div></td>
-            <td><span class="interest-tag">🚗 2023 Camry</span></td>
+            <th>Name</th>
+            <th>Interest</th>
+            <th class="hide-sm">Source</th>
+            <th>Status</th>
+            <th class="hide-sm">Last conversation</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="leadsTableBody">
+          <tr>
+            <td>
+              <div class="lead-name">James Harper</div>
+              <div class="lead-email">james@email.com · (801) 555-0182</div>
+              <a class="conv-link has-unread" onclick="navigate('conversations')">
+                <svg><use href="#icon-conversations"/></svg>
+                SMS · 2 min ago · 1 unread
+              </a>
+            </td>
+            <td><span class="interest-tag">2023 Camry</span></td>
             <td class="hide-sm"><span class="badge badge-blue">Website</span></td>
             <td><span class="badge badge-yellow">New</span></td>
-            <td class="hide-sm" style="color:var(--text-3);font-size:13px">12 min ago</td>
-            <td><button class="btn btn-secondary btn-sm">Contact</button></td>
+            <td class="hide-sm">
+              <span style="font-size:12px;color:var(--text-3)">SMS · 2m ago</span>
+            </td>
+            <td><button class="btn btn-secondary btn-sm" onclick="navigate('conversations')">View</button></td>
           </tr>
           <tr>
-            <td><div class="lead-name">Sara Chen</div><div class="lead-email">s.chen@mail.com · (801) 555-0291</div></td>
-            <td><span class="interest-tag">🚙 2022 CR-V</span></td>
+            <td>
+              <div class="lead-name">Sara Chen</div>
+              <div class="lead-email">s.chen@mail.com · (801) 555-0291</div>
+              <a class="conv-link has-unread" onclick="navigate('conversations')">
+                <svg><use href="#icon-conversations"/></svg>
+                Email · 1h ago · 1 unread
+              </a>
+            </td>
+            <td><span class="interest-tag">2022 CR-V</span></td>
             <td class="hide-sm"><span class="badge badge-blue">Website</span></td>
             <td><span class="badge badge-blue">Contacted</span></td>
-            <td class="hide-sm" style="color:var(--text-3);font-size:13px">1h ago</td>
-            <td><button class="btn btn-secondary btn-sm">View</button></td>
+            <td class="hide-sm"><span style="font-size:12px;color:var(--text-3)">Email · 1h ago</span></td>
+            <td><button class="btn btn-secondary btn-sm" onclick="navigate('conversations')">View</button></td>
           </tr>
           <tr>
-            <td><div class="lead-name">Mike Torres</div><div class="lead-email">mtorres@mail.com · (801) 555-0384</div></td>
-            <td><span class="interest-tag">🚛 2024 F-150</span></td>
+            <td>
+              <div class="lead-name">Mike Torres</div>
+              <div class="lead-email">mtorres@mail.com · (801) 555-0384</div>
+              <a class="conv-link" onclick="navigate('conversations')">
+                <svg><use href="#icon-conversations"/></svg>
+                SMS · 3h ago
+              </a>
+            </td>
+            <td><span class="interest-tag">2024 F-150</span></td>
             <td class="hide-sm"><span class="badge badge-gray">Phone</span></td>
             <td><span class="badge badge-green">Qualified</span></td>
-            <td class="hide-sm" style="color:var(--text-3);font-size:13px">3h ago</td>
-            <td><button class="btn btn-secondary btn-sm">View</button></td>
+            <td class="hide-sm"><span style="font-size:12px;color:var(--text-3)">SMS · 3h ago</span></td>
+            <td><button class="btn btn-secondary btn-sm" onclick="navigate('conversations')">View</button></td>
           </tr>
           <tr>
-            <td><div class="lead-name">Linda Park</div><div class="lead-email">lpark@mail.com · (801) 555-0477</div></td>
-            <td><span class="interest-tag">🚙 2021 RAV4</span></td>
+            <td>
+              <div class="lead-name">Linda Park</div>
+              <div class="lead-email">lpark@mail.com · (801) 555-0477</div>
+              <a class="conv-link" onclick="navigate('conversations')">
+                <svg><use href="#icon-conversations"/></svg>
+                Call · Yesterday · 4m 22s
+              </a>
+            </td>
+            <td><span class="interest-tag">2021 RAV4</span></td>
             <td class="hide-sm"><span class="badge badge-gray">Walk-in</span></td>
             <td><span class="badge badge-gray">Closed</span></td>
-            <td class="hide-sm" style="color:var(--text-3);font-size:13px">Yesterday</td>
+            <td class="hide-sm"><span style="font-size:12px;color:var(--text-3)">Call · Yesterday</span></td>
             <td><button class="btn btn-secondary btn-sm">View</button></td>
           </tr>
           <tr>
-            <td><div class="lead-name">David Kim</div><div class="lead-email">dkim@mail.com · (801) 555-0533</div></td>
-            <td><span class="interest-tag">🚗 2023 Accord</span></td>
+            <td>
+              <div class="lead-name">David Kim</div>
+              <div class="lead-email">dkim@mail.com · (801) 555-0533</div>
+              <a class="conv-link has-unread" onclick="navigate('conversations')">
+                <svg><use href="#icon-conversations"/></svg>
+                SMS · 2d ago · 1 unread
+              </a>
+            </td>
+            <td><span class="interest-tag">2023 Accord</span></td>
             <td class="hide-sm"><span class="badge badge-blue">Website</span></td>
             <td><span class="badge badge-yellow">New</span></td>
-            <td class="hide-sm" style="color:var(--text-3);font-size:13px">2 days ago</td>
-            <td><button class="btn btn-secondary btn-sm">Contact</button></td>
+            <td class="hide-sm"><span style="font-size:12px;color:var(--text-3)">SMS · 2d ago</span></td>
+            <td><button class="btn btn-secondary btn-sm" onclick="navigate('conversations')">Contact</button></td>
           </tr>
           <tr>
-            <td><div class="lead-name">Rachel Moore</div><div class="lead-email">rmoore@mail.com · (801) 555-0614</div></td>
-            <td><span class="interest-tag">🚘 2024 Mustang</span></td>
+            <td>
+              <div class="lead-name">Rachel Moore</div>
+              <div class="lead-email">rmoore@mail.com · (801) 555-0614</div>
+              <a class="conv-link" onclick="navigate('conversations')">
+                <svg><use href="#icon-conversations"/></svg>
+                Email · 3d ago
+              </a>
+            </td>
+            <td><span class="interest-tag">2024 Mustang</span></td>
             <td class="hide-sm"><span class="badge badge-blue">Website</span></td>
             <td><span class="badge badge-green">Qualified</span></td>
-            <td class="hide-sm" style="color:var(--text-3);font-size:13px">3 days ago</td>
-            <td><button class="btn btn-secondary btn-sm">View</button></td>
+            <td class="hide-sm"><span style="font-size:12px;color:var(--text-3)">Email · 3d ago</span></td>
+            <td><button class="btn btn-secondary btn-sm" onclick="navigate('conversations')">View</button></td>
           </tr>
         </tbody>
       </table>
@@ -117,3 +260,72 @@
     </div>
   </div>
 </div>
+
+<script>
+let selectedSource = 'Website';
+let selectedStatus = 'New';
+
+function toggleAddLead() {
+  const wrap  = document.getElementById('addLeadWrap');
+  const label = document.getElementById('addLeadBtnLabel');
+  const open  = wrap.classList.toggle('open');
+  label.textContent = open ? 'Cancel' : 'Add lead';
+  if (open) setTimeout(() => document.getElementById('lName').focus(), 50);
+  else resetLeadForm();
+}
+function selectSource(btn) {
+  document.querySelectorAll('.source-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedSource = btn.dataset.source;
+}
+function selectStatus(btn) {
+  document.querySelectorAll('.status-opt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedStatus = btn.dataset.status;
+}
+function saveLead() {
+  const name     = document.getElementById('lName').value.trim();
+  const email    = document.getElementById('lEmail').value.trim();
+  const phone    = document.getElementById('lPhone').value.trim();
+  const interest = document.getElementById('lInterest').value.trim();
+  if (!name) return;
+  const sc = {New:'badge-yellow',Contacted:'badge-blue',Qualified:'badge-green'};
+  const tbody = document.getElementById('leadsTableBody');
+  const row   = document.createElement('tr');
+  row.innerHTML = `
+    <td>
+      <div class="lead-name">${name}</div>
+      <div class="lead-email">${[email,phone].filter(Boolean).join(' · ')||'—'}</div>
+      <a class="conv-link" onclick="navigate('conversations')">
+        <svg width="11" height="11"><use href="#icon-conversations"/></svg>
+        No conversations yet
+      </a>
+    </td>
+    <td><span class="interest-tag">${interest||'—'}</span></td>
+    <td class="hide-sm"><span class="badge badge-gray">${selectedSource}</span></td>
+    <td><span class="badge ${sc[selectedStatus]||'badge-yellow'}">${selectedStatus}</span></td>
+    <td class="hide-sm"><span style="font-size:12px;color:var(--text-3)">—</span></td>
+    <td><button class="btn btn-secondary btn-sm" onclick="navigate('conversations')">Contact</button></td>
+  `;
+  tbody.insertBefore(row, tbody.firstChild);
+  row.style.background = 'var(--green-light)';
+  setTimeout(() => row.style.background = '', 1400);
+  document.getElementById('addLeadWrap').classList.remove('open');
+  document.getElementById('addLeadBtnLabel').textContent = 'Add lead';
+  resetLeadForm();
+}
+function resetLeadForm() {
+  ['lName','lEmail','lPhone','lInterest','lNotes'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('saveLeadBtn').disabled = true;
+  selectedSource='Website'; selectedStatus='New';
+  document.querySelectorAll('.source-pill').forEach(b=>b.classList.toggle('active',b.dataset.source==='Website'));
+  document.querySelectorAll('.status-opt').forEach(b=>b.classList.toggle('active',b.dataset.status==='New'));
+}
+function filterLeads(q) {
+  document.querySelectorAll('#leadsTableBody tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+</script>

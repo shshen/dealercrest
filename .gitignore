@@ -2,6 +2,7 @@
 .idea
 .vscode
 .DS_Store
-/logs/
 **/*.iml
+/logs/
 /target/
+/libs/netty-4.2.14/

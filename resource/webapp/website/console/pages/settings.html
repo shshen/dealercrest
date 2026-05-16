@@ -1,101 +1,51 @@
 <!-- fragment: pages/settings.html -->
 <style>
-/* Settings card grid */
-.settings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-}
-.setting-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  cursor: pointer;
-  transition: border-color .15s, box-shadow .15s;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  text-decoration: none;
-}
-.setting-card:hover {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px var(--green-light);
-}
-.setting-card-icon {
-  width: 40px; height: 40px;
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.setting-card-icon svg { width: 20px; height: 20px; display: block; }
-.setting-card-body { flex: 1; min-width: 0; }
-.setting-card-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.setting-card-desc  { font-size: 12.5px; color: var(--text-2); line-height: 1.5; }
-.setting-card-arrow { color: var(--text-3); margin-top: 2px; flex-shrink: 0; }
-.setting-card-arrow svg { width: 16px; height: 16px; display: block; }
-
-/* Detail view */
-.detail-view { display: none; }
-.detail-view.active { display: block; }
-.cards-view { display: block; }
-.cards-view.hidden { display: none; }
-
-/* Back button row */
-.back-row {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 20px;
-}
-.back-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  color: var(--text-2); font-size: 13px; font-weight: 500;
-  cursor: pointer; padding: 6px 10px;
-  border-radius: var(--radius-sm); border: 1px solid var(--border);
-  background: var(--surface); transition: background .12s;
-  font-family: var(--font);
-}
-.back-btn:hover { background: var(--bg); color: var(--text); }
-.back-btn svg { width: 14px; height: 14px; display: block; }
-.detail-title { font-size: 17px; font-weight: 700; color: var(--text); }
-
-/* Toggle row */
-.toggle-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 0; border-bottom: 1px solid var(--border-light); gap: 20px;
-}
-.toggle-row:last-child { border-bottom: none; }
-.toggle-info .tl { font-size: 13.5px; font-weight: 500; color: var(--text); }
-.toggle-info .td { font-size: 12px; color: var(--text-3); margin-top: 2px; }
-
-/* Danger zone */
-.danger-zone { border: 1px solid #f4bdb8; border-radius: var(--radius); overflow: hidden; margin-top: 20px; }
-.danger-head  { background: var(--danger-bg); padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--danger); }
-.danger-item  { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid #f4bdb8; gap: 16px; flex-wrap: wrap; }
-.danger-item:last-child { border-bottom: none; }
-.danger-item-title { font-size: 13.5px; font-weight: 500; color: var(--text); }
-.danger-item-desc  { font-size: 12px; color: var(--text-3); margin-top: 2px; }
-
-/* Team table actions */
-.member-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
-.member-row:last-child { border-bottom: none; }
-.member-av { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
-.member-info { flex: 1; min-width: 0; }
-.member-name  { font-size: 13.5px; font-weight: 600; color: var(--text); }
-.member-email { font-size: 12px; color: var(--text-3); }
-.member-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-
-@media (max-width: 600px) {
-  .settings-grid { grid-template-columns: 1fr; }
-  .setting-card { padding: 16px; }
-}
+.page-header-nav{display:flex;align-items:center;gap:10px;min-width:0;flex-shrink:1;overflow:hidden}
+.page-header-nav .detail-title{font-size:17px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.setting-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;align-items:flex-start;gap:14px}
+.setting-card:hover{border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}
+.setting-card-icon{width:40px;height:40px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.setting-card-icon svg{width:20px;height:20px;display:block}
+.setting-card-body{flex:1;min-width:0}
+.setting-card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.setting-card-desc{font-size:12.5px;color:var(--text-2);line-height:1.5}
+.setting-card-arrow{color:var(--text-3);margin-top:2px;flex-shrink:0}
+.setting-card-arrow svg{width:16px;height:16px;display:block}
+.detail-view{display:none}
+.detail-view.active{display:block}
+.cards-view{display:block}
+.cards-view.hidden{display:none}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13px;font-weight:500;cursor:pointer;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);transition:background .12s;font-family:var(--font);white-space:nowrap}
+.back-btn:hover{background:var(--bg);color:var(--text)}
+.back-btn svg{width:14px;height:14px;display:block}
+.detail-title{font-size:18px;font-weight:700;color:var(--text);margin-left:4px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border-light);gap:20px}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info .tl{font-size:13.5px;font-weight:500;color:var(--text)}
+.toggle-info .td{font-size:12px;color:var(--text-3);margin-top:2px}
+.danger-zone{border:1px solid #f4bdb8;border-radius:var(--radius);overflow:hidden;margin-top:20px}
+.danger-head{background:var(--danger-bg);padding:12px 16px;font-size:13px;font-weight:600;color:var(--danger)}
+.danger-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f4bdb8;gap:16px;flex-wrap:wrap}
+.danger-item:last-child{border-bottom:none}
+.danger-item-title{font-size:13.5px;font-weight:500;color:var(--text)}
+.danger-item-desc{font-size:12px;color:var(--text-3);margin-top:2px}
+.member-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-light)}
+.member-row:last-child{border-bottom:none}
+.member-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.member-info{flex:1;min-width:0}
+.member-name{font-size:13.5px;font-weight:600;color:var(--text)}
+.member-email{font-size:12px;color:var(--text-3)}
+.member-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+@media(max-width:600px){.settings-grid{grid-template-columns:1fr}.setting-card{padding:16px}}
 </style>
 
 <div class="page" id="settingsPage">
 
-  <!-- ── CARDS VIEW ── -->
+  <!-- CARDS VIEW -->
   <div class="cards-view" id="cardsView">
     <div class="page-header">
-      <div>
+      <div class="page-header-title">
         <div class="page-title">Settings</div>
         <div class="page-sub">Manage your dealership account and preferences</div>
       </div>
@@ -105,88 +55,86 @@
 
         <div class="setting-card" onclick="showDetail('general')">
           <div class="setting-card-icon" style="background:#f0f4ff">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <svg width="20" height="20" style="color:#3b5bdb"><use href="#icon-user"/></svg>
           </div>
           <div class="setting-card-body">
             <div class="setting-card-title">General</div>
             <div class="setting-card-desc">Dealership name, address, phone, time zone</div>
           </div>
-          <div class="setting-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="setting-card-arrow"><svg width="16" height="16"><use href="#icon-chevron-right"/></svg></div>
         </div>
 
         <div class="setting-card" onclick="showDetail('notifications')">
           <div class="setting-card-icon" style="background:#fff8e1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <svg width="14" height="14"><use href="#icon-bell"/></svg>
           </div>
           <div class="setting-card-body">
             <div class="setting-card-title">Notifications</div>
             <div class="setting-card-desc">Email alerts for leads, publishing, weekly digest</div>
           </div>
-          <div class="setting-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="setting-card-arrow"><svg width="16" height="16"><use href="#icon-chevron-right"/></svg></div>
         </div>
 
         <div class="setting-card" onclick="showDetail('team')">
           <div class="setting-card-icon" style="background:#f0fff4">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#008060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            <svg width="20" height="20" style="color:#008060"><use href="#icon-users"/></svg>
           </div>
           <div class="setting-card-body">
             <div class="setting-card-title">Team</div>
             <div class="setting-card-desc">Manage team members, roles, and access levels</div>
           </div>
-          <div class="setting-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="setting-card-arrow"><svg width="16" height="16"><use href="#icon-chevron-right"/></svg></div>
         </div>
 
         <div class="setting-card" onclick="showDetail('branding')">
           <div class="setting-card-icon" style="background:#fdf4ff">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 20v-5"/><path d="M12 15c-2 0-5-1-5-3"/><path d="M12 15c2 0 5-1 5-3"/></svg>
+            <svg width="20" height="20" style="color:#9333ea"><use href="#icon-palette"/></svg>
           </div>
           <div class="setting-card-body">
             <div class="setting-card-title">Branding</div>
             <div class="setting-card-desc">Logo, brand colors, favicon for your dealer site</div>
           </div>
-          <div class="setting-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="setting-card-arrow"><svg width="16" height="16"><use href="#icon-chevron-right"/></svg></div>
         </div>
 
         <div class="setting-card" onclick="showDetail('integrations')">
           <div class="setting-card-icon" style="background:#fff0f3">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="1"/><rect x="13" y="2" width="9" height="9" rx="1"/><rect x="2" y="13" width="9" height="9" rx="1"/><rect x="13" y="13" width="9" height="9" rx="1"/></svg>
+            <svg width="20" height="20" style="color:#e11d48"><use href="#icon-grid4"/></svg>
           </div>
           <div class="setting-card-body">
             <div class="setting-card-title">Integrations</div>
             <div class="setting-card-desc">Connect Google Analytics, Facebook Pixel, CRMs</div>
           </div>
-          <div class="setting-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="setting-card-arrow"><svg width="16" height="16"><use href="#icon-chevron-right"/></svg></div>
         </div>
 
         <div class="setting-card" onclick="showDetail('danger')">
           <div class="setting-card-icon" style="background:var(--danger-bg)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <svg width="20" height="20" style="color:var(--danger)"><use href="#icon-warning"/></svg>
           </div>
           <div class="setting-card-body">
             <div class="setting-card-title">Danger Zone</div>
             <div class="setting-card-desc">Reset site, delete leads, or delete your account</div>
           </div>
-          <div class="setting-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="setting-card-arrow"><svg width="16" height="16"><use href="#icon-chevron-right"/></svg></div>
         </div>
 
       </div>
     </div>
   </div>
 
-  <!-- ── DETAIL VIEWS ── -->
-
-  <!-- General -->
+  <!-- DETAIL: General -->
   <div class="detail-view" id="detail-general">
     <div class="page-header">
-      <div class="back-row">
+      <div class="page-header-nav">
         <button class="back-btn" onclick="showCards()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
           Settings
         </button>
-        <div class="detail-title">General</div>
+        <span class="detail-title">General</span>
       </div>
       <div class="page-header-actions">
-        <button class="btn btn-primary" onclick="saveSection(this)">Save changes</button>
+        <button class="btn btn-primary" onclick="saveSection(this)"><span class="btn-label">Save changes</span></button>
       </div>
     </div>
     <div class="page-body">
@@ -194,158 +142,85 @@
         <div class="card-header"><div class="card-title">Dealership Info</div></div>
         <div class="card-body">
           <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Dealership Name</label>
-              <input type="text" class="form-input" value="AutoTrader SaaS">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Phone Number</label>
-              <input type="tel" class="form-input" value="(801) 555-0100">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" class="form-input" value="info@autotrader.com">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Time Zone</label>
-              <select class="form-select">
-                <option selected>America/Denver (MT)</option>
-                <option>America/Los_Angeles (PT)</option>
-                <option>America/Chicago (CT)</option>
-                <option>America/New_York (ET)</option>
-              </select>
-            </div>
-            <div class="form-group" style="grid-column:1/-1">
-              <label class="form-label">Address</label>
-              <input type="text" class="form-input" value="1234 Auto Park Dr, Salt Lake City, UT 84101">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Business Hours</label>
-              <input type="text" class="form-input" value="Mon–Sat 9am–7pm, Sun 11am–5pm">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Website</label>
-              <input type="text" class="form-input" value="https://dealercrest.com">
-            </div>
+            <div class="form-group"><label class="form-label">Dealership Name</label><input type="text" class="form-input" value="AutoTrader SaaS"></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-input" value="(801) 555-0100"></div>
+            <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" value="info@autotrader.com"></div>
+            <div class="form-group"><label class="form-label">Time Zone</label><select class="form-select"><option selected>America/Denver (MT)</option><option>America/Los_Angeles (PT)</option><option>America/Chicago (CT)</option><option>America/New_York (ET)</option></select></div>
+            <div class="form-group" style="grid-column:1/-1"><label class="form-label">Address</label><input type="text" class="form-input" value="1234 Auto Park Dr, Salt Lake City, UT 84101"></div>
+            <div class="form-group"><label class="form-label">Business Hours</label><input type="text" class="form-input" value="Mon–Sat 9am–7pm, Sun 11am–5pm"></div>
+            <div class="form-group"><label class="form-label">Website</label><input type="text" class="form-input" value="https://dealercrest.com"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Notifications -->
+  <!-- DETAIL: Notifications -->
   <div class="detail-view" id="detail-notifications">
     <div class="page-header">
-      <div class="back-row">
+      <div class="page-header-nav">
         <button class="back-btn" onclick="showCards()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
           Settings
         </button>
-        <div class="detail-title">Notifications</div>
+        <span class="detail-title">Notifications</span>
       </div>
       <div class="page-header-actions">
-        <button class="btn btn-primary" onclick="saveSection(this)">Save changes</button>
+        <button class="btn btn-primary" onclick="saveSection(this)"><span class="btn-label">Save changes</span></button>
       </div>
     </div>
     <div class="page-body">
       <div class="card">
         <div class="card-header"><div class="card-title">Email Notifications</div></div>
         <div class="card-body">
-          <div class="toggle-row">
-            <div class="toggle-info"><div class="tl">New lead received</div><div class="td">Get an email whenever a new lead submits a form on your site</div></div>
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info"><div class="tl">Lead status changes</div><div class="td">Notify when a lead moves to Qualified or Closed</div></div>
-            <label class="toggle"><input type="checkbox"><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info"><div class="tl">Weekly summary</div><div class="td">A digest of your weekly leads and website traffic every Monday</div></div>
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info"><div class="tl">Publish confirmations</div><div class="td">Email confirmation when a page is published to your live site</div></div>
-            <label class="toggle"><input type="checkbox"><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info"><div class="tl">Domain alerts</div><div class="td">Notify when a domain is connected, expires, or has issues</div></div>
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label>
-          </div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">New lead received</div><div class="td">Get an email whenever a new lead submits a form on your site</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Lead status changes</div><div class="td">Notify when a lead moves to Qualified or Closed</div></div><label class="toggle"><input type="checkbox"><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Weekly summary</div><div class="td">A digest of your weekly leads and website traffic every Monday</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Publish confirmations</div><div class="td">Email confirmation when a page is published to your live site</div></div><label class="toggle"><input type="checkbox"><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Domain alerts</div><div class="td">Notify when a domain is connected, expires, or has issues</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Team -->
+  <!-- DETAIL: Team -->
   <div class="detail-view" id="detail-team">
     <div class="page-header">
-      <div class="back-row">
+      <div class="page-header-nav">
         <button class="back-btn" onclick="showCards()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
           Settings
         </button>
-        <div class="detail-title">Team</div>
+        <span class="detail-title">Team</span>
       </div>
       <div class="page-header-actions">
-        <button class="btn btn-primary btn-sm">Invite member</button>
+        <button class="btn btn-primary"><span class="btn-label">Invite member</span></button>
       </div>
     </div>
     <div class="page-body">
       <div class="card">
         <div class="card-header"><div class="card-title">Members · 3</div></div>
         <div class="card-body" style="padding:8px 20px">
-          <div class="member-row">
-            <div class="member-av" style="background:#3b5bdb">AT</div>
-            <div class="member-info">
-              <div class="member-name">Alex Thompson</div>
-              <div class="member-email">alex@autotrader.com</div>
-            </div>
-            <div class="member-actions">
-              <span class="badge badge-green">Owner</span>
-              <span class="badge badge-green">Active</span>
-            </div>
-          </div>
-          <div class="member-row">
-            <div class="member-av" style="background:#0891b2">ML</div>
-            <div class="member-info">
-              <div class="member-name">Maria Lopez</div>
-              <div class="member-email">m.lopez@autotrader.com</div>
-            </div>
-            <div class="member-actions">
-              <span class="badge badge-blue">Editor</span>
-              <span class="badge badge-green">Active</span>
-              <button class="btn btn-ghost btn-sm">Remove</button>
-            </div>
-          </div>
-          <div class="member-row">
-            <div class="member-av" style="background:#7c3aed">SN</div>
-            <div class="member-info">
-              <div class="member-name">Sam Nguyen</div>
-              <div class="member-email">snguyen@autotrader.com</div>
-            </div>
-            <div class="member-actions">
-              <span class="badge badge-gray">Viewer</span>
-              <span class="badge badge-yellow">Invited</span>
-              <button class="btn btn-ghost btn-sm">Resend</button>
-            </div>
-          </div>
+          <div class="member-row"><div class="member-av" style="background:#3b5bdb">AT</div><div class="member-info"><div class="member-name">Alex Thompson</div><div class="member-email">alex@autotrader.com</div></div><div class="member-actions"><span class="badge badge-green">Owner</span><span class="badge badge-green">Active</span></div></div>
+          <div class="member-row"><div class="member-av" style="background:#0891b2">ML</div><div class="member-info"><div class="member-name">Maria Lopez</div><div class="member-email">m.lopez@autotrader.com</div></div><div class="member-actions"><span class="badge badge-blue">Editor</span><span class="badge badge-green">Active</span><button class="btn btn-ghost btn-sm">Remove</button></div></div>
+          <div class="member-row"><div class="member-av" style="background:#7c3aed">SN</div><div class="member-info"><div class="member-name">Sam Nguyen</div><div class="member-email">snguyen@autotrader.com</div></div><div class="member-actions"><span class="badge badge-gray">Viewer</span><span class="badge badge-yellow">Invited</span><button class="btn btn-ghost btn-sm">Resend</button></div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Branding -->
+  <!-- DETAIL: Branding -->
   <div class="detail-view" id="detail-branding">
     <div class="page-header">
-      <div class="back-row">
+      <div class="page-header-nav">
         <button class="back-btn" onclick="showCards()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
           Settings
         </button>
-        <div class="detail-title">Branding</div>
+        <span class="detail-title">Branding</span>
       </div>
       <div class="page-header-actions">
-        <button class="btn btn-primary" onclick="saveSection(this)">Save changes</button>
+        <button class="btn btn-primary" onclick="saveSection(this)"><span class="btn-label">Save changes</span></button>
       </div>
     </div>
     <div class="page-body">
@@ -354,10 +229,7 @@
         <div class="card-body">
           <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
             <div style="width:80px;height:80px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:28px">🚗</div>
-            <div>
-              <button class="btn btn-secondary btn-sm" style="margin-bottom:8px">Upload logo</button>
-              <div style="font-size:12px;color:var(--text-3)">PNG, SVG or JPG · Max 2MB · Recommended 400×120px</div>
-            </div>
+            <div><button class="btn btn-secondary btn-sm" style="margin-bottom:8px">Upload logo</button><div style="font-size:12px;color:var(--text-3)">PNG, SVG or JPG · Max 2MB · Recommended 400×120px</div></div>
           </div>
         </div>
       </div>
@@ -365,142 +237,76 @@
         <div class="card-header"><div class="card-title">Brand Colors</div></div>
         <div class="card-body">
           <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Primary Color</label>
-              <div style="display:flex;gap:8px;align-items:center">
-                <input type="color" value="#008060" style="width:40px;height:36px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;padding:2px">
-                <input type="text" class="form-input" value="#008060" style="font-family:monospace">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Accent Color</label>
-              <div style="display:flex;gap:8px;align-items:center">
-                <input type="color" value="#1a1c1e" style="width:40px;height:36px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;padding:2px">
-                <input type="text" class="form-input" value="#1a1c1e" style="font-family:monospace">
-              </div>
-            </div>
+            <div class="form-group"><label class="form-label">Primary Color</label><div style="display:flex;gap:8px;align-items:center"><input type="color" value="#008060" style="width:40px;height:36px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;padding:2px"><input type="text" class="form-input" value="#008060" style="font-family:monospace"></div></div>
+            <div class="form-group"><label class="form-label">Accent Color</label><div style="display:flex;gap:8px;align-items:center"><input type="color" value="#1a1c1e" style="width:40px;height:36px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;padding:2px"><input type="text" class="form-input" value="#1a1c1e" style="font-family:monospace"></div></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Integrations -->
+  <!-- DETAIL: Integrations -->
   <div class="detail-view" id="detail-integrations">
     <div class="page-header">
-      <div class="back-row">
+      <div class="page-header-nav">
         <button class="back-btn" onclick="showCards()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
           Settings
         </button>
-        <div class="detail-title">Integrations</div>
+        <span class="detail-title">Integrations</span>
       </div>
     </div>
     <div class="page-body">
       <div style="display:flex;flex-direction:column;gap:12px">
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap">
-            <div style="width:40px;height:40px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📊</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:14px;font-weight:600;color:var(--text)">Google Analytics</div>
-              <div style="font-size:12px;color:var(--text-3);margin-top:2px">Track page views, sessions, and visitor behaviour</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <span class="badge badge-green">Connected</span>
-              <button class="btn btn-ghost btn-sm">Configure</button>
-            </div>
-          </div>
-          <div style="padding:12px 20px;border-top:1px solid var(--border-light);background:var(--bg)">
-            <div class="form-group" style="margin-bottom:0">
-              <label class="form-label" style="font-size:12px">Measurement ID</label>
-              <input type="text" class="form-input" value="G-XXXXXXXXXX" style="font-family:monospace;font-size:13px">
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap">
-            <div style="width:40px;height:40px;background:#1877f2;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📘</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:14px;font-weight:600;color:var(--text)">Facebook Pixel</div>
-              <div style="font-size:12px;color:var(--text-3);margin-top:2px">Track conversions and retarget visitors on Facebook & Instagram</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <span class="badge badge-gray">Not connected</span>
-              <button class="btn btn-secondary btn-sm">Connect</button>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap">
-            <div style="width:40px;height:40px;background:#ff7a59;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🔗</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:14px;font-weight:600;color:var(--text)">HubSpot CRM</div>
-              <div style="font-size:12px;color:var(--text-3);margin-top:2px">Sync leads automatically to your HubSpot pipeline</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <span class="badge badge-gray">Not connected</span>
-              <button class="btn btn-secondary btn-sm">Connect</button>
-            </div>
-          </div>
-        </div>
+        <div class="card"><div style="display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap"><div style="width:40px;height:40px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📊</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--text)">Google Analytics</div><div style="font-size:12px;color:var(--text-3);margin-top:2px">Track page views, sessions, and visitor behaviour</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-green">Connected</span><button class="btn btn-ghost btn-sm">Configure</button></div></div><div style="padding:12px 20px;border-top:1px solid var(--border-light);background:var(--bg)"><div class="form-group" style="margin-bottom:0"><label class="form-label" style="font-size:12px">Measurement ID</label><input type="text" class="form-input" value="G-XXXXXXXXXX" style="font-family:monospace;font-size:13px"></div></div></div>
+        <div class="card"><div style="display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap"><div style="width:40px;height:40px;background:#1877f2;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📘</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--text)">Facebook Pixel</div><div style="font-size:12px;color:var(--text-3);margin-top:2px">Track conversions and retarget visitors on Facebook & Instagram</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-gray">Not connected</span><button class="btn btn-secondary btn-sm">Connect</button></div></div></div>
+        <div class="card"><div style="display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap"><div style="width:40px;height:40px;background:#ff7a59;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🔗</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--text)">HubSpot CRM</div><div style="font-size:12px;color:var(--text-3);margin-top:2px">Sync leads automatically to your HubSpot pipeline</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-gray">Not connected</span><button class="btn btn-secondary btn-sm">Connect</button></div></div></div>
       </div>
     </div>
   </div>
 
-  <!-- Danger Zone -->
+  <!-- DETAIL: Danger Zone -->
   <div class="detail-view" id="detail-danger">
     <div class="page-header">
-      <div class="back-row">
+      <div class="page-header-nav">
         <button class="back-btn" onclick="showCards()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
           Settings
         </button>
-        <div class="detail-title">Danger Zone</div>
+        <span class="detail-title">Danger Zone</span>
       </div>
     </div>
     <div class="page-body">
       <div class="alert alert-yellow">These actions are irreversible. Please proceed with caution.</div>
       <div class="danger-zone">
         <div class="danger-head">⚠ Destructive actions</div>
-        <div class="danger-item">
-          <div><div class="danger-item-title">Reset website to default</div><div class="danger-item-desc">Clears all page content and returns to the blank starter template</div></div>
-          <button class="btn btn-danger btn-sm">Reset site</button>
-        </div>
-        <div class="danger-item">
-          <div><div class="danger-item-title">Delete all leads</div><div class="danger-item-desc">Permanently removes all 248 lead records from this account</div></div>
-          <button class="btn btn-danger btn-sm">Delete leads</button>
-        </div>
-        <div class="danger-item">
-          <div><div class="danger-item-title">Delete account</div><div class="danger-item-desc">Permanently deletes your DealerCrest account, all sites, and all data</div></div>
-          <button class="btn btn-danger btn-sm">Delete account</button>
-        </div>
+        <div class="danger-item"><div><div class="danger-item-title">Reset website to default</div><div class="danger-item-desc">Clears all page content and returns to the blank starter template</div></div><button class="btn btn-danger btn-sm">Reset site</button></div>
+        <div class="danger-item"><div><div class="danger-item-title">Delete all leads</div><div class="danger-item-desc">Permanently removes all 248 lead records from this account</div></div><button class="btn btn-danger btn-sm">Delete leads</button></div>
+        <div class="danger-item"><div><div class="danger-item-title">Delete account</div><div class="danger-item-desc">Permanently deletes your DealerCrest account, all sites, and all data</div></div><button class="btn btn-danger btn-sm">Delete account</button></div>
       </div>
     </div>
   </div>
 
-</div><!-- /page -->
+</div>
 
 <script>
 function showDetail(id) {
   document.getElementById('cardsView').classList.add('hidden');
   document.querySelectorAll('.detail-view').forEach(d => d.classList.remove('active'));
   document.getElementById('detail-' + id).classList.add('active');
-  document.getElementById('contentPane').scrollTop = 0;
+  const pb = document.querySelector('.page-body'); if (pb) pb.scrollTop = 0;
 }
-
 function showCards() {
   document.querySelectorAll('.detail-view').forEach(d => d.classList.remove('active'));
   document.getElementById('cardsView').classList.remove('hidden');
-  document.getElementById('contentPane').scrollTop = 0;
+  const pb = document.querySelector('.page-body'); if (pb) pb.scrollTop = 0;
 }
-
 function saveSection(btn) {
-  const orig = btn.textContent;
-  btn.textContent = 'Saving…';
-  btn.disabled = true;
+  const orig = btn.innerHTML; btn.disabled = true;
+  btn.innerHTML = '<span class="btn-label">Saving…</span>';
   setTimeout(() => {
-    btn.textContent = '✓ Saved';
-    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1500);
+    btn.innerHTML = '<span class="btn-label">✓ Saved</span>';
+    setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 1500);
   }, 700);
 }
 </script>

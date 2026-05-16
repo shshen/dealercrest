@@ -12,28 +12,31 @@ import java.util.jar.JarFile;
 
 import com.dealercrest.page.Page;
 import com.dealercrest.page.SitePages;
-import com.dealercrest.page.ThemeFiles;
+import com.dealercrest.page.ThemeStore;
+import com.dealercrest.page.DealerTheme;
 import com.dealercrest.template.TemplateEngine;
 
 public class WebResources {
 
     private final ErrorPages errorPages;
-    private final Map<String, ThemeFiles> themes;
+    private final ThemeStore themeStore;
+    // private final Map<String, DealerTheme> themes;
     private final Map<String, SitePages> hostSites;
  
-    public WebResources(SitePages appPages, ErrorPages errorPages, Map<String, ThemeFiles> themesMap) {
-        this.themes = new HashMap<>(themesMap);
+    public WebResources(SitePages appPages, ErrorPages errorPages, ThemeStore themeStore) {
+        // this.themes = new HashMap<>(themesMap);
+        this.themeStore = themeStore;
         this.hostSites = new HashMap<>();
         this.errorPages = errorPages;
         addDealerPages(appPages);
     }
 
-    public ThemeFiles getTheme(String themeName) {
-        return themes.get(themeName);
+    public DealerTheme getTheme(String themeName) {
+        return themeStore.getTheme(themeName);
     }
 
-    public void addTheme(ThemeFiles theme) {
-        themes.put(theme.getThemeName(), theme);
+    public void addTheme(DealerTheme theme) {
+        themeStore.addTheme(theme);
     }
 
     public SitePages getDealerPages(String hostId) {
@@ -61,13 +64,6 @@ public class WebResources {
             JarScanner jarResource = new JarScanner();
             return jarResource.scan(jar, domain, templateEngine);
         }
-        // Path localWebApp = localBase.resolve("webapp");
-        // if (Files.isDirectory(localWebApp)) {
-        //     LocalScanner localResource = new LocalScanner();
-        //     return localResource.scan(localWebApp, domain, templateEngine);
-        // }
-        // JarScanner jarResource = new JarScanner();
-        // return jarResource.scan(localWebApp, domain);
     }
  
 }

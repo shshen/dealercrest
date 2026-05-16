@@ -1,45 +1,91 @@
 <!-- fragment: pages/inventory.html -->
+<!-- Uses SVG sprite from parent index.html for brand logos and UI icons -->
 <style>
-.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
-.v-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s,box-shadow .15s}
-.v-card:hover{border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}
-.v-img{height:140px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:44px;border-bottom:1px solid var(--border)}
-.v-body{padding:14px 16px}
-.v-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
-.v-price{font-size:16px;font-weight:700;color:var(--green);margin-bottom:8px}
-.v-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
-.v-tag{font-size:11px;background:var(--bg);border:1px solid var(--border);padding:2px 7px;border-radius:20px;color:var(--text-2)}
-.v-footer{display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--border-light);background:var(--bg)}
-.v-footer .btn{flex:1;justify-content:center}
-.filter-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.search-wrap{position:relative;display:flex;align-items:center}
-.search-wrap svg{position:absolute;left:10px;width:14px;height:14px;color:var(--text-3);pointer-events:none}
-.search-wrap input{padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;width:200px}
-.search-wrap input:focus{border-color:var(--green)}
-.filter-sel{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;cursor:pointer}
-.view-toggle{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-left:auto}
-.vt-btn{width:34px;height:34px;border:none;background:var(--surface);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);transition:background .12s}
-.vt-btn:last-child{border-right:none}
-.vt-btn.active{background:var(--bg);color:var(--text)}
-.vt-btn svg{width:15px;height:15px;display:block}
-@media(max-width:600px){.inv-grid{grid-template-columns:1fr 1fr}.search-wrap input{width:140px}}
-@media(max-width:400px){.inv-grid{grid-template-columns:1fr}}
+/* Brand icon container */
+.brand-icon{
+  width:48px; height:48px; border-radius:var(--radius-sm);
+  background:var(--bg); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; color:var(--text-2);
+}
+.brand-icon svg{ width:36px; height:20px; display:block; }
+.brand-icon.brand-toyota  { color:#eb0a1e; }
+.brand-icon.brand-honda   { color:#cc0000; }
+.brand-icon.brand-ford    { color:#003478; }
+.brand-icon.brand-chevrolet{ color:#c8a876; }
+.brand-icon.brand-bmw     { color:#1c69d4; }
+.brand-icon.brand-mercedes{ color:#666; }
+.brand-icon.brand-audi    { color:#bb0a14; }
+.brand-icon.brand-hyundai { color:#002c5f; }
+.brand-icon.brand-kia     { color:#05141f; }
+.brand-icon.brand-nissan  { color:#c3002f; }
+.brand-icon.brand-subaru  { color:#003399; }
+.brand-icon.brand-tesla   { color:#cc0000; }
+.brand-icon.brand-generic { color:var(--text-3); }
+
+/* List view */
+.inv-list{ display:flex; flex-direction:column; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--surface); }
+.inv-list-item{ display:flex; align-items:center; gap:14px; padding:12px 20px; border-bottom:1px solid var(--border-light); transition:background .12s; }
+.inv-list-item:last-child{ border-bottom:none; }
+.inv-list-item:hover{ background:#fafafa; }
+.inv-list-info{ flex:1; min-width:0; }
+.inv-list-title{ font-size:14px; font-weight:600; color:var(--text); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.inv-list-meta{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.inv-meta-tag{ font-size:12px; color:var(--text-3); }
+.inv-meta-sep{ color:var(--border); }
+.inv-list-price{ font-size:15px; font-weight:700; color:var(--green); flex-shrink:0; min-width:76px; text-align:right; }
+.inv-list-status{ flex-shrink:0; min-width:70px; text-align:right; }
+.inv-list-actions{ display:flex; gap:6px; flex-shrink:0; }
+
+/* Grid view */
+.inv-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
+.inv-grid-item{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:border-color .15s, box-shadow .15s; }
+.inv-grid-item:hover{ border-color:var(--green); box-shadow:0 0 0 3px var(--green-light); }
+.inv-grid-header{ height:110px; background:var(--bg); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:center; }
+.inv-grid-header .brand-icon{ width:64px; height:64px; border:none; background:transparent; }
+.inv-grid-header .brand-icon svg{ width:52px; height:28px; }
+.inv-grid-body{ padding:12px 14px; }
+.inv-grid-title{ font-size:13.5px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.inv-grid-price{ font-size:15px; font-weight:700; color:var(--green); margin-bottom:6px; }
+.inv-grid-tags{ display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; }
+.v-tag{ font-size:11px; background:var(--bg); border:1px solid var(--border); padding:2px 7px; border-radius:20px; color:var(--text-2); }
+.inv-grid-foot{ display:flex; gap:6px; padding:10px 14px; border-top:1px solid var(--border-light); background:var(--bg); }
+.inv-grid-foot .btn{ flex:1; justify-content:center; }
+
+/* Filter bar */
+.filter-bar{ display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.search-wrap{ position:relative; display:flex; align-items:center; }
+.search-wrap svg{ position:absolute; left:10px; width:14px; height:14px; color:var(--text-3); pointer-events:none; display:block; }
+.search-wrap input{ padding:9px 12px 9px 34px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:var(--font); font-size:13px; color:var(--text); background:var(--surface); outline:none; transition:border-color .15s; width:200px; }
+.search-wrap input:focus{ border-color:var(--green); }
+.filter-sel{ padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:var(--font); font-size:13px; color:var(--text); background:var(--surface); outline:none; cursor:pointer; }
+.view-toggle{ display:flex; border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; margin-left:auto; flex-shrink:0; }
+.vt-btn{ width:36px; height:36px; border:none; background:var(--surface); color:var(--text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; border-right:1px solid var(--border); transition:background .12s, color .12s; }
+.vt-btn:last-child{ border-right:none; }
+.vt-btn.active{ background:var(--bg); color:var(--text); }
+.vt-btn svg{ width:15px; height:15px; display:block; }
+
+@media(max-width:700px){
+  .hide-sm{ display:none; }
+  .inv-list-item{ gap:10px; padding:10px 14px; }
+  .search-wrap input{ width:140px; }
+}
 </style>
 
 <div class="page">
   <div class="page-header">
-    <div>
+    <div class="page-header-title">
       <div class="page-title">Inventory</div>
       <div class="page-sub">134 vehicles listed · 12 pending review</div>
     </div>
     <div class="page-header-actions">
-      <button class="btn btn-secondary btn-sm">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Import
+      <button class="btn btn-secondary">
+        <svg width="15" height="15"><use href="#icon-upload"/></svg>
+        <span class="btn-label">Import</span>
       </button>
-      <button class="btn btn-primary btn-sm">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add vehicle
+      <button class="btn btn-primary" onclick="navigate('inventory-add')">
+        <svg width="15" height="15"><use href="#icon-plus"/></svg>
+        <span class="btn-label">Add vehicle</span>
       </button>
     </div>
   </div>
@@ -52,31 +98,242 @@
       <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value">12</div><div class="stat-delta down">Review needed</div></div>
     </div>
 
-    <div class="filter-row">
+    <div class="filter-bar">
       <div class="search-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" placeholder="Search vehicles…">
+        <svg><use href="#icon-search"/></svg>
+        <input type="text" placeholder="Search vehicles…" oninput="filterVehicles(this.value)">
       </div>
-      <select class="filter-sel"><option>All types</option><option>New</option><option>Used</option><option>CPO</option></select>
-      <select class="filter-sel"><option>All makes</option><option>Toyota</option><option>Honda</option><option>Ford</option></select>
+      <select class="filter-sel">
+        <option value="">All types</option>
+        <option>New</option><option>Used</option><option>CPO</option>
+      </select>
+      <select class="filter-sel">
+        <option value="">All makes</option>
+        <option>Toyota</option><option>Honda</option><option>Ford</option>
+        <option>Chevrolet</option><option>BMW</option><option>Mercedes</option>
+      </select>
       <div class="view-toggle">
-        <button class="vt-btn active" title="Grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
-        <button class="vt-btn" title="List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <button class="vt-btn" id="btnGrid" title="Grid" onclick="setView('grid')">
+          <svg><use href="#icon-dashboard"/></svg>
+        </button>
+        <button class="vt-btn active" id="btnList" title="List" onclick="setView('list')">
+          <svg width="15" height="15"><use href="#icon-list"/></svg>
+        </button>
       </div>
     </div>
 
-    <div class="inv-grid">
-      <div class="v-card"><div class="v-img">🚗</div><div class="v-body"><div class="v-title">2023 Toyota Camry LE</div><div class="v-price">$27,500</div><div class="v-tags"><span class="v-tag">12,400 mi</span><span class="v-tag">Used</span><span class="v-tag">Silver</span></div><span class="badge badge-green">Active</span></div><div class="v-footer"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="v-card"><div class="v-img">🚙</div><div class="v-body"><div class="v-title">2022 Honda CR-V EX-L</div><div class="v-price">$31,200</div><div class="v-tags"><span class="v-tag">8,100 mi</span><span class="v-tag">CPO</span><span class="v-tag">Blue</span></div><span class="badge badge-green">Active</span></div><div class="v-footer"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="v-card"><div class="v-img">🚘</div><div class="v-body"><div class="v-title">2024 Ford Mustang GT</div><div class="v-price">$44,900</div><div class="v-tags"><span class="v-tag">1,200 mi</span><span class="v-tag">New</span><span class="v-tag">Red</span></div><span class="badge badge-green">Active</span></div><div class="v-footer"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="v-card"><div class="v-img">🚐</div><div class="v-body"><div class="v-title">2021 Toyota RAV4 XLE</div><div class="v-price">$29,800</div><div class="v-tags"><span class="v-tag">22,000 mi</span><span class="v-tag">Used</span><span class="v-tag">White</span></div><span class="badge badge-yellow">Pending</span></div><div class="v-footer"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="v-card"><div class="v-img">🚛</div><div class="v-body"><div class="v-title">2024 Ford F-150 XLT</div><div class="v-price">$52,100</div><div class="v-tags"><span class="v-tag">340 mi</span><span class="v-tag">New</span><span class="v-tag">Black</span></div><span class="badge badge-green">Active</span></div><div class="v-footer"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="v-card"><div class="v-img">🚗</div><div class="v-body"><div class="v-title">2023 Honda Accord Sport</div><div class="v-price">$30,450</div><div class="v-tags"><span class="v-tag">5,800 mi</span><span class="v-tag">CPO</span><span class="v-tag">Gray</span></div><span class="badge badge-green">Active</span></div><div class="v-footer"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
+    <!-- LIST VIEW (default) -->
+    <div class="inv-list" id="listView">
+
+      <div class="inv-list-item" data-title="2023 Toyota Camry LE">
+        <div class="brand-icon brand-toyota">
+          <svg><use href="#brand-toyota"/></svg>
+        </div>
+        <div class="inv-list-info">
+          <div class="inv-list-title">2023 Toyota Camry LE</div>
+          <div class="inv-list-meta">
+            <span class="inv-meta-tag">12,400 mi</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Silver</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Auto</span><span class="inv-meta-sep">·</span>
+            <span class="badge badge-gray" style="font-size:11px">Used</span>
+          </div>
+        </div>
+        <div class="inv-list-price">$27,500</div>
+        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
+        <div class="inv-list-actions">
+          <button class="btn btn-secondary btn-sm">Edit</button>
+          <button class="btn btn-ghost btn-sm hide-sm">View</button>
+        </div>
+      </div>
+
+      <div class="inv-list-item" data-title="2022 Honda CR-V EX-L">
+        <div class="brand-icon brand-honda">
+          <svg><use href="#brand-honda"/></svg>
+        </div>
+        <div class="inv-list-info">
+          <div class="inv-list-title">2022 Honda CR-V EX-L</div>
+          <div class="inv-list-meta">
+            <span class="inv-meta-tag">8,100 mi</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Blue</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">AWD</span><span class="inv-meta-sep">·</span>
+            <span class="badge badge-blue" style="font-size:11px">CPO</span>
+          </div>
+        </div>
+        <div class="inv-list-price">$31,200</div>
+        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
+        <div class="inv-list-actions">
+          <button class="btn btn-secondary btn-sm">Edit</button>
+          <button class="btn btn-ghost btn-sm hide-sm">View</button>
+        </div>
+      </div>
+
+      <div class="inv-list-item" data-title="2024 Ford Mustang GT">
+        <div class="brand-icon brand-ford">
+          <svg><use href="#brand-ford"/></svg>
+        </div>
+        <div class="inv-list-info">
+          <div class="inv-list-title">2024 Ford Mustang GT</div>
+          <div class="inv-list-meta">
+            <span class="inv-meta-tag">1,200 mi</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Red</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Manual</span><span class="inv-meta-sep">·</span>
+            <span class="badge badge-green" style="font-size:11px">New</span>
+          </div>
+        </div>
+        <div class="inv-list-price">$44,900</div>
+        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
+        <div class="inv-list-actions">
+          <button class="btn btn-secondary btn-sm">Edit</button>
+          <button class="btn btn-ghost btn-sm hide-sm">View</button>
+        </div>
+      </div>
+
+      <div class="inv-list-item" data-title="2021 Toyota RAV4 XLE">
+        <div class="brand-icon brand-toyota">
+          <svg><use href="#brand-toyota"/></svg>
+        </div>
+        <div class="inv-list-info">
+          <div class="inv-list-title">2021 Toyota RAV4 XLE</div>
+          <div class="inv-list-meta">
+            <span class="inv-meta-tag">22,000 mi</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">White</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">AWD</span><span class="inv-meta-sep">·</span>
+            <span class="badge badge-gray" style="font-size:11px">Used</span>
+          </div>
+        </div>
+        <div class="inv-list-price">$29,800</div>
+        <div class="inv-list-status hide-sm"><span class="badge badge-yellow">Pending</span></div>
+        <div class="inv-list-actions">
+          <button class="btn btn-secondary btn-sm">Edit</button>
+          <button class="btn btn-ghost btn-sm hide-sm">View</button>
+        </div>
+      </div>
+
+      <div class="inv-list-item" data-title="2024 Ford F-150 XLT">
+        <div class="brand-icon brand-ford">
+          <svg><use href="#brand-ford"/></svg>
+        </div>
+        <div class="inv-list-info">
+          <div class="inv-list-title">2024 Ford F-150 XLT</div>
+          <div class="inv-list-meta">
+            <span class="inv-meta-tag">340 mi</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Black</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">4WD</span><span class="inv-meta-sep">·</span>
+            <span class="badge badge-green" style="font-size:11px">New</span>
+          </div>
+        </div>
+        <div class="inv-list-price">$52,100</div>
+        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
+        <div class="inv-list-actions">
+          <button class="btn btn-secondary btn-sm">Edit</button>
+          <button class="btn btn-ghost btn-sm hide-sm">View</button>
+        </div>
+      </div>
+
+      <div class="inv-list-item" data-title="2023 Honda Accord Sport">
+        <div class="brand-icon brand-honda">
+          <svg><use href="#brand-honda"/></svg>
+        </div>
+        <div class="inv-list-info">
+          <div class="inv-list-title">2023 Honda Accord Sport</div>
+          <div class="inv-list-meta">
+            <span class="inv-meta-tag">5,800 mi</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Gray</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Auto</span><span class="inv-meta-sep">·</span>
+            <span class="badge badge-blue" style="font-size:11px">CPO</span>
+          </div>
+        </div>
+        <div class="inv-list-price">$30,450</div>
+        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
+        <div class="inv-list-actions">
+          <button class="btn btn-secondary btn-sm">Edit</button>
+          <button class="btn btn-ghost btn-sm hide-sm">View</button>
+        </div>
+      </div>
+
+      <div class="inv-list-item" data-title="2023 BMW 3 Series">
+        <div class="brand-icon brand-bmw">
+          <svg><use href="#brand-bmw"/></svg>
+        </div>
+        <div class="inv-list-info">
+          <div class="inv-list-title">2023 BMW 3 Series</div>
+          <div class="inv-list-meta">
+            <span class="inv-meta-tag">9,300 mi</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Navy</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">AWD</span><span class="inv-meta-sep">·</span>
+            <span class="badge badge-blue" style="font-size:11px">CPO</span>
+          </div>
+        </div>
+        <div class="inv-list-price">$41,800</div>
+        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
+        <div class="inv-list-actions">
+          <button class="btn btn-secondary btn-sm">Edit</button>
+          <button class="btn btn-ghost btn-sm hide-sm">View</button>
+        </div>
+      </div>
+
+      <div class="inv-list-item" data-title="2022 Tesla Model 3">
+        <div class="brand-icon brand-tesla">
+          <svg><use href="#brand-tesla"/></svg>
+        </div>
+        <div class="inv-list-info">
+          <div class="inv-list-title">2022 Tesla Model 3</div>
+          <div class="inv-list-meta">
+            <span class="inv-meta-tag">18,400 mi</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">White</span><span class="inv-meta-sep">·</span>
+            <span class="inv-meta-tag">Electric</span><span class="inv-meta-sep">·</span>
+            <span class="badge badge-gray" style="font-size:11px">Used</span>
+          </div>
+        </div>
+        <div class="inv-list-price">$34,900</div>
+        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
+        <div class="inv-list-actions">
+          <button class="btn btn-secondary btn-sm">Edit</button>
+          <button class="btn btn-ghost btn-sm hide-sm">View</button>
+        </div>
+      </div>
+
+    </div><!-- /inv-list -->
+
+    <!-- GRID VIEW (toggled) -->
+    <div class="inv-grid" id="gridView" style="display:none">
+      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-toyota"><svg><use href="#brand-toyota"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2023 Toyota Camry LE</div><div class="inv-grid-price">$27,500</div><div class="inv-grid-tags"><span class="v-tag">12,400 mi</span><span class="v-tag">Used</span><span class="v-tag">Silver</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
+      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-honda"><svg><use href="#brand-honda"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2022 Honda CR-V EX-L</div><div class="inv-grid-price">$31,200</div><div class="inv-grid-tags"><span class="v-tag">8,100 mi</span><span class="v-tag">CPO</span><span class="v-tag">Blue</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
+      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-ford"><svg><use href="#brand-ford"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2024 Ford Mustang GT</div><div class="inv-grid-price">$44,900</div><div class="inv-grid-tags"><span class="v-tag">1,200 mi</span><span class="v-tag">New</span><span class="v-tag">Red</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
+      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-toyota"><svg><use href="#brand-toyota"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2021 Toyota RAV4 XLE</div><div class="inv-grid-price">$29,800</div><div class="inv-grid-tags"><span class="v-tag">22,000 mi</span><span class="v-tag">Used</span><span class="v-tag">White</span></div><span class="badge badge-yellow">Pending</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
+      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-bmw"><svg><use href="#brand-bmw"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2023 BMW 3 Series</div><div class="inv-grid-price">$41,800</div><div class="inv-grid-tags"><span class="v-tag">9,300 mi</span><span class="v-tag">CPO</span><span class="v-tag">Navy</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
+      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-tesla"><svg><use href="#brand-tesla"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2022 Tesla Model 3</div><div class="inv-grid-price">$34,900</div><div class="inv-grid-tags"><span class="v-tag">18,400 mi</span><span class="v-tag">Used</span><span class="v-tag">White</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
     </div>
 
-    <div class="pagination" style="margin-top:20px">
-      <span class="pagination-info">Showing 6 of 134 vehicles</span>
-      <div class="pagination-btns"><button class="btn btn-secondary btn-sm">← Previous</button><button class="btn btn-secondary btn-sm">Next →</button></div>
+    <div class="pagination" style="margin-top:16px">
+      <span class="pagination-info">Showing 8 of 134 vehicles</span>
+      <div class="pagination-btns">
+        <button class="btn btn-secondary btn-sm">← Previous</button>
+        <button class="btn btn-secondary btn-sm">Next →</button>
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+let currentView = 'list';
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('listView').style.display  = v === 'list' ? '' : 'none';
+  document.getElementById('gridView').style.display  = v === 'grid' ? '' : 'none';
+  document.getElementById('btnList').classList.toggle('active', v === 'list');
+  document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
+}
+
+function filterVehicles(q) {
+  const lq = q.toLowerCase();
+  document.querySelectorAll('.inv-list-item').forEach(r => {
+    r.style.display = r.dataset.title.toLowerCase().includes(lq) ? '' : 'none';
+  });
+  document.querySelectorAll('.inv-grid-item').forEach(r => {
+    const t = r.querySelector('.inv-grid-title');
+    if (t) r.style.display = t.textContent.toLowerCase().includes(lq) ? '' : 'none';
+  });
+}
+</script>

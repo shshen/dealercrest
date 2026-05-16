@@ -29,41 +29,86 @@
   --shadow-md:    0 4px 16px rgba(0,0,0,.12);
 }
 
-/* ── Page wrapper ── */
+/* ── Page wrapper — fills contentPane and owns its own scroll ── */
 .page {
-  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;       /* critical: allows flex child to shrink below content size */
   font-family: var(--font);
   font-size: 14px;
   color: var(--text);
+  overflow: hidden;    /* page itself clips; page-body scrolls */
 }
 
-/* ── Page header (sticky) ── */
+/* ── Page header — fixed row, never scrolls ── */
 .page-header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   padding: 0 28px;
   display: flex;
   align-items: center;
-  min-height: 64px;
-  gap: 16px;
-  flex-wrap: wrap;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  height: 64px;
+  gap: 12px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  flex-shrink: 0;    /* never shrinks — stays at 64px always */
 }
-.page-title { font-size: 20px; font-weight: 700; color: var(--text); }
-.page-sub   { font-size: 13px; color: var(--text-2); margin-top: 1px; }
+
+/* Title block: shrinks before actions do */
+.page-header-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;           /* allow text truncation */
+  flex-shrink: 1;
+}
+.page-title {
+  font-size: 20px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.page-sub {
+  font-size: 13px; color: var(--text-2); margin-top: 1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Actions: never shrink, push to the right */
 .page-header-actions {
   margin-left: auto;
   display: flex;
   align-items: center;
+  gap: 8px;
+  flex-shrink: 0;         /* actions never shrink */
+  flex-wrap: nowrap;
+}
+
+/* Button text labels hide on narrow screens; icon-only via .btn-icon-only */
+.btn-label { display: inline; }  /* shown by default */
+
+
+/* ── Page header nav row (back button + title, horizontal) ── */
+.page-header-nav {
+  display: flex;
+  align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
-  padding: 10px 0;
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+}
+.page-header-nav .detail-title {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 /* ── Page body ── */
-.page-body { padding: 28px; }
+.page-body {
+  padding: 28px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable; /* reserves gutter always — no layout shift when scrollbar appears */
+}
 
 /* ── Buttons ── */
 .btn {
@@ -240,18 +285,40 @@ tbody tr:hover   { background: #fafafa; }
 @media (max-width: 900px) {
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .page-header { padding: 0 20px; }
-  .page-body   { padding: 20px; }
-}
-@media (max-width: 600px) {
-  .page-header { padding: 0 16px; min-height: 56px; }
-  .page-body   { padding: 16px; }
+  .page-body   { padding: 20px; overflow-y: auto; }
+  /* Hide the subtitle on tablet to keep header single-row */
+  .page-sub    { display: none; }
   .page-title  { font-size: 18px; }
+}
+
+@media (max-width: 680px) {
+  .page-header { padding: 0 16px; gap: 8px; }
+  .page-body   { padding: 16px; overflow-y: auto; }
+  .page-title  { font-size: 16px; }
+  /* Hide button text labels — show icon only */
+  .btn-label   { display: none; }
+  /* Shrink buttons to icon-only squares */
+  .page-header-actions .btn {
+    padding: 8px 10px;
+    gap: 0;
+    min-width: 36px;
+    justify-content: center;
+  }
+  /* Hide secondary buttons entirely if still overflowing */
+  .page-header-actions .btn-secondary {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header { padding: 0 12px; gap: 6px; }
   .stats-grid  { grid-template-columns: 1fr 1fr; }
   .stat-value  { font-size: 22px; }
   th, td       { padding: 10px 12px; }
-  .btn         { padding: 8px 14px; font-size: 13px; }
-  .btn-sm      { padding: 5px 10px; font-size: 12px; }
+  .btn         { padding: 8px 12px; font-size: 13px; }
+  .btn-sm      { padding: 5px 9px; font-size: 12px; }
 }
+
 @media (max-width: 400px) {
-  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid  { grid-template-columns: 1fr; }
 }

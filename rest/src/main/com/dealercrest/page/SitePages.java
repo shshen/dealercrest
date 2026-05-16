@@ -23,6 +23,10 @@ public class SitePages {
         return hostId;
     }
 
+    public boolean hasPage(String resourcePath) {
+        return pages.containsKey(resourcePath) || layouts.containsKey(resourcePath);
+    }
+
     public void addPage(Page page) {
         String resourcePath = page.getResourcePath();
         if ( resourcePath.endsWith(".html") ) {
