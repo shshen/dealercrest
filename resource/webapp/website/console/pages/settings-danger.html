@@ -1,0 +1,29 @@
+<!-- fragment: pages/settings-danger.html -->
+<style>
+.danger-zone{border:1px solid #f4bdb8;border-radius:var(--radius);overflow:hidden;margin-top:12px}
+.danger-head{background:var(--danger-bg);padding:12px 16px;font-size:13px;font-weight:600;color:var(--danger)}
+.danger-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f4bdb8;gap:16px;flex-wrap:wrap}
+.danger-item:last-child{border-bottom:none}
+.danger-item-title{font-size:13.5px;font-weight:500;color:var(--text)}
+.danger-item-desc{font-size:12px;color:var(--text-3);margin-top:2px}
+</style>
+<div class="page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-parent" onclick="navigate('settings')">Settings</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Danger Zone</span>
+    </div>
+  </div>
+  <div class="page-body">
+    <div >
+      <div class="alert alert-yellow">These actions are irreversible. Please proceed with caution.</div>
+      <div class="danger-zone">
+        <div class="danger-head">⚠ Destructive actions</div>
+        <div class="danger-item"><div><div class="danger-item-title">Reset website to default</div><div class="danger-item-desc">Clears all page content and returns to the blank starter template</div></div><button class="btn btn-danger btn-sm">Reset site</button></div>
+        <div class="danger-item"><div><div class="danger-item-title">Delete all leads</div><div class="danger-item-desc">Permanently removes all 248 lead records from this account</div></div><button class="btn btn-danger btn-sm">Delete leads</button></div>
+        <div class="danger-item"><div><div class="danger-item-title">Delete account</div><div class="danger-item-desc">Permanently deletes your DealerCrest account, all sites, and all data</div></div><button class="btn btn-danger btn-sm">Delete account</button></div>
+      </div>
+    </div>
+  </div>
+</div>

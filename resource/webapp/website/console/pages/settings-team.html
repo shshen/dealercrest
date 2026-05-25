@@ -1,0 +1,35 @@
+<!-- fragment: pages/settings-team.html -->
+<style>
+.member-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-light)}
+.member-row:last-child{border-bottom:none}
+.member-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.member-info{flex:1;min-width:0}
+.member-name{font-size:13.5px;font-weight:600;color:var(--text)}
+.member-email{font-size:12px;color:var(--text-3)}
+.member-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+</style>
+<div class="page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-parent" onclick="navigate('settings')">Settings</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Team</span>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary">
+        <svg width="14" height="14"><use href="#icon-plus"/></svg>
+        <span class="btn-label">Invite member</span>
+      </button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="card" >
+      <div class="card-header"><div class="card-title">Members · 3</div></div>
+      <div class="card-body" style="padding:8px 20px">
+        <div class="member-row"><div class="member-av" style="background:#3b5bdb">AT</div><div class="member-info"><div class="member-name">Alex Thompson</div><div class="member-email">alex@autotrader.com</div></div><div class="member-actions"><span class="badge badge-green">Owner</span><span class="badge badge-green">Active</span></div></div>
+        <div class="member-row"><div class="member-av" style="background:#0891b2">ML</div><div class="member-info"><div class="member-name">Maria Lopez</div><div class="member-email">m.lopez@autotrader.com</div></div><div class="member-actions"><span class="badge badge-blue">Editor</span><span class="badge badge-green">Active</span><button class="btn btn-ghost btn-sm">Remove</button></div></div>
+        <div class="member-row"><div class="member-av" style="background:#7c3aed">SN</div><div class="member-info"><div class="member-name">Sam Nguyen</div><div class="member-email">snguyen@autotrader.com</div></div><div class="member-actions"><span class="badge badge-gray">Viewer</span><span class="badge badge-yellow">Invited</span><button class="btn btn-ghost btn-sm">Resend</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>

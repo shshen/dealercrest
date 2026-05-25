@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DealerCrest Console</title>
 <!-- shared design-system — loaded ONCE here, available to every fragment -->
+<script src="/script/mockApi.js"></script>
+<script src="/script/pageUtils.js"></script>
+<!-- shared design-system — loaded ONCE here, available to every fragment -->
 <link rel="stylesheet" href="/style/shared.css">
 <style>
 /* Shell-only layout styles */
@@ -138,12 +141,11 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);ba
   <!-- ══ UI ICONS ══ stroke-based, currentColor ══ -->
 
   <!-- Car / Inventory — proper side-profile silhouette -->
-  <symbol id="icon-inventory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/>
-    <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/>
-    <path d="M5 17H3V13L5 7h11l3 4h1a1 1 0 0 1 1 1v5h-2"/>
-    <path d="M5 17h10"/>
-    <path d="M9 7l-1 4h7l-2-4z"/>
+  <symbol id="icon-inventory" viewBox="0 0 512 512" stroke="currentColor" stroke-width="2">
+    <path d="M461 204 429 90a80 80 0 0 0-77-58H160c-35 0-67 24-77 58L51 204a95 95 0 0 0-51 84v176q2 15 15 16c13 1 15-7 15-16v-48h448v48q2 15 15 16 
+        14-1 15-16V288c3-37-17-69-47-84M114 99c6-21 24-35 46-35h192c21 0 40 14 46 35l27 94-10-1H96l-9 1zm365 253c0 18-14 32-32 32H64c-18 
+        0-32-14-32-32v-64c0-35 29-64 64-64h319c35 0 64 29 64 64zm-375-80c-13 0-23 11-23 24s10 24 23 24 23-11 23-24-10-24-23-24m303 0c-13 
+        0-23 11-23 24s11 24 23 24 23-11 23-24-9-24-23-24"/>
   </symbol>
 
   <symbol id="icon-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -183,7 +185,11 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);ba
 
   <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="3"/>
-    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 
+        01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 
+        00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 
+        4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 
+        1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
   </symbol>
 
   <symbol id="icon-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -260,7 +266,8 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);ba
     <polyline points="9 22 9 12 15 12 15 22"/>
   </symbol>
   <symbol id="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .18h3a2 2 0 012 
+        1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
   </symbol>
   <symbol id="icon-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="10"/>
@@ -464,7 +471,8 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);ba
 
   <!-- Phone call log -->
   <symbol id="icon-call" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 
+        1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
   </symbol>
 
   <!-- SMS / message bubble -->
@@ -587,12 +595,6 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);ba
     <div class="logo-mark">DC</div>
     <span class="logo-text">DealerCrest</span>
   </div>
-  <div class="t-sep"></div>
-  <div class="store-pill">
-    <div class="store-av">AT</div>
-    <span class="store-name">AutoTrader SaaS</span>
-    <svg width="10" height="10" style="flex-shrink:0;margin-left:2px;color:rgba(255,255,255,.45)"><use href="#icon-chevron-down"/></svg>
-  </div>
   <div class="t-gap"></div>
   <div style="display:flex;align-items:center;gap:4px">
     <button class="t-btn" title="Notifications">
@@ -601,7 +603,11 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);ba
     <button class="t-btn" title="Help">
       <svg width="16" height="16"><use href="#icon-help"/></svg>
     </button>
-    <div class="u-av">AT</div>
+    <div class="store-pill">
+        <div class="store-av">AT</div>
+        <span class="store-name">AutoTrader SaaS</span>
+        <svg width="10" height="10" style="flex-shrink:0;margin-left:2px;color:rgba(255,255,255,.45)"><use href="#icon-chevron-down"/></svg>
+      </div>
   </div>
 </header>
 
@@ -663,10 +669,10 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);ba
 
       <div class="sb-divider"></div>
 
-      <button class="nav-item" data-page="reviews" data-label="Reviews" onclick="navigate('reviews')">
+      <!-- <button class="nav-item" data-page="reviews" data-label="Reviews" onclick="navigate('reviews')">
         <span class="nav-icon"><svg width="17" height="17"><use href="#icon-star"/></svg></span>
         <span class="nav-label">Reviews</span>
-      </button>
+      </button> -->
 
       <button class="nav-item" data-page="domains" data-label="Domains" onclick="navigate('domains')">
         <span class="nav-icon"><svg width="17" height="17"><use href="#icon-domains"/></svg></span>
@@ -712,7 +718,13 @@ const PAGES = {
   analytics: {file:'pages/analytics', label:'Analytics'},
   domains:   {file:'pages/domains',   label:'Domains'},
   billing:   {file:'pages/billing',   label:'Billing'},
-  settings:       {file:'pages/settings',       label:'Settings'},
+  settings:              {file:'pages/settings',              label:'Settings'},
+  'settings-general':    {file:'pages/settings-general',    label:'General'},
+  'settings-notifications':{file:'pages/settings-notifications',label:'Notifications'},
+  'settings-team':       {file:'pages/settings-team',       label:'Team'},
+  'settings-branding':   {file:'pages/settings-branding',   label:'Branding'},
+  'settings-integrations':{file:'pages/settings-integrations',label:'Integrations'},
+  'settings-danger':     {file:'pages/settings-danger',     label:'Danger Zone'},
   listings:      {file:'pages/listings',      label:'Listings'},
   appointments:  {file:'pages/appointments',  label:'Appointments'},
   reviews:       {file:'pages/reviews',       label:'Reviews'},
@@ -728,7 +740,16 @@ async function navigate(key, force) {
   if (key === currentPage && !force) { closeMobileSidebar(); return; }
 
   // Virtual sub-pages: keep their parent nav item highlighted
-  const navParent = { '_editor': 'website', 'inventory-add': 'inventory' };
+  const navParent = {
+    '_editor':                'website',
+    'inventory-add':          'inventory',
+    'settings-general':       'settings',
+    'settings-notifications': 'settings',
+    'settings-team':          'settings',
+    'settings-branding':      'settings',
+    'settings-integrations':  'settings',
+    'settings-danger':        'settings',
+  };
   const navKey = navParent[key] || key;
   document.querySelectorAll('.nav-item').forEach(el =>
     el.classList.toggle('active', el.dataset.page === navKey)

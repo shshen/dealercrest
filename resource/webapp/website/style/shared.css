@@ -86,14 +86,34 @@
 .btn-label { display: inline; }  /* shown by default */
 
 
-/* ── Page header nav row (back button + title, horizontal) ── */
-.page-header-nav {
+/* ── Page header breadcrumb (Parent › Current) ── */
+.breadcrumb {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
   min-width: 0;
   flex-shrink: 1;
   overflow: hidden;
+}
+.breadcrumb-parent {
+  font-size: 15px; font-weight: 500; color: var(--text-2);
+  cursor: pointer; white-space: nowrap;
+  transition: color .12s;
+  text-decoration: none;
+}
+.breadcrumb-parent:hover { color: var(--green); }
+.breadcrumb-sep {
+  font-size: 15px; color: var(--border);
+  margin: 0 8px; flex-shrink: 0; user-select: none;
+}
+.breadcrumb-current {
+  font-size: 15px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* Keep old page-header-nav as alias for backwards compat */
+.page-header-nav {
+  display: flex; align-items: center; gap: 10px;
+  min-width: 0; flex-shrink: 1; overflow: hidden;
 }
 .page-header-nav .detail-title {
   font-size: 17px; font-weight: 700; color: var(--text);

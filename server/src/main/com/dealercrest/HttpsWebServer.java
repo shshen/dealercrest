@@ -4,9 +4,9 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.channel.kqueue.KQueueIoHandler;
-import io.netty.channel.kqueue.KQueueServerSocketChannel;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
@@ -66,9 +66,9 @@ public class HttpsWebServer extends NettyServer {
         this.dataSource = DataSourceFactory.build(jdbcUrl, "dealerbase_app", "zhu88jie");
         // Configure the bootstrap.
         this.bossGroup = new MultiThreadIoEventLoopGroup(1, new PrefixThreadFactory("DealerCrestBossGroup"),
-                KQueueIoHandler.newFactory());
+                NioIoHandler.newFactory());
         this.workerGroup = new MultiThreadIoEventLoopGroup(1, new PrefixThreadFactory("DealerCrestWorkerGroup"),
-                KQueueIoHandler.newFactory());
+                NioIoHandler.newFactory());
     }
 
     @Override
@@ -84,7 +84,7 @@ public class HttpsWebServer extends NettyServer {
     private void startHttpServer(int port) {
         AcmeChallengeStore challengeStore = new AcmeChallengeStore(dataSource);
         ServerBootstrap httpBootstrap = new ServerBootstrap();
-        httpBootstrap.group(bossGroup, workerGroup).channel(KQueueServerSocketChannel.class)
+        httpBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 6000)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -131,7 +131,7 @@ public class HttpsWebServer extends NettyServer {
         CertificateManager certificateManager = new CertificateManager();
         Mapping<String, SslContext> sniMapping = certificateManager.getMapping();
         ServerBootstrap httpsBootstrap = new ServerBootstrap();
-        httpsBootstrap.group(bossGroup, workerGroup).channel(KQueueServerSocketChannel.class)
+        httpsBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 6000)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override

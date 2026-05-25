@@ -1,0 +1,205 @@
+<!-- fragment: pages/settings-integrations.html -->
+<style>
+.intg-head{display:flex;align-items:center;gap:12px;padding:14px 20px;cursor:pointer;transition:background .12s}
+.intg-head:hover{background:var(--bg)}
+.intg-body{padding:16px 20px;border-top:1px solid var(--border-light);background:var(--bg);display:none}
+.intg-body.open{display:block}
+.intg-logo{width:36px;height:36px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:11px}
+.intg-field{margin-bottom:14px}
+.intg-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.intg-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);margin:0 0 10px}
+.intg-section{margin-bottom:24px}
+</style>
+
+<div class="page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-parent" onclick="navigate('settings')">Settings</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Integrations</span>
+    </div>
+  </div>
+  <div class="page-body">
+    <div >
+
+      <!-- Analytics -->
+      <div class="intg-section">
+        <div class="intg-section-title">Website Analytics</div>
+        <div class="card">
+          <div class="intg-head" onclick="toggleIntg(this)">
+            <div class="intg-logo" style="background:#fff;border:1px solid var(--border)">📊</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text)">Google Analytics</div><div style="font-size:12px;color:var(--text-3)">Track page views, sessions, conversions</div></div>
+            <span class="badge badge-green">Connected</span>
+            <svg width="14" height="14" style="color:var(--text-3);flex-shrink:0;transition:transform .2s" class="intg-chevron"><use href="#icon-chevron-down"/></svg>
+          </div>
+          <div class="intg-body">
+            <div class="intg-field"><label class="form-label">Measurement ID</label><input type="text" class="form-input" value="G-XXXXXXXXXX" placeholder="G-XXXXXXXXXX" style="font-family:monospace"><div class="form-hint">Google Analytics → Admin → Data Streams</div></div>
+            <div class="intg-actions"><button class="btn btn-primary btn-sm" onclick="saveIntg(this,'ga','Google Analytics')"><svg width="13" height="13"><use href="#icon-check"/></svg> Save</button><button class="btn btn-danger btn-sm" onclick="disconnectIntg(this,'Google Analytics')">Disconnect</button></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="intg-head" onclick="toggleIntg(this)">
+            <div class="intg-logo" style="background:#1877f2;color:#fff">f</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text)">Facebook Pixel</div><div style="font-size:12px;color:var(--text-3)">Retarget visitors on Facebook &amp; Instagram</div></div>
+            <span class="badge badge-gray">Not connected</span>
+            <svg width="14" height="14" style="color:var(--text-3);flex-shrink:0;transition:transform .2s" class="intg-chevron"><use href="#icon-chevron-down"/></svg>
+          </div>
+          <div class="intg-body">
+            <div class="intg-field"><label class="form-label">Pixel ID</label><input type="text" class="form-input" placeholder="e.g. 1234567890123456" style="font-family:monospace"><div class="form-hint">Facebook Events Manager → Your Pixel → Settings</div></div>
+            <div class="intg-actions"><button class="btn btn-primary btn-sm" onclick="saveIntg(this,'fbpixel','Facebook Pixel')"><svg width="13" height="13"><use href="#icon-check"/></svg> Connect</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Marketplace -->
+      <div class="intg-section">
+        <div class="intg-section-title">Marketplace Listings</div>
+
+        <div class="card" style="margin-bottom:10px">
+          <div class="intg-head" onclick="toggleIntg(this)">
+            <div class="intg-logo" style="background:#1877f2;color:#fff;font-size:18px">f</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text)">Facebook Marketplace</div><div style="font-size:12px;color:var(--text-3)">Auto-sync inventory every 6h · Free</div></div>
+            <span class="badge badge-green">Connected</span>
+            <svg width="14" height="14" style="color:var(--text-3);flex-shrink:0;transition:transform .2s" class="intg-chevron"><use href="#icon-chevron-down"/></svg>
+          </div>
+          <div class="intg-body">
+            <div class="alert alert-blue" style="margin-bottom:12px;font-size:13px">Uses OAuth. Click "Authorize" to grant access without entering credentials manually.</div>
+            <div class="intg-field"><label class="form-label">Facebook Page ID</label><input type="text" class="form-input" value="112233445566" style="font-family:monospace"><div class="form-hint">Facebook Business Page → Settings → Page Info → Page ID</div></div>
+            <div class="intg-field"><label class="form-label">Access Token</label><input type="password" class="form-input" value="EAAxxxxxxxxxx"><div class="form-hint">Meta Business Suite → System Users → Generate Token</div></div>
+            <div class="intg-actions"><button class="btn btn-primary btn-sm" onclick="saveIntg(this,'fbmarket','Facebook Marketplace')"><svg width="13" height="13"><use href="#icon-check"/></svg> Save</button><button class="btn btn-secondary btn-sm">Authorize with Facebook</button><button class="btn btn-danger btn-sm" onclick="disconnectIntg(this,'Facebook Marketplace')">Disconnect</button></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:10px">
+          <div class="intg-head" onclick="toggleIntg(this)">
+            <div class="intg-logo" style="background:#e8f4fd;color:#0070cc">KSL</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text)">KSL Cars</div><div style="font-size:12px;color:var(--text-3)">Auto-sync every 12h · $49/mo</div></div>
+            <span class="badge badge-green">Connected</span>
+            <svg width="14" height="14" style="color:var(--text-3);flex-shrink:0;transition:transform .2s" class="intg-chevron"><use href="#icon-chevron-down"/></svg>
+          </div>
+          <div class="intg-body">
+            <div class="intg-field"><label class="form-label">Dealer Account ID</label><input type="text" class="form-input" value="KSL-98765" style="font-family:monospace"><div class="form-hint">KSL Dealer Portal → Account Settings</div></div>
+            <div class="intg-field"><label class="form-label">API Key</label><input type="password" class="form-input" value="ksl_live_xxxx"><div class="form-hint">KSL Dealer Portal → API Access → Generate Key</div></div>
+            <div class="intg-actions"><button class="btn btn-primary btn-sm" onclick="saveIntg(this,'ksl','KSL Cars')"><svg width="13" height="13"><use href="#icon-check"/></svg> Save</button><button class="btn btn-secondary btn-sm" onclick="testConn(this,'KSL')">Test connection</button><button class="btn btn-danger btn-sm" onclick="disconnectIntg(this,'KSL Cars')">Disconnect</button></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:10px">
+          <div class="intg-head" onclick="toggleIntg(this)">
+            <div class="intg-logo" style="background:#fff3e0;color:#e65100;font-size:9px">Cars.com</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text)">Cars.com</div><div style="font-size:12px;color:var(--text-3)">Auto-sync every 24h · $199/mo</div></div>
+            <span class="badge badge-green">Connected</span>
+            <svg width="14" height="14" style="color:var(--text-3);flex-shrink:0;transition:transform .2s" class="intg-chevron"><use href="#icon-chevron-down"/></svg>
+          </div>
+          <div class="intg-body">
+            <div class="intg-field"><label class="form-label">Dealer ID</label><input type="text" class="form-input" value="CARS-44231" style="font-family:monospace"><div class="form-hint">Cars.com Dealer Dashboard → Account → Dealer Info</div></div>
+            <div class="intg-field"><label class="form-label">API Key</label><input type="password" class="form-input" value="carscom_xxxx"><div class="form-hint">Cars.com Dealer Portal → Integrations → API Access</div></div>
+            <div class="intg-field"><label class="form-label">FTP Host <span style="color:var(--text-3);font-weight:400">(optional)</span></label><input type="text" class="form-input" placeholder="ftp.cars.com" style="font-family:monospace"><div class="form-hint">Only if using FTP feed instead of API</div></div>
+            <div class="intg-actions"><button class="btn btn-primary btn-sm" onclick="saveIntg(this,'carscom','Cars.com')"><svg width="13" height="13"><use href="#icon-check"/></svg> Save</button><button class="btn btn-secondary btn-sm" onclick="testConn(this,'Cars.com')">Test connection</button><button class="btn btn-danger btn-sm" onclick="disconnectIntg(this,'Cars.com')">Disconnect</button></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:10px">
+          <div class="intg-head" onclick="toggleIntg(this)">
+            <div class="intg-logo" style="background:#fff9e6;color:#f2a900;font-size:8px">AutoTrader</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text)">AutoTrader</div><div style="font-size:12px;color:var(--text-3)">From $299/mo</div></div>
+            <span class="badge badge-gray">Not connected</span>
+            <svg width="14" height="14" style="color:var(--text-3);flex-shrink:0;transition:transform .2s" class="intg-chevron"><use href="#icon-chevron-down"/></svg>
+          </div>
+          <div class="intg-body">
+            <div class="intg-field"><label class="form-label">Dealer Code</label><input type="text" class="form-input" placeholder="e.g. AT-123456" style="font-family:monospace"><div class="form-hint">AutoTrader Dealer Center → Account Settings</div></div>
+            <div class="intg-field"><label class="form-label">API Secret</label><input type="password" class="form-input" placeholder="AutoTrader API secret key"><div class="form-hint">AutoTrader Dealer Center → API Management → Create Secret</div></div>
+            <div class="intg-actions"><button class="btn btn-primary btn-sm" onclick="saveIntg(this,'autotrader','AutoTrader')"><svg width="13" height="13"><use href="#icon-check"/></svg> Connect</button></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="intg-head" onclick="toggleIntg(this)">
+            <div class="intg-logo" style="background:#e8f5e9;color:#2e7d32;font-size:9px">CarGurus</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text)">CarGurus</div><div style="font-size:12px;color:var(--text-3)">From $149/mo</div></div>
+            <span class="badge badge-gray">Not connected</span>
+            <svg width="14" height="14" style="color:var(--text-3);flex-shrink:0;transition:transform .2s" class="intg-chevron"><use href="#icon-chevron-down"/></svg>
+          </div>
+          <div class="intg-body">
+            <div class="intg-field"><label class="form-label">Partner ID</label><input type="text" class="form-input" placeholder="e.g. CG-78901" style="font-family:monospace"><div class="form-hint">CarGurus Dealer Dashboard → Account → Partner ID</div></div>
+            <div class="intg-field"><label class="form-label">API Key</label><input type="password" class="form-input" placeholder="CarGurus API key"><div class="form-hint">CarGurus Dealer Dashboard → API Access → Generate Key</div></div>
+            <div class="intg-actions"><button class="btn btn-primary btn-sm" onclick="saveIntg(this,'cargurus','CarGurus')"><svg width="13" height="13"><use href="#icon-check"/></svg> Connect</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRM -->
+      <div class="intg-section">
+        <div class="intg-section-title">CRM</div>
+        <div class="card">
+          <div class="intg-head" onclick="toggleIntg(this)">
+            <div class="intg-logo" style="background:#ff7a59;color:#fff;font-size:18px">🔗</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text)">HubSpot CRM</div><div style="font-size:12px;color:var(--text-3)">Sync leads automatically to your pipeline</div></div>
+            <span class="badge badge-gray">Not connected</span>
+            <svg width="14" height="14" style="color:var(--text-3);flex-shrink:0;transition:transform .2s" class="intg-chevron"><use href="#icon-chevron-down"/></svg>
+          </div>
+          <div class="intg-body">
+            <div class="intg-field"><label class="form-label">Private App Token</label><input type="password" class="form-input" placeholder="pat-na1-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"><div class="form-hint">HubSpot → Settings → Integrations → Private Apps → Create app → Copy token</div></div>
+            <div class="intg-actions"><button class="btn btn-primary btn-sm" onclick="saveIntg(this,'hubspot','HubSpot')"><svg width="13" height="13"><use href="#icon-check"/></svg> Connect</button><button class="btn btn-secondary btn-sm">Authorize with HubSpot</button></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleIntg(head) {
+  const card   = head.closest('.card');
+  const body   = card.querySelector('.intg-body');
+  const chev   = head.querySelector('.intg-chevron');
+  const isOpen = body.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.intg-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.intg-chevron').forEach(c => c.style.transform = '');
+  if (!isOpen) {
+    body.classList.add('open');
+    if (chev) chev.style.transform = 'rotate(180deg)';
+  }
+}
+
+function saveIntg(btn, id, name) {
+  const orig = btn.innerHTML; btn.disabled = true; btn.textContent = 'Saving…';
+  setTimeout(() => {
+    window.configuredPlatforms = window.configuredPlatforms || {};
+    window.configuredPlatforms[id] = true;
+    // Update badge in same card
+    const badge = btn.closest('.card').querySelector('.badge');
+    if (badge) { badge.className='badge badge-green'; badge.textContent='Connected'; }
+    btn.innerHTML = '<svg width="13" height="13"><use href="#icon-check"/></svg> Saved';
+    setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 1500);
+  }, 700);
+}
+
+function disconnectIntg(btn, name) {
+  if (!confirm('Disconnect ' + name + '? Syncing will stop immediately.')) return;
+  const badge = btn.closest('.card').querySelector('.badge');
+  if (badge) { badge.className='badge badge-gray'; badge.textContent='Not connected'; }
+  btn.closest('.intg-body').classList.remove('open');
+}
+
+function testConn(btn, name) {
+  const orig = btn.textContent; btn.disabled = true; btn.textContent = 'Testing…';
+  setTimeout(() => {
+    btn.textContent = '✓ Connected!';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1500);
+  }, 900);
+}
+
+// Auto-open if coming from Listings page
+if (window._pendingIntegration) {
+  const pending = window._pendingIntegration; window._pendingIntegration = null;
+  setTimeout(() => {
+    const heads = document.querySelectorAll('.intg-head');
+    heads.forEach(h => {
+      if (h.textContent.toLowerCase().includes(pending.toLowerCase())) toggleIntg(h);
+    });
+  }, 100);
+}
+</script>

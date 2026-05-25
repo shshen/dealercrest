@@ -1,0 +1,45 @@
+<!-- fragment: pages/settings-notifications.html -->
+<style>
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border-light);gap:20px}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info .tl{font-size:13.5px;font-weight:500;color:var(--text)}
+.toggle-info .td{font-size:12px;color:var(--text-3);margin-top:2px}
+</style>
+<div class="page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span class="breadcrumb-parent" onclick="navigate('settings')">Settings</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Notifications</span>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" onclick="navigate('settings')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSection(this)">
+        <svg width="14" height="14"><use href="#icon-check"/></svg>
+        <span class="btn-label">Save changes</span>
+      </button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="card" >
+      <div class="card-header"><div class="card-title">Email Notifications</div></div>
+      <div class="card-body">
+        <div class="toggle-row"><div class="toggle-info"><div class="tl">New lead received</div><div class="td">Get an email whenever a new lead submits a form</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="tl">Lead status changes</div><div class="td">Notify when a lead moves to Qualified or Closed</div></div><label class="toggle"><input type="checkbox"><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="tl">Weekly summary</div><div class="td">A digest of your weekly leads and website traffic every Monday</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="tl">Publish confirmations</div><div class="td">Email confirmation when a page is published to your live site</div></div><label class="toggle"><input type="checkbox"><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="tl">Domain alerts</div><div class="td">Notify when a domain is connected, expires, or has issues</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span><span class="toggle-thumb"></span></label></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function saveSection(btn) {
+  const orig = btn.innerHTML; btn.disabled = true;
+  btn.innerHTML = '<span class="btn-label">Saving…</span>';
+  setTimeout(() => {
+    btn.innerHTML = '<svg width="14" height="14"><use href="#icon-check"/></svg><span class="btn-label"> Saved</span>';
+    setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 1500);
+  }, 700);
+}
+</script>

@@ -70,6 +70,39 @@
 .time-slot.active{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:600}
 .time-slot.taken{background:var(--bg);color:var(--text-3);cursor:not-allowed;opacity:.5;text-decoration:line-through}
 
+/* ── Week view ── */
+.week-view{display:none}
+.week-view.active{display:block}
+.week-grid{display:grid;grid-template-columns:60px repeat(7,1fr);background:var(--surface);border-top:1px solid var(--border);border-left:1px solid var(--border)}
+.week-day-head{padding:10px 8px;text-align:center;border-bottom:1px solid var(--border);border-right:1px solid var(--border-light);border-top:0;background:var(--bg)}
+.week-day-head:last-child{border-right:none}
+.week-day-name{font-size:11.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px}
+.week-day-num{font-size:16px;font-weight:700;color:var(--text);margin-top:2px}
+.week-day-head.today .week-day-num{background:var(--blue);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;margin:2px auto 0}
+.week-time-col{font-size:11px;color:var(--text-3);text-align:right;padding:0 8px 0 4px;vertical-align:top;border-right:1px solid var(--border-light)}
+.week-row{display:contents}
+.week-cell{min-height:48px;border-right:1px solid var(--border-light);border-bottom:1px solid var(--border-light);padding:3px;position:relative}
+.week-cell:last-child{border-right:none}
+.week-appt{border-radius:3px;padding:2px 5px;font-size:11px;font-weight:600;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.week-time-label{font-size:11px;color:var(--text-3);padding:6px 8px 6px 4px;border-right:1px solid var(--border-light);border-bottom:1px solid var(--border-light);text-align:right;white-space:nowrap;background:var(--bg)}
+
+/* ── Day view ── */
+.day-view{display:none}
+.day-view.active{display:block}
+.day-timeline{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.day-head-row{display:flex;border-bottom:1px solid var(--border);background:var(--bg);padding:12px 20px;align-items:center;gap:12px}
+.day-head-date{font-size:16px;font-weight:700;color:var(--text)}
+.day-head-count{font-size:13px;color:var(--text-3)}
+.day-slot{display:flex;align-items:stretch;border-bottom:1px solid var(--border-light);min-height:52px}
+.day-slot:last-child{border-bottom:none}
+.day-slot-time{width:72px;flex-shrink:0;padding:8px 12px;font-size:11.5px;color:var(--text-3);font-weight:500;border-right:1px solid var(--border-light);display:flex;align-items:flex-start;padding-top:10px}
+.day-slot-content{flex:1;padding:4px 8px;position:relative}
+.day-appt-block{border-radius:4px;padding:6px 10px;margin-bottom:3px;cursor:pointer;transition:opacity .12s}
+.day-appt-block:hover{opacity:.85}
+.day-appt-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:1px}
+.day-appt-meta{font-size:11.5px;color:rgba(255,255,255,.8)}
+.day-slot.half-hour .day-slot-time{color:var(--border)}
+
 @media(max-width:900px){.cal-layout{grid-template-columns:1fr}.day-panel{display:none}}
 @media(max-width:600px){.cal-cell{min-height:60px}.cal-appt{display:none}}
 </style>
@@ -85,9 +118,9 @@
         <svg width="15" height="15"><use href="#icon-leads"/></svg>
         <span class="btn-label">View leads</span>
       </button>
-      <button class="btn btn-primary" onclick="openAddAppt()">
+      <button class="btn btn-primary" id="newApptBtn" onclick="toggleAddAppt()">
         <svg width="15" height="15"><use href="#icon-plus"/></svg>
-        <span class="btn-label">New appointment</span>
+        <span class="btn-label" id="newApptBtnLabel">New appointment</span>
       </button>
     </div>
   </div>
@@ -106,12 +139,12 @@
             <svg><use href="#icon-chevron-right"/></svg>
           </button>
           <div class="cal-view-toggle">
-            <button class="cal-view-btn active">Month</button>
-            <button class="cal-view-btn">Week</button>
-            <button class="cal-view-btn">Day</button>
+            <button class="cal-view-btn active" onclick="setCalView('month',this)">Month</button>
+            <button class="cal-view-btn" onclick="setCalView('week',this)">Week</button>
           </div>
         </div>
 
+        <div id="calMonthView">
         <div class="cal-days-head">
           <div class="cal-day-lbl">Sun</div>
           <div class="cal-day-lbl">Mon</div>
@@ -123,7 +156,14 @@
         </div>
 
         <div class="cal-grid" id="calGrid"></div>
-      </div>
+        </div><!-- /calMonthView -->
+
+        <!-- Week view — shown instead of month grid -->
+        <div id="weekView" style="display:none">
+          <div class="week-grid" id="weekGrid"></div>
+        </div>
+
+      </div><!-- /cal-wrap -->
 
       <!-- ── Right: Day panel ── -->
       <div class="day-panel">
@@ -132,7 +172,7 @@
         <div class="day-panel-card">
           <div class="dp-head">
             <div class="dp-title">Wednesday, May 20</div>
-            <button class="btn btn-ghost btn-sm" onclick="openAddAppt()">
+            <button class="btn btn-ghost btn-sm" onclick="toggleAddAppt()">
               <svg width="13" height="13"><use href="#icon-plus"/></svg>
               Add
             </button>
@@ -248,55 +288,57 @@
           </div>
         </div>
 
-      </div>
-    </div>
-  </div>
+      </div><!-- /cal-layout -->
+
+    </div><!-- /page-body -->
+  </div><!-- /page -->
 </div>
 
 <script>
 /* ── Calendar ── */
-let currentYear = 2026, currentMonth = 4; // May = 4 (0-indexed)
+window.calYear = window.calYear || 2026;
+window.calMonth = window.calMonth || 4;
 
 // Sample appointments data
-const appts = {
+window.calAppts = window.calAppts || {
   '2026-5-20': [{type:'test-drive',label:'James Harper',time:'9:00'},{type:'call',label:'David Kim',time:'11:00'},{type:'test-drive',label:'Sara Chen',time:'2:30'}],
   '2026-5-21': [{type:'test-drive',label:'Mike Torres',time:'10:00'}],
   '2026-5-22': [{type:'service',label:'Linda Park',time:'9:00'},{type:'call',label:'Rachel Moore',time:'2:00'}],
   '2026-5-26': [{type:'test-drive',label:'New Lead',time:'1:00'},{type:'test-drive',label:'Walk-in',time:'3:00'},{type:'service',label:'Return visit',time:'4:00'}],
   '2026-5-27': [{type:'call',label:'Follow-up',time:'9:30'}],
 };
-const typeClass = {'test-drive':'appt-test-drive','service':'appt-service','call':'appt-call'};
-const typeLabel = {'test-drive':'🚗','service':'🔧','call':'📞'};
+window.typeClass = {'test-drive':'appt-test-drive','service':'appt-service','call':'appt-call'};
+window.typeLabel = {'test-drive':'🚗','service':'🔧','call':'📞'};
 
 function renderCalendar() {
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('calTitle').textContent = months[currentMonth] + ' ' + currentYear;
+  document.getElementById('calTitle').textContent = months[window.calMonth] + ' ' + window.calYear;
 
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
 
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
-  const daysInPrev  = new Date(currentYear, currentMonth, 0).getDate();
+  const firstDay = new Date(window.calYear, window.calMonth, 1).getDay();
+  const daysInMonth = new Date(window.calYear, window.calMonth+1, 0).getDate();
+  const daysInPrev  = new Date(window.calYear, window.calMonth, 0).getDate();
   const today = new Date();
 
   // Previous month filler
   for (let i = firstDay-1; i >= 0; i--) {
-    const cell = makeCell(daysInPrev-i, currentMonth-1, true);
+    const cell = makeCell(daysInPrev-i, window.calMonth-1, true);
     grid.appendChild(cell);
   }
   // Current month
   for (let d = 1; d <= daysInMonth; d++) {
-    const isToday = today.getFullYear()===currentYear && today.getMonth()===currentMonth && today.getDate()===d;
-    const key = `${currentYear}-${currentMonth+1}-${d}`;
-    const cell = makeCell(d, currentMonth, false, isToday, appts[key]);
+    const isToday = today.getFullYear()===window.calYear && today.getMonth()===window.calMonth && today.getDate()===d;
+    const key = `${window.calYear}-${window.calMonth+1}-${d}`;
+    const cell = makeCell(d, window.calMonth, false, isToday, window.calAppts[key]);
     cell.onclick = () => selectDay(d);
     grid.appendChild(cell);
   }
   // Next month filler
   const remaining = 42 - (firstDay + daysInMonth);
   for (let d = 1; d <= remaining; d++) {
-    grid.appendChild(makeCell(d, currentMonth+1, true));
+    grid.appendChild(makeCell(d, window.calMonth+1, true));
   }
 }
 
@@ -306,7 +348,7 @@ function makeCell(day, month, otherMonth, isToday=false, dayAppts=[]) {
   let html = `<div class="cal-cell-num">${day}</div>`;
   if (dayAppts) {
     dayAppts.slice(0,2).forEach(a => {
-      html += `<div class="cal-appt ${typeClass[a.type]||''}">${typeLabel[a.type]||''} ${a.label}</div>`;
+      html += `<div class="cal-appt ${window.typeClass[a.type]||''}">${window.typeLabel[a.type]||''} ${a.label}</div>`;
     });
     if (dayAppts.length > 2) html += `<div class="appt-more">+${dayAppts.length-2} more</div>`;
   }
@@ -320,19 +362,24 @@ function selectDay(d) {
 }
 
 function changeMonth(dir) {
-  currentMonth += dir;
-  if (currentMonth > 11) { currentMonth=0; currentYear++; }
-  if (currentMonth < 0)  { currentMonth=11; currentYear--; }
+  window.calMonth += dir;
+  if (window.calMonth > 11) { window.calMonth=0; window.calYear++; }
+  if (window.calMonth < 0)  { window.calMonth=11; window.calYear--; }
   renderCalendar();
 }
 
 /* ── Add appointment ── */
-function openAddAppt() {
-  document.getElementById('addApptWrap').classList.add('open');
-  setTimeout(() => document.getElementById('apptLead').focus(), 50);
+function toggleAddAppt() {
+  const wrap  = document.getElementById('addApptWrap');
+  const label = document.getElementById('newApptBtnLabel');
+  const open  = !wrap.classList.contains('open');
+  wrap.classList.toggle('open', open);
+  label.textContent = open ? 'Cancel' : 'New appointment';
+  if (open) setTimeout(() => document.getElementById('apptLead').focus(), 50);
 }
-function closeAddAppt() {
+function closeAddAppt() { // keep for the form's cancel button
   document.getElementById('addApptWrap').classList.remove('open');
+  document.getElementById('newApptBtnLabel').textContent = 'New appointment';
 }
 function setApptType(btn) {
   document.querySelectorAll('.appt-type-btn').forEach(b => b.classList.remove('active'));
@@ -364,8 +411,82 @@ function saveAppt() {
   `;
   list.appendChild(row);
   closeAddAppt();
+  document.getElementById('newApptBtnLabel').textContent = 'New appointment';
   row.style.background = 'var(--green-light)';
   setTimeout(() => row.style.background = '', 1200);
+}
+
+// ── View switching ──
+window.calView = window.calView || 'month';
+window.selectedDay = window.selectedDay || 20;
+
+function setCalView(view, btn) {
+  window.calView = view;
+  document.querySelectorAll('.cal-view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Only swap the calendar grid — keep the whole cal-layout (including right day panel) intact
+  document.getElementById('calMonthView').style.display = view === 'month' ? '' : 'none';
+  document.getElementById('weekView').style.display     = view === 'week'  ? 'block' : 'none';
+  if (view === 'week') renderWeek();
+}
+
+// ── Week view ──
+function renderWeek() {
+  const grid = document.getElementById('weekGrid');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const today = new Date();
+
+  // Find start of week containing today
+  const start = new Date(window.calYear, window.calMonth, window.selectedDay);
+  const dow = start.getDay();
+  start.setDate(start.getDate() - dow); // go to Sunday
+
+  let html = '<div class="week-day-head" style="background:var(--bg)"></div>'; // time col header
+  const weekDates = [];
+  for (let d = 0; d < 7; d++) {
+    const dt = new Date(start); dt.setDate(start.getDate() + d);
+    weekDates.push(dt);
+    const isToday = dt.toDateString() === today.toDateString();
+    html += `<div class="week-day-head${isToday ? ' today' : ''}">
+      <div class="week-day-name">${days[dt.getDay()]}</div>
+      <div class="week-day-num">${dt.getDate()}</div>
+    </div>`;
+  }
+
+  // Time rows: 8am to 6pm
+  const hours = ['8 AM','9 AM','10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','4 PM','5 PM','6 PM'];
+  const hourNums = [8,9,10,11,12,13,14,15,16,17,18];
+
+  for (let h = 0; h < hours.length; h++) {
+    html += `<div class="week-time-label">${hours[h]}</div>`;
+    for (let d = 0; d < 7; d++) {
+      const dt = weekDates[d];
+      const key = `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
+      const dayAppts = (window.calAppts[key] || []).filter(a => {
+        const ah = parseInt(a.time.split(':')[0]);
+        const pm = a.time.includes('PM') && ah !== 12;
+        const h24 = pm ? ah + 12 : ah;
+        return h24 === hourNums[h];
+      });
+      let cellHtml = '';
+      dayAppts.forEach(a => {
+        const cls = window.typeClass[a.type] || 'appt-test-drive';
+        cellHtml += `<div class="week-appt ${cls}">${a.time} ${a.label}</div>`;
+      });
+      html += `<div class="week-cell">${cellHtml}</div>`;
+    }
+  }
+
+  grid.innerHTML = html;
+}
+
+
+
+// When clicking a day in month view, switch to day view
+function selectDay(d) {
+  window.selectedDay = d;
+  document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
 }
 
 // Init

@@ -43,32 +43,40 @@
 
 /* ── Toggle button — flex sibling of the content, always visible ── */
 .panel-toggle{
-  width:16px;flex-shrink:0;
+  width:12px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;
-  background:var(--bg);
+  background:transparent;
   border:none;
-  color:var(--text-3);
-  transition:background .12s,color .12s;
+  padding:0;
   position:relative;
 }
-.panel-toggle:hover{background:var(--green-light);color:var(--green)}
-/* The visible pill */
+/* The thin clickable bar */
 .panel-toggle::after{
   content:'';
   position:absolute;
-  left:50%;top:50%;
+  top:50%;left:50%;
   transform:translate(-50%,-50%);
-  width:14px;height:28px;
-  background:var(--surface);
-  border:1px solid var(--border);
+  width:4px;height:36px;
+  background:var(--border);
   border-radius:4px;
-  box-shadow:var(--shadow);
-  transition:background .12s,border-color .12s;
-  z-index:0;
+  transition:background .15s,height .15s,width .15s;
 }
-.panel-toggle:hover::after{background:var(--green-light);border-color:var(--green)}
-.panel-toggle svg{width:10px;height:10px;display:block;position:relative;z-index:1}
+.panel-toggle:hover::after{
+  background:var(--green);
+  height:48px;
+  width:4px;
+}
+/* Chevron icon — centred on the bar, small */
+.panel-toggle svg{
+  display:block;
+  width:8px;height:8px;
+  color:var(--text-3);
+  opacity:0;
+  position:relative;z-index:1;
+  transition:opacity .15s,color .15s;
+}
+.panel-toggle:hover svg{opacity:1;color:var(--green)}
 
 /* ── Conversation list internals ── */
 .conv-list-head{padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
@@ -194,14 +202,45 @@
       <div class="page-sub">5 unread · all channels</div>
     </div>
     <div class="page-header-actions">
-      <button class="btn btn-primary">
+      <button class="btn btn-primary" id="newConvBtn" onclick="toggleNewConv()">
         <svg width="15" height="15"><use href="#icon-plus"/></svg>
-        <span class="btn-label">New conversation</span>
+        <span class="btn-label" id="newConvBtnLabel">New conversation</span>
       </button>
     </div>
   </div>
 
   <div class="page-body" style="display:flex;flex-direction:column">
+    <!-- ── New conversation form ── -->
+    <div id="newConvWrap" style="overflow:hidden;max-height:0;opacity:0;transition:max-height .3s ease,opacity .22s ease;margin-bottom:0">
+      <div style="background:var(--surface);border:2px solid var(--green);border-radius:var(--radius);padding:20px;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">Start a new conversation</div>
+        <div style="font-size:13px;color:var(--text-2);margin-bottom:16px">Search for a lead to message, call, or add a note to.</div>
+        <div class="grid-2" style="gap:12px;margin-bottom:14px">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Lead</label>
+            <input type="text" class="form-input" id="newConvLead" placeholder="Search leads…" autocomplete="off">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Channel</label>
+            <select class="form-select" id="newConvChannel">
+              <option>SMS</option><option>Email</option><option>Call log</option><option>Note</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+          <label class="form-label">First message</label>
+          <textarea class="form-textarea" id="newConvMsg" rows="2" style="min-height:68px" placeholder="Type your opening message…"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-primary" onclick="startConversation()">
+            <svg width="14" height="14"><use href="#icon-send"/></svg>
+            Start conversation
+          </button>
+          <button class="btn btn-secondary" onclick="toggleNewConv()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <div class="conv-shell">
 
       <!-- ── LEFT: conversation list ── -->
@@ -470,25 +509,25 @@
 </div>
 
 <script>
-let activeChannel = 'SMS';
-let noteMode      = false;
-let listVisible   = true;
-let leadVisible   = true;
+window.activeChannel = (window.activeChannel !== undefined) ? window.activeChannel : 'SMS';
+window.noteMode = (window.noteMode !== undefined) ? window.noteMode : false;
+window.listVisible = (window.listVisible !== undefined) ? window.listVisible : true;
+window.leadVisible = (window.leadVisible !== undefined) ? window.leadVisible : true;
 
 /* No JS positioning needed — toggle buttons are flex siblings inside panels */
 
 function toggleList() {
-  listVisible = !listVisible;
-  document.getElementById('convList').classList.toggle('hidden', !listVisible);
+  window.listVisible = !window.listVisible;
+  document.getElementById('convList').classList.toggle('hidden', !window.listVisible);
   document.getElementById('listChevron')
-    .setAttribute('href', listVisible ? '#icon-chevron-left' : '#icon-chevron-right');
+    .setAttribute('href', window.listVisible ? '#icon-chevron-left' : '#icon-chevron-right');
 }
 
 function toggleLeadPanel() {
-  leadVisible = !leadVisible;
-  document.getElementById('leadPanel').classList.toggle('hidden', !leadVisible);
+  window.leadVisible = !window.leadVisible;
+  document.getElementById('leadPanel').classList.toggle('hidden', !window.leadVisible);
   document.getElementById('leadChevron')
-    .setAttribute('href', leadVisible ? '#icon-chevron-right' : '#icon-chevron-left');
+    .setAttribute('href', window.leadVisible ? '#icon-chevron-right' : '#icon-chevron-left');
 }
 
 function openConv(item) {
@@ -505,10 +544,10 @@ function filterConvs(q) {
 }
 
 function setChannel(btn, ch) {
-  if (noteMode) { noteMode=false; document.getElementById('noteBtn').classList.remove('active'); }
+  if (window.noteMode) { window.noteMode=false; document.getElementById('noteBtn').classList.remove('active'); }
   document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  activeChannel = ch;
+  window.activeChannel = ch;
   const ta = document.getElementById('composeTA');
   ta.className = 'compose-ta';
   ta.placeholder = ch==='Call' ? 'Log call notes…' : `Reply via ${ch} to James Harper…`;
@@ -517,10 +556,10 @@ function setChannel(btn, ch) {
 }
 
 function toggleNote() {
-  noteMode = !noteMode;
-  document.getElementById('noteBtn').classList.toggle('active', noteMode);
+  window.noteMode = !window.noteMode;
+  document.getElementById('noteBtn').classList.toggle('active', window.noteMode);
   const ta = document.getElementById('composeTA');
-  if (noteMode) {
+  if (window.noteMode) {
     document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
     ta.className = 'compose-ta note-mode';
     ta.placeholder = 'Add an internal note — only visible to your team…';
@@ -540,14 +579,14 @@ function sendMsg() {
   const now = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   const row = document.createElement('div');
 
-  if (noteMode) {
+  if (window.noteMode) {
     row.className = 'tl-row ev-note';
     row.innerHTML = `<div class="tl-time">${now}</div><div class="tl-dot"></div>
       <div class="tl-body">
         <div class="tl-who">You <span class="tl-ch" style="border-color:#fde68a;color:var(--warning)">📝 Note</span></div>
         <div class="tl-note"><div class="tl-note-lbl">Internal · not sent</div>${text}</div>
       </div>`;
-  } else if (activeChannel === 'Call') {
+  } else if (window.activeChannel === 'Call') {
     row.className = 'tl-row ev-call';
     row.innerHTML = `<div class="tl-time">${now}</div><div class="tl-dot"></div>
       <div class="tl-body">
@@ -557,11 +596,11 @@ function sendMsg() {
         </div>
       </div>`;
   } else {
-    const id = activeChannel==='SMS' ? 'icon-sms' : 'icon-email';
+    const id = window.activeChannel==='SMS' ? 'icon-sms' : 'icon-email';
     row.className = 'tl-row ev-out';
     row.innerHTML = `<div class="tl-time">${now}</div><div class="tl-dot"></div>
       <div class="tl-body">
-        <div class="tl-who">You <span class="tl-ch"><svg width="10" height="10"><use href="#${id}"/></svg>${activeChannel}</span></div>
+        <div class="tl-who">You <span class="tl-ch"><svg width="10" height="10"><use href="#${id}"/></svg>${window.activeChannel}</span></div>
         <div class="tl-out-wrap"><div class="tl-bubble-out">${text}</div></div>
       </div>`;
   }
@@ -582,6 +621,26 @@ function updateStatus(val) {
       <span class="badge ${map[val]}" style="font-size:10px">${val}</span></div></div>`;
   tl.appendChild(row);
   scrollBottom();
+}
+
+function toggleNewConv() {
+  const wrap  = document.getElementById('newConvWrap');
+  const label = document.getElementById('newConvBtnLabel');
+  const open  = wrap.style.maxHeight === '0px' || wrap.style.maxHeight === '0' || !wrap.style.maxHeight;
+  wrap.style.maxHeight = open ? '400px' : '0px';
+  wrap.style.opacity   = open ? '1'     : '0';
+  wrap.style.marginBottom = open ? '0' : '0';
+  label.textContent    = open ? 'Cancel' : 'New conversation';
+  if (open) setTimeout(() => document.getElementById('newConvLead').focus(), 50);
+}
+
+function startConversation() {
+  const lead = document.getElementById('newConvLead').value.trim();
+  if (!lead) { document.getElementById('newConvLead').style.borderColor='var(--danger)'; return; }
+  // Close form
+  toggleNewConv();
+  // In real app: create conversation record and open thread
+  // For now: just close form
 }
 
 function scrollBottom() {

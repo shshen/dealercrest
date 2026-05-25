@@ -1,87 +1,63 @@
 <!-- fragment: pages/inventory.html -->
-<!-- Uses SVG sprite from parent index.html for brand logos and UI icons -->
 <style>
-/* Brand icon container */
-.brand-icon{
-  width:48px; height:48px; border-radius:var(--radius-sm);
-  background:var(--bg); border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  flex-shrink:0; color:var(--text-2);
-}
-.brand-icon svg{ width:36px; height:20px; display:block; }
-.brand-icon.brand-toyota  { color:#eb0a1e; }
-.brand-icon.brand-honda   { color:#cc0000; }
-.brand-icon.brand-ford    { color:#003478; }
-.brand-icon.brand-chevrolet{ color:#c8a876; }
-.brand-icon.brand-bmw     { color:#1c69d4; }
-.brand-icon.brand-mercedes{ color:#666; }
-.brand-icon.brand-audi    { color:#bb0a14; }
-.brand-icon.brand-hyundai { color:#002c5f; }
-.brand-icon.brand-kia     { color:#05141f; }
-.brand-icon.brand-nissan  { color:#c3002f; }
-.brand-icon.brand-subaru  { color:#003399; }
-.brand-icon.brand-tesla   { color:#cc0000; }
-.brand-icon.brand-generic { color:var(--text-3); }
-
-/* List view */
-.inv-list{ display:flex; flex-direction:column; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--surface); }
-.inv-list-item{ display:flex; align-items:center; gap:14px; padding:12px 20px; border-bottom:1px solid var(--border-light); transition:background .12s; }
-.inv-list-item:last-child{ border-bottom:none; }
-.inv-list-item:hover{ background:#fafafa; }
-.inv-list-info{ flex:1; min-width:0; }
-.inv-list-title{ font-size:14px; font-weight:600; color:var(--text); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.inv-list-meta{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
-.inv-meta-tag{ font-size:12px; color:var(--text-3); }
-.inv-meta-sep{ color:var(--border); }
-.inv-list-price{ font-size:15px; font-weight:700; color:var(--green); flex-shrink:0; min-width:76px; text-align:right; }
-.inv-list-status{ flex-shrink:0; min-width:70px; text-align:right; }
-.inv-list-actions{ display:flex; gap:6px; flex-shrink:0; }
-
-/* Grid view */
-.inv-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
-.inv-grid-item{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:border-color .15s, box-shadow .15s; }
-.inv-grid-item:hover{ border-color:var(--green); box-shadow:0 0 0 3px var(--green-light); }
-.inv-grid-header{ height:110px; background:var(--bg); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:center; }
-.inv-grid-header .brand-icon{ width:64px; height:64px; border:none; background:transparent; }
-.inv-grid-header .brand-icon svg{ width:52px; height:28px; }
-.inv-grid-body{ padding:12px 14px; }
-.inv-grid-title{ font-size:13.5px; font-weight:600; color:var(--text); margin-bottom:4px; }
-.inv-grid-price{ font-size:15px; font-weight:700; color:var(--green); margin-bottom:6px; }
-.inv-grid-tags{ display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; }
-.v-tag{ font-size:11px; background:var(--bg); border:1px solid var(--border); padding:2px 7px; border-radius:20px; color:var(--text-2); }
-.inv-grid-foot{ display:flex; gap:6px; padding:10px 14px; border-top:1px solid var(--border-light); background:var(--bg); }
-.inv-grid-foot .btn{ flex:1; justify-content:center; }
-
-/* Filter bar */
-.filter-bar{ display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
-.search-wrap{ position:relative; display:flex; align-items:center; }
-.search-wrap svg{ position:absolute; left:10px; width:14px; height:14px; color:var(--text-3); pointer-events:none; display:block; }
-.search-wrap input{ padding:9px 12px 9px 34px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:var(--font); font-size:13px; color:var(--text); background:var(--surface); outline:none; transition:border-color .15s; width:200px; }
-.search-wrap input:focus{ border-color:var(--green); }
-.filter-sel{ padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:var(--font); font-size:13px; color:var(--text); background:var(--surface); outline:none; cursor:pointer; }
-.view-toggle{ display:flex; border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; margin-left:auto; flex-shrink:0; }
-.vt-btn{ width:36px; height:36px; border:none; background:var(--surface); color:var(--text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; border-right:1px solid var(--border); transition:background .12s, color .12s; }
-.vt-btn:last-child{ border-right:none; }
-.vt-btn.active{ background:var(--bg); color:var(--text); }
-.vt-btn svg{ width:15px; height:15px; display:block; }
-
-@media(max-width:700px){
-  .hide-sm{ display:none; }
-  .inv-list-item{ gap:10px; padding:10px 14px; }
-  .search-wrap input{ width:140px; }
-}
+.brand-icon{width:48px;height:48px;border-radius:var(--radius-sm);background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-2)}
+.brand-icon svg{width:36px;height:20px;display:block}
+.brand-icon.brand-toyota{color:#eb0a1e}.brand-icon.brand-honda{color:#cc0000}
+.brand-icon.brand-ford{color:#003478}.brand-icon.brand-chevrolet{color:#c8a876}
+.brand-icon.brand-bmw{color:#1c69d4}.brand-icon.brand-mercedes{color:#666}
+.brand-icon.brand-audi{color:#bb0a14}.brand-icon.brand-hyundai{color:#002c5f}
+.brand-icon.brand-kia{color:#05141f}.brand-icon.brand-nissan{color:#c3002f}
+.brand-icon.brand-subaru{color:#003399}.brand-icon.brand-tesla{color:#cc0000}
+.brand-icon.brand-generic{color:var(--text-3)}
+.inv-list{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.inv-list-item{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border-light);transition:background .12s}
+.inv-list-item:last-child{border-bottom:none}
+.inv-list-item:hover{background:#fafafa}
+.inv-list-info{flex:1;min-width:0}
+.inv-list-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-list-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.inv-meta-tag{font-size:12px;color:var(--text-3)}
+.inv-meta-sep{color:var(--border)}
+.inv-list-price{font-size:15px;font-weight:700;color:var(--green);flex-shrink:0;min-width:76px;text-align:right}
+.inv-list-status{flex-shrink:0;min-width:70px;text-align:right}
+.inv-list-actions{display:flex;gap:6px;flex-shrink:0}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.inv-grid-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.inv-grid-item:hover{border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}
+.inv-grid-header{height:110px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.inv-grid-header .brand-icon{width:64px;height:64px;border:none;background:transparent}
+.inv-grid-header .brand-icon svg{width:52px;height:28px}
+.inv-grid-body{padding:12px 14px}
+.inv-grid-title{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:4px}
+.inv-grid-price{font-size:15px;font-weight:700;color:var(--green);margin-bottom:6px}
+.inv-grid-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.v-tag{font-size:11px;background:var(--bg);border:1px solid var(--border);padding:2px 7px;border-radius:20px;color:var(--text-2)}
+.inv-grid-foot{display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--border-light);background:var(--bg)}
+.inv-grid-foot .btn{flex:1;justify-content:center}
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap svg{position:absolute;left:10px;width:14px;height:14px;color:var(--text-3);pointer-events:none;display:block}
+.search-wrap input{padding:9px 12px 9px 34px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;width:200px}
+.search-wrap input:focus{border-color:var(--green)}
+.filter-sel{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);outline:none;cursor:pointer}
+.view-toggle{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-left:auto;flex-shrink:0}
+.vt-btn{width:36px;height:36px;border:none;background:var(--surface);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);transition:background .12s,color .12s}
+.vt-btn:last-child{border-right:none}
+.vt-btn.active{background:var(--bg);color:var(--text)}
+.vt-btn svg{width:15px;height:15px;display:block}
+@media(max-width:700px){.hide-sm{display:none}.inv-list-item{gap:10px;padding:10px 14px}.search-wrap input{width:140px}}
 </style>
 
 <div class="page">
   <div class="page-header">
     <div class="page-header-title">
       <div class="page-title">Inventory</div>
-      <div class="page-sub">134 vehicles listed · 12 pending review</div>
+      <div class="page-sub" id="invSubtitle">Loading…</div>
     </div>
     <div class="page-header-actions">
-      <button class="btn btn-secondary">
-        <svg width="15" height="15"><use href="#icon-upload"/></svg>
-        <span class="btn-label">Import</span>
+      <button class="btn btn-secondary" onclick="loadInventory()">
+        <svg width="15" height="15"><use href="#icon-refresh"/></svg>
+        <span class="btn-label">Refresh</span>
       </button>
       <button class="btn btn-primary" onclick="navigate('inventory-add')">
         <svg width="15" height="15"><use href="#icon-plus"/></svg>
@@ -91,222 +67,42 @@
   </div>
 
   <div class="page-body">
-    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
-      <div class="stat-card"><div class="stat-label">Total Listed</div><div class="stat-value">134</div><div class="stat-delta up">↑ 3 today</div></div>
-      <div class="stat-card"><div class="stat-label">New</div><div class="stat-value">48</div><div class="stat-delta">36%</div></div>
-      <div class="stat-card"><div class="stat-label">Used</div><div class="stat-value">86</div><div class="stat-delta">64%</div></div>
-      <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value">12</div><div class="stat-delta down">Review needed</div></div>
+    <!-- Stats -->
+    <div class="stats-grid" id="invStats" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Total Listed</div><div class="stat-value" id="s-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">New</div><div class="stat-value" id="s-new">—</div></div>
+      <div class="stat-card"><div class="stat-label">Used</div><div class="stat-value" id="s-used">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value" id="s-pending">—</div></div>
     </div>
 
+    <!-- Filter bar -->
     <div class="filter-bar">
       <div class="search-wrap">
         <svg><use href="#icon-search"/></svg>
-        <input type="text" placeholder="Search vehicles…" oninput="filterVehicles(this.value)">
+        <input type="text" id="invSearch" placeholder="Search vehicles…" oninput="filterInventory()">
       </div>
-      <select class="filter-sel">
-        <option value="">All types</option>
+      <select class="filter-sel" id="condFilter" onchange="filterInventory()">
+        <option value="">All conditions</option>
         <option>New</option><option>Used</option><option>CPO</option>
       </select>
-      <select class="filter-sel">
+      <select class="filter-sel" id="makeFilter" onchange="filterInventory()">
         <option value="">All makes</option>
-        <option>Toyota</option><option>Honda</option><option>Ford</option>
-        <option>Chevrolet</option><option>BMW</option><option>Mercedes</option>
       </select>
       <div class="view-toggle">
         <button class="vt-btn" id="btnGrid" title="Grid" onclick="setView('grid')">
           <svg><use href="#icon-dashboard"/></svg>
         </button>
         <button class="vt-btn active" id="btnList" title="List" onclick="setView('list')">
-          <svg width="15" height="15"><use href="#icon-list"/></svg>
+          <svg><use href="#icon-list"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- LIST VIEW (default) -->
-    <div class="inv-list" id="listView">
+    <!-- Data container -->
+    <div id="invData"></div>
 
-      <div class="inv-list-item" data-title="2023 Toyota Camry LE">
-        <div class="brand-icon brand-toyota">
-          <svg><use href="#brand-toyota"/></svg>
-        </div>
-        <div class="inv-list-info">
-          <div class="inv-list-title">2023 Toyota Camry LE</div>
-          <div class="inv-list-meta">
-            <span class="inv-meta-tag">12,400 mi</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Silver</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Auto</span><span class="inv-meta-sep">·</span>
-            <span class="badge badge-gray" style="font-size:11px">Used</span>
-          </div>
-        </div>
-        <div class="inv-list-price">$27,500</div>
-        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
-        <div class="inv-list-actions">
-          <button class="btn btn-secondary btn-sm">Edit</button>
-          <button class="btn btn-ghost btn-sm hide-sm">View</button>
-        </div>
-      </div>
-
-      <div class="inv-list-item" data-title="2022 Honda CR-V EX-L">
-        <div class="brand-icon brand-honda">
-          <svg><use href="#brand-honda"/></svg>
-        </div>
-        <div class="inv-list-info">
-          <div class="inv-list-title">2022 Honda CR-V EX-L</div>
-          <div class="inv-list-meta">
-            <span class="inv-meta-tag">8,100 mi</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Blue</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">AWD</span><span class="inv-meta-sep">·</span>
-            <span class="badge badge-blue" style="font-size:11px">CPO</span>
-          </div>
-        </div>
-        <div class="inv-list-price">$31,200</div>
-        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
-        <div class="inv-list-actions">
-          <button class="btn btn-secondary btn-sm">Edit</button>
-          <button class="btn btn-ghost btn-sm hide-sm">View</button>
-        </div>
-      </div>
-
-      <div class="inv-list-item" data-title="2024 Ford Mustang GT">
-        <div class="brand-icon brand-ford">
-          <svg><use href="#brand-ford"/></svg>
-        </div>
-        <div class="inv-list-info">
-          <div class="inv-list-title">2024 Ford Mustang GT</div>
-          <div class="inv-list-meta">
-            <span class="inv-meta-tag">1,200 mi</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Red</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Manual</span><span class="inv-meta-sep">·</span>
-            <span class="badge badge-green" style="font-size:11px">New</span>
-          </div>
-        </div>
-        <div class="inv-list-price">$44,900</div>
-        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
-        <div class="inv-list-actions">
-          <button class="btn btn-secondary btn-sm">Edit</button>
-          <button class="btn btn-ghost btn-sm hide-sm">View</button>
-        </div>
-      </div>
-
-      <div class="inv-list-item" data-title="2021 Toyota RAV4 XLE">
-        <div class="brand-icon brand-toyota">
-          <svg><use href="#brand-toyota"/></svg>
-        </div>
-        <div class="inv-list-info">
-          <div class="inv-list-title">2021 Toyota RAV4 XLE</div>
-          <div class="inv-list-meta">
-            <span class="inv-meta-tag">22,000 mi</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">White</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">AWD</span><span class="inv-meta-sep">·</span>
-            <span class="badge badge-gray" style="font-size:11px">Used</span>
-          </div>
-        </div>
-        <div class="inv-list-price">$29,800</div>
-        <div class="inv-list-status hide-sm"><span class="badge badge-yellow">Pending</span></div>
-        <div class="inv-list-actions">
-          <button class="btn btn-secondary btn-sm">Edit</button>
-          <button class="btn btn-ghost btn-sm hide-sm">View</button>
-        </div>
-      </div>
-
-      <div class="inv-list-item" data-title="2024 Ford F-150 XLT">
-        <div class="brand-icon brand-ford">
-          <svg><use href="#brand-ford"/></svg>
-        </div>
-        <div class="inv-list-info">
-          <div class="inv-list-title">2024 Ford F-150 XLT</div>
-          <div class="inv-list-meta">
-            <span class="inv-meta-tag">340 mi</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Black</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">4WD</span><span class="inv-meta-sep">·</span>
-            <span class="badge badge-green" style="font-size:11px">New</span>
-          </div>
-        </div>
-        <div class="inv-list-price">$52,100</div>
-        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
-        <div class="inv-list-actions">
-          <button class="btn btn-secondary btn-sm">Edit</button>
-          <button class="btn btn-ghost btn-sm hide-sm">View</button>
-        </div>
-      </div>
-
-      <div class="inv-list-item" data-title="2023 Honda Accord Sport">
-        <div class="brand-icon brand-honda">
-          <svg><use href="#brand-honda"/></svg>
-        </div>
-        <div class="inv-list-info">
-          <div class="inv-list-title">2023 Honda Accord Sport</div>
-          <div class="inv-list-meta">
-            <span class="inv-meta-tag">5,800 mi</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Gray</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Auto</span><span class="inv-meta-sep">·</span>
-            <span class="badge badge-blue" style="font-size:11px">CPO</span>
-          </div>
-        </div>
-        <div class="inv-list-price">$30,450</div>
-        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
-        <div class="inv-list-actions">
-          <button class="btn btn-secondary btn-sm">Edit</button>
-          <button class="btn btn-ghost btn-sm hide-sm">View</button>
-        </div>
-      </div>
-
-      <div class="inv-list-item" data-title="2023 BMW 3 Series">
-        <div class="brand-icon brand-bmw">
-          <svg><use href="#brand-bmw"/></svg>
-        </div>
-        <div class="inv-list-info">
-          <div class="inv-list-title">2023 BMW 3 Series</div>
-          <div class="inv-list-meta">
-            <span class="inv-meta-tag">9,300 mi</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Navy</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">AWD</span><span class="inv-meta-sep">·</span>
-            <span class="badge badge-blue" style="font-size:11px">CPO</span>
-          </div>
-        </div>
-        <div class="inv-list-price">$41,800</div>
-        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
-        <div class="inv-list-actions">
-          <button class="btn btn-secondary btn-sm">Edit</button>
-          <button class="btn btn-ghost btn-sm hide-sm">View</button>
-        </div>
-      </div>
-
-      <div class="inv-list-item" data-title="2022 Tesla Model 3">
-        <div class="brand-icon brand-tesla">
-          <svg><use href="#brand-tesla"/></svg>
-        </div>
-        <div class="inv-list-info">
-          <div class="inv-list-title">2022 Tesla Model 3</div>
-          <div class="inv-list-meta">
-            <span class="inv-meta-tag">18,400 mi</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">White</span><span class="inv-meta-sep">·</span>
-            <span class="inv-meta-tag">Electric</span><span class="inv-meta-sep">·</span>
-            <span class="badge badge-gray" style="font-size:11px">Used</span>
-          </div>
-        </div>
-        <div class="inv-list-price">$34,900</div>
-        <div class="inv-list-status hide-sm"><span class="badge badge-green">Active</span></div>
-        <div class="inv-list-actions">
-          <button class="btn btn-secondary btn-sm">Edit</button>
-          <button class="btn btn-ghost btn-sm hide-sm">View</button>
-        </div>
-      </div>
-
-    </div><!-- /inv-list -->
-
-    <!-- GRID VIEW (toggled) -->
-    <div class="inv-grid" id="gridView" style="display:none">
-      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-toyota"><svg><use href="#brand-toyota"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2023 Toyota Camry LE</div><div class="inv-grid-price">$27,500</div><div class="inv-grid-tags"><span class="v-tag">12,400 mi</span><span class="v-tag">Used</span><span class="v-tag">Silver</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-honda"><svg><use href="#brand-honda"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2022 Honda CR-V EX-L</div><div class="inv-grid-price">$31,200</div><div class="inv-grid-tags"><span class="v-tag">8,100 mi</span><span class="v-tag">CPO</span><span class="v-tag">Blue</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-ford"><svg><use href="#brand-ford"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2024 Ford Mustang GT</div><div class="inv-grid-price">$44,900</div><div class="inv-grid-tags"><span class="v-tag">1,200 mi</span><span class="v-tag">New</span><span class="v-tag">Red</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-toyota"><svg><use href="#brand-toyota"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2021 Toyota RAV4 XLE</div><div class="inv-grid-price">$29,800</div><div class="inv-grid-tags"><span class="v-tag">22,000 mi</span><span class="v-tag">Used</span><span class="v-tag">White</span></div><span class="badge badge-yellow">Pending</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-bmw"><svg><use href="#brand-bmw"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2023 BMW 3 Series</div><div class="inv-grid-price">$41,800</div><div class="inv-grid-tags"><span class="v-tag">9,300 mi</span><span class="v-tag">CPO</span><span class="v-tag">Navy</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-      <div class="inv-grid-item"><div class="inv-grid-header"><div class="brand-icon brand-tesla"><svg><use href="#brand-tesla"/></svg></div></div><div class="inv-grid-body"><div class="inv-grid-title">2022 Tesla Model 3</div><div class="inv-grid-price">$34,900</div><div class="inv-grid-tags"><span class="v-tag">18,400 mi</span><span class="v-tag">Used</span><span class="v-tag">White</span></div><span class="badge badge-green">Active</span></div><div class="inv-grid-foot"><button class="btn btn-secondary btn-sm">Edit</button><button class="btn btn-ghost btn-sm">View</button></div></div>
-    </div>
-
-    <div class="pagination" style="margin-top:16px">
-      <span class="pagination-info">Showing 8 of 134 vehicles</span>
+    <div class="pagination" style="margin-top:16px;display:none" id="invPagination">
+      <span class="pagination-info" id="invCount"></span>
       <div class="pagination-btns">
         <button class="btn btn-secondary btn-sm">← Previous</button>
         <button class="btn btn-secondary btn-sm">Next →</button>
@@ -316,24 +112,375 @@
 </div>
 
 <script>
-let currentView = 'list';
+    window.invView = window.invView || 'list';
+    window.invVehicles = window.invVehicles || [];
+    
+    function brandClass(make) {
+        const name = (make || '').toLowerCase().replace(/[^a-z]/g, '');
+        if (!name) {
+            return 'brand-generic';
+        }
+        return 'brand-' + name;
+    }
+    
+    function brandId(make) {
+        const map = {
+            toyota: 'brand-toyota',
+            honda: 'brand-honda',
+            ford: 'brand-ford',
+            chevrolet: 'brand-chevrolet',
+            bmw: 'brand-bmw',
+            'mercedes-benz': 'brand-mercedes',
+            audi: 'brand-audi',
+            hyundai: 'brand-hyundai',
+            kia: 'brand-kia',
+            nissan: 'brand-nissan',
+            subaru: 'brand-subaru',
+            tesla: 'brand-tesla'
+        };
+        const key = (make || '').toLowerCase();
+        return map[key] || 'brand-generic';
+    };
+    
+    function condBadge(condition) {
+        if (condition === 'New') {
+            return 'badge-green';
+        }
+        if (condition === 'CPO') {
+            return 'badge-blue';
+        }
+        return 'badge-gray';
+    }
+    
+    function statusBadge(status) {
+        if (status === 'active') {
+            return 'badge-green';
+        }
+        if (status === 'pending') {
+            return 'badge-yellow';
+        }
+        return 'badge-gray';
+    }
+    
+    function statusLabel(status) {
+        if (status === 'active') {
+            return 'Active';
+        }
+        return 'Pending';
+    }
+    
+    function fmt(price) {
+        return '$' + price.toLocaleString();
+    }
+    
+    function mileage(vehicle) {
+        if (vehicle.mileage === 0) {
+            return 'New';
+        }
+        return vehicle.mileage.toLocaleString() + ' mi';
+    }
 
-function setView(v) {
-  currentView = v;
-  document.getElementById('listView').style.display  = v === 'list' ? '' : 'none';
-  document.getElementById('gridView').style.display  = v === 'grid' ? '' : 'none';
-  document.getElementById('btnList').classList.toggle('active', v === 'list');
-  document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
-}
+    function renderListItem(vehicle) {
+      return '' +
+        '<div class="inv-list-item" data-title="' + vehicle.year + ' ' + vehicle.make + ' ' + vehicle.model + '">' +
+          '<div class="brand-icon ' + brandClass(vehicle.make) + '">' +
+            '<svg><use href="#' + brandId(vehicle.make) + '"/></svg>' +
+          '</div>' +
+    
+          '<div class="inv-list-info">' +
+            '<div class="inv-list-title">' +
+              vehicle.year + ' ' + vehicle.make + ' ' + vehicle.model + ' ' + vehicle.trim +
+            '</div>' +
+    
+            '<div class="inv-list-meta">' +
+              '<span class="inv-meta-tag">' + mileage(vehicle) + '</span>' +
+              '<span class="inv-meta-sep">·</span>' +
+    
+              '<span class="inv-meta-tag">' + vehicle.color + '</span>' +
+              '<span class="inv-meta-sep">·</span>' +
+    
+              '<span class="inv-meta-tag">' + vehicle.transmission + '</span>' +
+              '<span class="inv-meta-sep">·</span>' +
+    
+              '<span class="badge ' + condBadge(vehicle.condition) + '" style="font-size:11px">' +
+                vehicle.condition +
+              '</span>' +
+            '</div>' +
+          '</div>' +
+    
+          '<div class="inv-list-price">' + fmt(vehicle.price) + '</div>' +
+    
+          '<div class="inv-list-status hide-sm">' +
+            '<span class="badge ' + statusBadge(vehicle.status) + '">' +
+              statusLabel(vehicle.status) +
+            '</span>' +
+          '</div>' +
+    
+          '<div class="inv-list-actions">' +
+            '<button class="btn btn-secondary btn-sm">Edit</button>' +
+            '<button class="btn btn-ghost btn-sm hide-sm">View</button>' +
+          '</div>' +
+        '</div>';
+    }
+    
+    function renderGridItem(vehicle) {
+      return '' +
+        '<div class="inv-grid-item">' +
+          '<div class="inv-grid-header">' +
+            '<div class="brand-icon ' + brandClass(vehicle.make) + '">' +
+              '<svg><use href="#' + brandId(vehicle.make) + '"/></svg>' +
+            '</div>' +
+          '</div>' +
+          '<div class="inv-grid-body">' +
+            '<div class="inv-grid-title">' +
+              vehicle.year + ' ' + vehicle.make + ' ' + vehicle.model +
+            '</div>' +
+            '<div class="inv-grid-price">' + fmt(vehicle.price) + '</div>' +
+            '<div class="inv-grid-tags">' +
+              '<span class="v-tag">' + mileage(vehicle) + '</span>' +
+              '<span class="v-tag">' + vehicle.condition + '</span>' +
+              '<span class="v-tag">' + vehicle.color + '</span>' +
+            '</div>' +
+            '<span class="badge ' + statusBadge(vehicle.status) + '">' +
+              statusLabel(vehicle.status) +
+            '</span>' +
+          '</div>' +
+          '<div class="inv-grid-foot">' +
+            '<button class="btn btn-secondary btn-sm">Edit</button>' +
+            '<button class="btn btn-ghost btn-sm">View</button>' +
+          '</div>' +
+        '</div>';
+    }
+    
+    function renderList(vehicles) {
+        if (!vehicles.length) {
+            return '';
+        }
+        let html = '<div class="inv-list">';
+        for (let i = 0; i < vehicles.length; i++) {
+            html += renderListItem(vehicles[i]);
+        }
+        html += '</div>';
+        return html;
+    }
 
-function filterVehicles(q) {
-  const lq = q.toLowerCase();
-  document.querySelectorAll('.inv-list-item').forEach(r => {
-    r.style.display = r.dataset.title.toLowerCase().includes(lq) ? '' : 'none';
-  });
-  document.querySelectorAll('.inv-grid-item').forEach(r => {
-    const t = r.querySelector('.inv-grid-title');
-    if (t) r.style.display = t.textContent.toLowerCase().includes(lq) ? '' : 'none';
-  });
-}
+    function renderGrid(vehicles) {
+        let html = '<div class="inv-grid">';
+        for (let i = 0; i < vehicles.length; i++) {
+            html += renderGridItem(vehicles[i]);
+        }
+        html += '</div>';
+        return html;
+    }
+
+    function updatePagination(count) {
+        document.getElementById('invCount').textContent =
+            'Showing ' + count + ' vehicles';
+        document.getElementById('invPagination').style.display =
+            count ? '' : 'none';
+    }
+
+    function renderVehicles(vehicles) {
+        const container = document.getElementById('invData');
+        let html = '';
+        if (window.invView === 'list') {
+            html = renderList(vehicles);
+        } else {
+            html = renderGrid(vehicles);
+        }
+        showContent(container, html);
+        updatePagination(vehicles.length);
+    }
+
+    function countByCondition(vehicles, condition) {
+        let count = 0;
+        for (let i = 0; i < vehicles.length; i++) {
+            if (vehicles[i].condition === condition) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    function countByStatus(vehicles, status) {
+        let count = 0;
+        for (let i = 0; i < vehicles.length; i++) {
+            if (vehicles[i].status === status) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    function updateStats(vehicles) {
+        const total = vehicles.length;
+        const newCount = countByCondition(vehicles, 'New');
+        const usedCount = countByCondition(vehicles, 'Used');
+        const pendingCount = countByStatus(vehicles, 'pending');
+
+        document.getElementById('s-total').textContent = total;
+        document.getElementById('s-new').textContent = newCount;
+        document.getElementById('s-used').textContent = usedCount;
+        document.getElementById('s-pending').textContent = pendingCount;
+
+        document.getElementById('invSubtitle').textContent =
+            total + ' vehicles · ' + pendingCount + ' pending review';
+    }
+
+    function getMakes(vehicles) {
+        const map = {};
+        const makes = [];
+        for (let i = 0; i < vehicles.length; i++) {
+            const make = vehicles[i].make;
+            if (!map[make]) {
+                map[make] = true;
+                makes.push(make);
+            }
+        }
+        makes.sort();
+        return makes;
+    }
+
+    function renderMakeOptions(makes) {
+        let html = '<option value="">All makes</option>';
+        for (let i = 0; i < makes.length; i++) {
+            html += '<option>' + makes[i] + '</option>';
+        }
+        return html;
+    }
+
+    function populateMakeFilter(vehicles) {
+        const makes = getMakes(vehicles);
+        const makeFilter = document.getElementById('makeFilter');
+        makeFilter.innerHTML = renderMakeOptions(makes);
+    }
+
+    function handleAddVehicle() {
+        navigate('inventory-add');
+    }
+
+    function showInventoryEmpty(container) {
+        showEmpty(container, {
+            icon: '#icon-inventory',
+            title: 'No vehicles yet',
+            message: 'Add your first vehicle to start building your inventory.',
+            actionLabel: 'Add vehicle',
+            onAction: handleAddVehicle
+        });
+    }
+
+    function showInventoryError(container) {
+        showError(container, {
+            message: 'Could not load inventory. Check your connection and try again.',
+            onRetry: loadInventory
+        });
+        document.getElementById('invSubtitle').textContent =
+            'Error loading data';
+    }
+
+    async function loadInventory() {
+        const container = document.getElementById('invData');
+        showLoading(container, 6, 'table');
+        document.getElementById('invSubtitle').textContent = 'Loading…';
+        try {
+            const vehicles = await api('inventory');
+            window.invVehicles = vehicles;
+            updateStats(vehicles);
+            populateMakeFilter(vehicles);
+            if (!vehicles.length) {
+                showInventoryEmpty(container);
+                return;
+            }
+            renderVehicles(vehicles);
+        } catch (e) {
+            showInventoryError(container);
+        }
+    }
+
+    function vehicleSearchText(vehicle) {
+        return (
+            vehicle.year + ' ' +
+            vehicle.make + ' ' +
+            vehicle.model + ' ' +
+            vehicle.trim + ' ' +
+            vehicle.color
+        ).toLowerCase();
+    }
+
+    function matchesQuery(vehicle, query) {
+        if (!query) {
+            return true;
+        }
+        return vehicleSearchText(vehicle).includes(query);
+    }
+    
+    function matchesCondition(vehicle, condition) {
+        if (!condition) {
+            return true;
+        }
+        return vehicle.condition === condition;
+    }
+
+    function matchesMake(vehicle, make) {
+        if (!make) {
+            return true;
+        }
+        return vehicle.make === make;
+    }
+
+    function filterVehicles(vehicles, query, condition, make) {
+        const results = [];
+        for (let i = 0; i < vehicles.length; i++) {
+            const vehicle = vehicles[i];
+            if (!matchesQuery(vehicle, query)) {
+                continue;
+            }
+            if (!matchesCondition(vehicle, condition)) {
+                continue;
+            }
+            if (!matchesMake(vehicle, make)) {
+                continue;
+            }
+            results.push(vehicle);
+        }
+
+        return results;
+    }
+
+    function showFilterEmpty() {
+        showEmpty(document.getElementById('invData'), {
+            icon: '#icon-search',
+            title: 'No vehicles match',
+            message: 'Try adjusting your search or filters.'
+        });
+        document.getElementById('invPagination').style.display = 'none';
+    }
+
+    function filterInventory() {
+        const query = document.getElementById('invSearch').value.toLowerCase();
+        const condition = document.getElementById('condFilter').value;
+        const make = document.getElementById('makeFilter').value;
+        const filtered = filterVehicles(
+            window.invVehicles,
+            query,
+            condition,
+            make
+        );
+        if (!filtered.length) {
+            showFilterEmpty();
+            return;
+        }
+        renderVehicles(filtered);
+    }
+
+    function setView(view) {
+        window.invView = view;
+        document.getElementById('btnList').classList.toggle('active', view === 'list');
+        document.getElementById('btnGrid').classList.toggle('active', view === 'grid');
+        if (window.invVehicles.length) {
+            renderVehicles(window.invVehicles);
+        }
+    }
+    
+    loadInventory();
 </script>

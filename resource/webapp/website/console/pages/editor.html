@@ -1,204 +1,255 @@
-<!-- fragment: pages/editor.html
-     change 5: page id in hash  (#website/edit/home)
-     change 6: right panel hide/show toggle
-     change 1: full-size Preview/Save/Publish buttons -->
+<!-- fragment: pages/editor.html -->
 <style>
-.editor-shell{display:flex;flex-direction:column;height:calc(100vh - 56px);overflow:hidden}
-.editor-bar{background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;height:64px;gap:10px;flex-shrink:0;flex-wrap:wrap}
-.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13px;font-weight:500;cursor:pointer;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);transition:background .12s;font-family:var(--font);white-space:nowrap}
-.back-btn:hover{background:var(--bg);color:var(--text)}
-.back-btn svg{width:14px;height:14px;display:block}
-.editor-page-name{font-size:15px;font-weight:600;color:var(--text)}
-.editor-page-status{font-size:12px;color:var(--text-3);margin-top:1px}
-.editor-bar-center{flex:1;display:flex;align-items:center;justify-content:center;gap:6px}
-.editor-bar-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 0}
+/* ── Editor bar (replaces page-header) ── */
+.editor-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 28px;height:64px;
+  gap:12px;flex-shrink:0;overflow:hidden;flex-wrap:nowrap;
+}
 
-.device-btns{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
-.dev-btn{width:34px;height:34px;border:none;background:var(--surface);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);transition:background .12s,color .12s}
-.dev-btn:last-child{border-right:none}
+/* Breadcrumb in editor */
+.editor-breadcrumb{
+  display:flex;align-items:center;gap:0;
+  min-width:0;flex-shrink:1;overflow:hidden;
+}
+.editor-breadcrumb .breadcrumb-parent{
+  font-size:15px;font-weight:500;color:var(--text-2);
+  cursor:pointer;white-space:nowrap;
+  transition:color .12s;
+}
+.editor-breadcrumb .breadcrumb-parent:hover{color:var(--green)}
+.editor-breadcrumb .breadcrumb-sep{
+  font-size:15px;color:var(--border);margin:0 8px;flex-shrink:0;user-select:none;
+}
+.editor-breadcrumb .breadcrumb-current{
+  font-size:15px;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Center: device toggle */
+.editor-bar-center{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
+}
+.dev-btn{
+  width:34px;height:34px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text-2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .12s,color .12s,border-color .12s;
+}
 .dev-btn svg{width:15px;height:15px;display:block}
-.dev-btn.active{background:var(--bg);color:var(--text)}
+.dev-btn.active{background:var(--bg);color:var(--text);border-color:var(--text-2)}
+.dev-btn:hover:not(.active){background:var(--bg)}
 
-.zoom-ctrl{display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
-.zoom-btn{width:30px;height:34px;border:none;background:var(--surface);color:var(--text-2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .12s}
-.zoom-btn:hover{background:var(--bg)}
-.zoom-val{padding:0 10px;font-size:12px;font-weight:600;color:var(--text-2);background:var(--bg);border-left:1px solid var(--border);border-right:1px solid var(--border);height:34px;display:flex;align-items:center;min-width:48px;justify-content:center}
+/* Actions */
+.editor-bar-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
 
-/* Panel toggle button */
-.panel-toggle-btn{width:34px;height:34px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s,color .12s;flex-shrink:0}
+/* Panel toggle in editor */
+.panel-toggle-btn{
+  width:34px;height:34px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text-2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .12s,color .12s;flex-shrink:0;
+}
 .panel-toggle-btn:hover{background:var(--bg);color:var(--text)}
 .panel-toggle-btn.active{background:var(--blue-light);color:var(--blue);border-color:var(--blue)}
 .panel-toggle-btn svg{width:16px;height:16px;display:block}
 
-.editor-body{flex:1;display:flex;overflow:hidden}
+/* Editor body */
+.editor-body{
+  flex:1;display:flex;overflow:hidden;min-height:0;background:var(--bg);
+}
 
-.canvas-area{flex:1;background:#d8dbe0;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:32px 24px;min-width:0}
-.canvas-frame{background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.14);border-radius:4px;width:100%;max-width:100%;min-height:520px;transition:width .25s ease;transform-origin:top center}
+/* Blocks tab */
+.block-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
+.block-item{border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;user-select:none;background:var(--surface)}
+.block-item:hover{border-color:var(--green);background:var(--green-light)}
+.block-item.active{border-color:var(--green);background:var(--green-light)}
+.block-item svg{width:18px;height:18px;display:block;margin:0 auto 6px;color:var(--text-2)}
+.block-lbl{font-size:11.5px;color:var(--text-2);font-weight:500}
+.template-list{border-top:1px solid var(--border-light);padding:12px}
+.template-list-head{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);margin-bottom:8px}
+.template-item{border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px;background:var(--surface);cursor:grab;transition:border-color .15s,background .15s}
+.template-item:hover{border-color:var(--green);background:var(--green-light)}
+.template-title{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px}
+.template-desc{font-size:11.5px;color:var(--text-3);line-height:1.35}
 
-/* Right panel — slide out via width transition */
-.right-panel{width:260px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .22s ease}
-.right-panel.hidden{width:0;border-left:none}
+/* Canvas */
+.editor-canvas{
+  flex:1;overflow:auto;display:flex;
+  align-items:flex-start;justify-content:center;
+  padding:24px;scrollbar-gutter:stable;
+}
+.canvas-frame{
+  background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.1);
+  border-radius:4px;width:100%;max-width:1080px;
+  min-height:500px;transition:max-width .3s ease;
+  overflow:hidden;
+}
+.canvas-frame.tablet{max-width:768px}
+.canvas-frame.mobile{max-width:390px}
 
+/* Canvas placeholder blocks */
+.cv-hero{background:#1a1c1e;padding:60px 40px;text-align:center;color:#fff}
+.cv-hero h1{font-size:32px;font-weight:800;margin-bottom:12px}
+.cv-hero p{font-size:16px;opacity:.7;margin-bottom:24px}
+.cv-hero-btn{background:var(--green);color:#fff;border:none;padding:12px 28px;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer}
+.cv-section{padding:48px 40px}
+.cv-section h2{font-size:24px;font-weight:700;margin-bottom:8px;color:#1a1c1e}
+.cv-section p{font-size:15px;color:#666;line-height:1.6;margin-bottom:24px}
+.cv-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cv-card{background:#f6f6f7;border-radius:8px;padding:20px}
+.cv-card-title{font-size:14px;font-weight:700;color:#1a1c1e;margin-bottom:6px}
+.cv-card-body{font-size:13px;color:#666;line-height:1.5}
+.cv-footer{background:#1a1c1e;padding:32px 40px;color:rgba(255,255,255,.5);font-size:13px;text-align:center}
+.canvas-block{position:relative;cursor:pointer;outline:2px solid transparent;outline-offset:-2px}
+.canvas-block:hover{outline-color:rgba(46,125,50,.35)}
+.canvas-block.selected{outline-color:var(--green)}
+.canvas-delete-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text-2);display:none;align-items:center;justify-content:center;cursor:pointer;font-size:16px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:2}
+.canvas-block.selected>.canvas-delete-btn{display:flex}
+.canvas-drop-placeholder{height:58px;margin:0;background:rgba(46,125,50,.08);border:2px dashed var(--green);display:flex;align-items:center;justify-content:center;color:var(--green);font-size:13px;font-weight:700;letter-spacing:.2px}
+.canvas-drop-placeholder::before{content:'+';width:24px;height:24px;border-radius:50%;border:1px solid var(--green);display:inline-flex;align-items:center;justify-content:center;margin-right:8px;font-size:18px;line-height:1;background:var(--surface)}
+
+/* Right panel */
+.right-panel{
+  width:260px;flex-shrink:0;background:var(--surface);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:width .22s ease,opacity .18s;
+}
+.right-panel.hidden{width:0;opacity:0;pointer-events:none;border-left:none}
 .panel-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
 .ptab{flex:1;padding:11px 8px;font-size:12.5px;font-weight:500;color:var(--text-2);cursor:pointer;text-align:center;border:none;background:none;font-family:var(--font);white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
 .ptab.active{color:var(--text);border-bottom:2px solid var(--green);font-weight:600}
 .ptab:hover:not(.active){color:var(--text);background:var(--bg)}
-.panel-body{flex:1;overflow-y:auto;min-width:260px}/* min-width keeps content from squishing during transition */
+.panel-body{display:none;flex:1;overflow-y:auto;min-width:260px;scrollbar-gutter:stable}
+.panel-body.active{display:block}
 .panel-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;color:var(--text-3);gap:8px;min-height:200px}
 .panel-empty-icon{font-size:28px;opacity:.3;margin-bottom:4px}
-
 .prop-section{padding:14px 16px;border-bottom:1px solid var(--border-light)}
 .prop-section-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);margin-bottom:12px}
 .prop-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .prop-lbl{font-size:12px;color:var(--text-2);width:68px;flex-shrink:0}
-.prop-input{flex:1;height:30px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 8px;font-family:var(--font);font-size:12px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s}
+.prop-input{flex:1;height:30px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 8px;font-family:var(--font);font-size:12px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;min-width:0}
 .prop-input:focus{border-color:var(--green);box-shadow:0 0 0 2px var(--green-light)}
+.prop-textarea{height:auto;min-height:64px;padding:8px;resize:vertical}
+.prop-select{height:30px;cursor:pointer}
+.prop-help{font-size:11.5px;color:var(--text-3);line-height:1.4;margin-top:8px}
+.prop-context{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border-light);background:var(--bg)}
+.prop-context-title{font-size:12.5px;font-weight:600;color:var(--text)}
+.prop-link{border:0;background:none;color:var(--green);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;padding:0}
 
-.block-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
-.block-item{border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px;text-align:center;cursor:grab;transition:border-color .15s,background .15s;user-select:none}
-.block-item:hover{border-color:var(--green);background:var(--green-light)}
-.block-item svg{width:18px;height:18px;display:block;margin:0 auto 6px;color:var(--text-2)}
-.block-lbl{font-size:11.5px;color:var(--text-2);font-weight:500}
-
-.layer-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border-light);transition:background .12s}
-.layer-item:hover{background:var(--bg)}
-.layer-item.sel{background:var(--blue-light);color:var(--blue)}
-.layer-item svg{width:15px;height:15px;flex-shrink:0;color:var(--text-3);display:block}
-
-.editor-status{height:26px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:14px;flex-shrink:0}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
-.status-txt{font-size:11.5px;color:var(--text-3)}
-
-@media(max-width:768px){
+/* Responsive */
+@media(max-width:900px){
   .right-panel{display:none!important}
-  .panel-toggle-btn{display:none}
-  .zoom-ctrl{display:none}
   .editor-bar-center{display:none}
 }
 @media(max-width:680px){
-  .editor-bar{gap:6px;padding:0 12px}
+  .editor-bar{padding:0 12px;gap:8px}
   .btn-label{display:none}
-  .editor-bar-actions .btn{padding:8px 10px;gap:0;min-width:36px;justify-content:center}
+  .editor-bar-actions .btn{padding:8px 10px;min-width:36px;justify-content:center}
   .editor-bar-actions .btn-secondary{display:none}
-  #edPageStatus{display:none}
-}
-@media(max-width:500px){
-  .editor-bar{height:auto;padding:8px 12px;gap:6px}
+  .editor-breadcrumb .breadcrumb-current{display:none}
 }
 </style>
 
-<div class="editor-shell">
+<div class="page">
+  <!-- Editor bar — replaces standard page-header -->
   <div class="editor-bar">
-    <button class="back-btn" onclick="navigate('website')">
-      <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
-      Pages
-    </button>
-    <div style="min-width:0;flex-shrink:1;overflow:hidden">
-      <div class="editor-page-name" id="edPageName" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Home</div>
-      <div class="editor-page-status" id="edPageStatus" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Published · dealercrest.com/</div>
+
+    <!-- Breadcrumb: Pages › Home -->
+    <div class="editor-breadcrumb">
+      <span class="breadcrumb-parent" onclick="navigate('website')">Pages</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current" id="edPageName">Home</span>
     </div>
 
-    <!-- Center: device + zoom controls -->
+    <!-- Center: device switcher -->
     <div class="editor-bar-center">
-      <div class="device-btns">
-        <button class="dev-btn active" title="Desktop" onclick="setDevice(this,'100%')">
-          <svg width="15" height="15"><use href="#icon-device-desktop"/></svg>
-        </button>
-        <button class="dev-btn" title="Tablet" onclick="setDevice(this,'768px')">
-          <svg width="15" height="15"><use href="#icon-device-tablet"/></svg>
-        </button>
-        <button class="dev-btn" title="Mobile" onclick="setDevice(this,'390px')">
-          <svg width="15" height="15"><use href="#icon-device-mobile"/></svg>
-        </button>
-      </div>
-      <div class="zoom-ctrl">
-        <button class="zoom-btn" onclick="adjustZoom(-10)">−</button>
-        <span class="zoom-val" id="zoomVal">100%</span>
-        <button class="zoom-btn" onclick="adjustZoom(10)">+</button>
-      </div>
+      <button class="dev-btn active" title="Desktop" onclick="setDevice('desktop',this)">
+        <svg><use href="#icon-device-desktop"/></svg>
+      </button>
+      <button class="dev-btn" title="Tablet" onclick="setDevice('tablet',this)">
+        <svg><use href="#icon-device-tablet"/></svg>
+      </button>
+      <button class="dev-btn" title="Mobile" onclick="setDevice('mobile',this)">
+        <svg><use href="#icon-device-mobile"/></svg>
+      </button>
     </div>
 
-    <!-- Right: actions + panel toggle -->
+    <!-- Actions -->
     <div class="editor-bar-actions">
-      <button class="btn btn-secondary" onclick="previewPage()">
-        <svg width="15" height="15"><use href="#icon-eye"/></svg>
+      <button class="btn btn-secondary" onclick="navigate('website')">
+        <span class="btn-label">Cancel</span>
+      </button>
+      <button class="btn btn-secondary" id="previewBtn">
+        <svg width="14" height="14"><use href="#icon-eye"/></svg>
         <span class="btn-label">Preview</span>
       </button>
-      <button class="btn btn-secondary" onclick="saveDraft(this)">Save draft</button>
-      <button class="btn btn-primary" onclick="publishPage(this)">
-        <svg width="15" height="15"><use href="#icon-check"/></svg>
+      <button class="panel-toggle-btn active" id="panelToggleBtn" title="Toggle panel" onclick="toggleRightPanel()">
+        <svg><use href="#icon-panel"/></svg>
+      </button>
+      <button class="btn btn-primary" id="publishBtn" onclick="publishPage()">
+        <svg width="14" height="14"><use href="#icon-check"/></svg>
         <span class="btn-label">Publish</span>
       </button>
-      <!-- change 6: panel toggle -->
-      <button class="panel-toggle-btn active" id="panelToggleBtn" title="Toggle panel" onclick="togglePanel()">
-        <svg width="2" height="18"><use href="#icon-panel"/></svg>
-      </button>
     </div>
   </div>
 
+  <!-- Editor body -->
   <div class="editor-body">
+
     <!-- Canvas -->
-    <div class="canvas-area">
+    <div class="editor-canvas">
       <div class="canvas-frame" id="canvasFrame">
-        <div style="background:#1a1c1e;padding:14px 28px;display:flex;align-items:center;justify-content:space-between">
-          <span style="color:#fff;font-size:17px;font-weight:700">AutoTrader</span>
-          <div style="display:flex;gap:20px;font-size:12px;color:rgba(255,255,255,.7)"><span>New Cars</span><span>Used Cars</span><span>Finance</span><span>Contact</span></div>
+        <div class="cv-hero canvas-block" data-canvas-block data-block-type="hero" data-block-title="Hero">
+          <h1>Drive Your Dream</h1>
+          <p>Browse our full inventory of new and pre-owned vehicles.</p>
+          <button class="cv-hero-btn">Browse Inventory</button>
         </div>
-        <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:72px 32px;text-align:center;color:#fff">
-          <div style="font-size:36px;font-weight:700;margin-bottom:12px">Find Your Perfect Car</div>
-          <div style="font-size:15px;opacity:.85;max-width:480px;margin:0 auto 24px">Browse thousands of certified pre-owned vehicles with transparent pricing.</div>
-          <span style="display:inline-block;padding:12px 28px;background:#fff;color:#764ba2;font-weight:700;font-size:14px;border-radius:4px;cursor:pointer">Browse Inventory</span>
+        <div class="cv-section canvas-block" data-canvas-block data-block-type="section" data-block-title="Content section">
+          <h2>Why Choose Us?</h2>
+          <p>We've been serving the community for over 20 years with honest pricing, great selection, and exceptional service.</p>
+          <div class="cv-cards">
+            <div class="cv-card"><div class="cv-card-title">Best Price Guarantee</div><div class="cv-card-body">We match or beat any competitor's advertised price.</div></div>
+            <div class="cv-card"><div class="cv-card-title">Certified Pre-Owned</div><div class="cv-card-body">Every used vehicle passes our 120-point inspection.</div></div>
+            <div class="cv-card"><div class="cv-card-title">Free Test Drives</div><div class="cv-card-body">Take any vehicle for a spin — no pressure, no obligation.</div></div>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:40px 28px;background:#f6f6f7">
-          <div style="background:#fff;border:1px solid #e1e3e5;border-radius:8px;padding:16px"><div style="height:100px;background:#f6f6f7;border-radius:6px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:28px">🚗</div><div style="font-size:13px;font-weight:600;margin-bottom:4px">2023 Toyota Camry</div><div style="font-size:12px;color:#6d7175">$27,500 · 12,400 mi</div></div>
-          <div style="background:#fff;border:1px solid #e1e3e5;border-radius:8px;padding:16px"><div style="height:100px;background:#f6f6f7;border-radius:6px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:28px">🚙</div><div style="font-size:13px;font-weight:600;margin-bottom:4px">2022 Honda CR-V</div><div style="font-size:12px;color:#6d7175">$31,200 · 8,100 mi</div></div>
-          <div style="background:#fff;border:1px solid #e1e3e5;border-radius:8px;padding:16px"><div style="height:100px;background:#f6f6f7;border-radius:6px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:28px">🚘</div><div style="font-size:13px;font-weight:600;margin-bottom:4px">2024 Ford Mustang</div><div style="font-size:12px;color:#6d7175">$44,900 · 1,200 mi</div></div>
-        </div>
-        <div style="background:#1a1c1e;padding:24px;text-align:center;color:rgba(255,255,255,.4);font-size:12px">© 2025 AutoTrader SaaS · Powered by DealerCrest</div>
+        <div class="cv-footer canvas-block" data-canvas-block data-block-type="footer" data-block-title="Footer">© 2026 DealerCrest. All rights reserved.</div>
       </div>
     </div>
 
-    <!-- Right panel -->
+    <!-- Right: page settings panel -->
     <div class="right-panel" id="rightPanel">
       <div class="panel-tabs">
-        <button class="ptab active" onclick="switchPanel(this,'props')">Properties</button>
-        <button class="ptab" onclick="switchPanel(this,'blocks')">Blocks</button>
+        <button class="ptab active" type="button" data-panel-tab="props" onclick="switchPanel(this,'props')">Properties</button>
+        <button class="ptab" type="button" data-panel-tab="blocks" onclick="switchPanel(this,'blocks')">Blocks</button>
       </div>
-      <div class="panel-body" id="paneProps">
-        <div class="panel-empty">
-          <div class="panel-empty-icon">◻</div>
-          <strong style="font-size:13px;color:var(--text-2)">No block selected</strong>
-          <span style="font-size:12px">Click any section on the canvas to edit properties</span>
-        </div>
+      <div class="panel-body active" id="paneProps">
+        <div id="propsContent"></div>
       </div>
-      <div class="panel-body" id="paneBlocks" style="display:none">
+      <div class="panel-body" id="paneBlocks">
         <div class="block-grid">
-          <div class="block-item"><svg width="18" height="18"><use href="#icon-block-header"/></svg><div class="block-lbl">Header</div></div>
-          <div class="block-item"><svg width="18" height="18"><use href="#icon-block-hero"/></svg><div class="block-lbl">Hero</div></div>
-          <div class="block-item"><svg width="18" height="18"><use href="#icon-block-grid"/></svg><div class="block-lbl">Grid</div></div>
-          <div class="block-item"><svg width="18" height="18"><use href="#icon-block-text"/></svg><div class="block-lbl">Text</div></div>
-          <div class="block-item"><svg width="18" height="18"><use href="#icon-block-image"/></svg><div class="block-lbl">Image</div></div>
-          <div class="block-item"><svg width="18" height="18"><use href="#icon-block-form"/></svg><div class="block-lbl">Form</div></div>
-          <div class="block-item"><svg width="18" height="18"><use href="#icon-block-footer"/></svg><div class="block-lbl">Footer</div></div>
-          <div class="block-item"><svg width="18" height="18"><use href="#icon-block-divider"/></svg><div class="block-lbl">Divider</div></div>
+          <div class="block-item" data-block-type="header" onclick="showTemplates('header')"><svg width="18" height="18"><use href="#icon-block-header"/></svg><div class="block-lbl">Header</div></div>
+          <div class="block-item" data-block-type="hero" onclick="showTemplates('hero')"><svg width="18" height="18"><use href="#icon-block-hero"/></svg><div class="block-lbl">Hero</div></div>
+          <div class="block-item" data-block-type="grid" onclick="showTemplates('grid')"><svg width="18" height="18"><use href="#icon-block-grid"/></svg><div class="block-lbl">Grid</div></div>
+          <div class="block-item" data-block-type="text" onclick="showTemplates('text')"><svg width="18" height="18"><use href="#icon-block-text"/></svg><div class="block-lbl">Text</div></div>
+          <div class="block-item" data-block-type="image" onclick="showTemplates('image')"><svg width="18" height="18"><use href="#icon-block-image"/></svg><div class="block-lbl">Image</div></div>
+          <div class="block-item" data-block-type="form" onclick="showTemplates('form')"><svg width="18" height="18"><use href="#icon-block-form"/></svg><div class="block-lbl">Form</div></div>
+          <div class="block-item" data-block-type="footer" onclick="showTemplates('footer')"><svg width="18" height="18"><use href="#icon-block-footer"/></svg><div class="block-lbl">Footer</div></div>
+          <div class="block-item" data-block-type="divider" onclick="showTemplates('divider')"><svg width="18" height="18"><use href="#icon-block-divider"/></svg><div class="block-lbl">Divider</div></div>
         </div>
-      </div></div>
+        <div class="template-list" id="templateList"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="editor-status">
-    <div class="status-dot"></div>
-    <span class="status-txt" id="edStatus">Draft — Last saved 2 min ago</span>
-    <div style="flex:1"></div>
-    <span class="status-txt" id="selInfo">No selection</span>
-  </div>
+  </div><!-- /editor-body -->
 </div>
 
 <script>
-// Read page name + slug from the parent shell's PAGES['_editor'] entry.
-// That entry is always populated before this fragment loads — either by a
-// click (navigateEditor) or by boot (buildEditorFromPageId). Both store the
-// query string in PAGES['_editor'].file so we can parse it here.
+// Read page info from PAGES['_editor'] entry set by navigateEditor() or buildEditorFromPageId()
 (function() {
   let name = 'Home', slug = '/';
   try {
@@ -208,74 +259,480 @@
       name = qs.get('name') || name;
       slug = qs.get('slug') || slug;
     } else {
-      // Fallback: parse directly from the URL hash #website/edit/<pageId>
+      // Fallback: parse from URL hash
       const parts = location.hash.replace('#','').split('/');
       if (parts[1] === 'edit' && parts[2]) {
-        const pageId = parts[2];
-        const nameMap = {
-          'home':'Home','inventory-page':'Inventory',
-          'contact':'Contact Us','about':'About Us'
-        };
-        name = nameMap[pageId] || (pageId.charAt(0).toUpperCase() + pageId.slice(1));
-        slug = {home:'/',  'inventory-page':'/inventory'}[pageId] || '/' + pageId;
+        const pid = parts[2];
+        const nameMap = { home:'Home','inventory-page':'Inventory',contact:'Contact Us',about:'About Us' };
+        name = nameMap[pid] || (pid.charAt(0).toUpperCase() + pid.slice(1));
+        slug = { home:'/', 'inventory-page':'/inventory' }[pid] || '/' + pid;
       }
     }
   } catch(e) {}
+  window.editorPageData = { name, slug };
   document.getElementById('edPageName').textContent = name;
-  document.getElementById('edPageStatus').textContent = 'dealercrest.com' + slug;
+  // document.getElementById('edPageStatus').textContent = 'dealercrest.com' + slug;
 })();
 
-let zoom = 100;
-let panelVisible = true;
-
-// change 6: toggle right panel
-function togglePanel() {
-  panelVisible = !panelVisible;
-  const panel = document.getElementById('rightPanel');
-  const btn   = document.getElementById('panelToggleBtn');
-  panel.classList.toggle('hidden', !panelVisible);
-  btn.classList.toggle('active', panelVisible);
-}
-
-function setDevice(btn, width) {
+// Device switcher
+function setDevice(device, btn) {
   document.querySelectorAll('.dev-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const f = document.getElementById('canvasFrame');
-  f.style.width    = width === '100%' ? '' : width;
-  f.style.maxWidth = width;
+  const frame = document.getElementById('canvasFrame');
+  frame.className = 'canvas-frame' + (device !== 'desktop' ? ' ' + device : '');
 }
 
-function adjustZoom(d) {
-  zoom = Math.min(150, Math.max(50, zoom + d));
-  document.getElementById('zoomVal').textContent = zoom + '%';
-  const f = document.getElementById('canvasFrame');
-  f.style.transform = zoom === 100 ? '' : 'scale(' + (zoom/100) + ')';
+// Panel toggles
+window.panelVisible  = (window.panelVisible  !== undefined) ? window.panelVisible  : true;
+
+function toggleRightPanel() {
+  window.panelVisible = !window.panelVisible;
+  document.getElementById('rightPanel').classList.toggle('hidden', !window.panelVisible);
+  document.getElementById('panelToggleBtn').classList.toggle('active', window.panelVisible);
 }
 
 function switchPanel(btn, pane) {
-  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  ['Props','Blocks'].forEach(p =>
-    document.getElementById('pane'+p).style.display = pane === p.toLowerCase() ? '' : 'none'
-  );
+  document.querySelectorAll('[data-panel-tab]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.panelTab === pane);
+  });
+  document.querySelectorAll('.panel-body').forEach(panel => {
+    panel.classList.toggle('active', panel.id === 'pane' + pane.charAt(0).toUpperCase() + pane.slice(1));
+    panel.style.display = panel.classList.contains('active') ? '' : 'none';
+  });
 }
 
-function previewPage() { window.open('https://dev.dealercrest.com/', '_blank'); }
-
-function saveDraft(btn) {
-  const orig = btn.textContent; btn.textContent = 'Saving…'; btn.disabled = true;
-  setTimeout(() => {
-    document.getElementById('edStatus').textContent = 'Draft saved · Just now';
-    btn.textContent = orig; btn.disabled = false;
-  }, 700);
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
 }
 
-function publishPage(btn) {
-  if (!confirm('Publish to your live site?')) return;
-  const orig = btn.innerHTML; btn.textContent = 'Publishing…'; btn.disabled = true;
-  setTimeout(() => {
-    document.getElementById('edStatus').textContent = 'Published · Just now';
-    btn.innerHTML = orig; btn.disabled = false;
-  }, 1000);
+function renderPageSettings() {
+  window.selectedCanvasBlock = null;
+  document.querySelectorAll('[data-canvas-block]').forEach(item => item.classList.remove('selected'));
+  const page = window.editorPageData || { name: 'Home', slug: '/' };
+  const pageName = escapeHtml(page.name);
+  const pageSlug = escapeHtml(page.slug.replace(/^\//,''));
+  document.getElementById('propsContent').innerHTML = `
+    <div class="prop-context">
+      <div class="prop-context-title">Page settings</div>
+    </div>
+    <div class="prop-section">
+      <div class="prop-section-title">Page</div>
+      <div class="prop-row">
+        <label class="prop-lbl">Title</label>
+        <input type="text" class="prop-input" id="rp-title" value="${pageName}">
+      </div>
+      <div class="prop-row">
+        <label class="prop-lbl">Slug</label>
+        <input type="text" class="prop-input" id="rp-slug" value="${pageSlug}">
+      </div>
+    </div>
+    <div class="prop-section">
+      <div class="prop-section-title">SEO</div>
+      <div class="prop-row">
+        <label class="prop-lbl">Meta title</label>
+        <input type="text" class="prop-input" placeholder="Page title for search engines">
+      </div>
+      <div class="prop-row">
+        <label class="prop-lbl">Meta</label>
+        <textarea class="prop-input prop-textarea" placeholder="Brief description for search results"></textarea>
+      </div>
+    </div>
+    <div class="prop-section">
+      <div class="prop-section-title">Status</div>
+      <div class="prop-row">
+        <label class="prop-lbl">Visible</label>
+        <select class="prop-input prop-select">
+          <option>Published</option>
+          <option>Draft</option>
+          <option>Hidden</option>
+        </select>
+      </div>
+    </div>
+  `;
+  switchPanel(null, 'props');
+}
+
+window.editorBlockTemplates = {
+  header: [
+    {
+      id: 'header-simple',
+      title: 'Simple nav',
+      desc: 'Brand name with three navigation links.',
+      html: '<div class="canvas-block" data-canvas-block data-block-type="header" data-block-title="Header" style="background:#1a1c1e;padding:14px 28px;display:flex;align-items:center;justify-content:space-between"><strong style="color:#fff;font-size:17px">DealerCrest</strong><div style="display:flex;gap:20px;font-size:12px;color:rgba(255,255,255,.7)"><span>Inventory</span><span>Finance</span><span>Contact</span></div></div>'
+    },
+    {
+      id: 'header-cta',
+      title: 'Header with CTA',
+      desc: 'Navigation with a call-to-action button.',
+      html: '<div class="canvas-block" data-canvas-block data-block-type="header" data-block-title="Header" style="background:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e1e3e5"><strong style="color:#1a1c1e;font-size:17px">DealerCrest</strong><button class="cv-hero-btn" style="padding:9px 16px">Schedule test drive</button></div>'
+    }
+  ],
+  hero: [
+    {
+      id: 'hero-dark',
+      title: 'Dark hero',
+      desc: 'Centered headline, copy, and primary button.',
+      html: '<div class="cv-hero canvas-block" data-canvas-block data-block-type="hero" data-block-title="Hero"><h1>Drive Your Dream</h1><p>Browse our full inventory of new and pre-owned vehicles.</p><button class="cv-hero-btn">Browse Inventory</button></div>'
+    },
+    {
+      id: 'hero-light',
+      title: 'Light hero',
+      desc: 'Bright dealership introduction with CTA.',
+      html: '<div class="canvas-block" data-canvas-block data-block-type="hero" data-block-title="Hero" style="background:#f6f6f7;padding:58px 40px;text-align:left;color:#1a1c1e"><h1 style="font-size:32px;font-weight:800;margin-bottom:12px">Find your next vehicle</h1><p style="font-size:16px;color:#666;margin-bottom:24px">Shop hand-picked inventory with transparent pricing.</p><button class="cv-hero-btn">View specials</button></div>'
+    }
+  ],
+  grid: [
+    {
+      id: 'grid-cards',
+      title: 'Feature cards',
+      desc: 'Three cards for selling points or services.',
+      html: '<div class="cv-section canvas-block" data-canvas-block data-block-type="grid" data-block-title="Card grid"><h2>Why Choose Us?</h2><p>Helpful reasons for shoppers to trust your dealership.</p><div class="cv-cards"><div class="cv-card"><div class="cv-card-title">Fair pricing</div><div class="cv-card-body">Transparent offers on every vehicle.</div></div><div class="cv-card"><div class="cv-card-title">Quality inspected</div><div class="cv-card-body">Every vehicle is reviewed before listing.</div></div><div class="cv-card"><div class="cv-card-title">Easy financing</div><div class="cv-card-body">Simple options for every buyer.</div></div></div></div>'
+    },
+    {
+      id: 'grid-inventory',
+      title: 'Inventory teaser',
+      desc: 'Compact vehicle listing preview.',
+      html: '<div class="cv-section canvas-block" data-canvas-block data-block-type="grid" data-block-title="Inventory grid"><h2>Featured vehicles</h2><div class="cv-cards"><div class="cv-card"><div class="cv-card-title">2023 Toyota Camry</div><div class="cv-card-body">$27,500 · 12,400 mi</div></div><div class="cv-card"><div class="cv-card-title">2022 Honda CR-V</div><div class="cv-card-body">$31,200 · 8,100 mi</div></div><div class="cv-card"><div class="cv-card-title">2024 Ford Mustang</div><div class="cv-card-body">$44,900 · 1,200 mi</div></div></div></div>'
+    }
+  ],
+  text: [
+    {
+      id: 'text-story',
+      title: 'Story section',
+      desc: 'Heading and paragraph content.',
+      html: '<div class="cv-section canvas-block" data-canvas-block data-block-type="text" data-block-title="Text"><h2>Locally trusted for 20 years</h2><p>We combine honest pricing, friendly service, and a carefully selected inventory so every customer can shop with confidence.</p></div>'
+    },
+    {
+      id: 'text-centered',
+      title: 'Centered intro',
+      desc: 'Short centered copy section.',
+      html: '<div class="cv-section canvas-block" data-canvas-block data-block-type="text" data-block-title="Text" style="text-align:center"><h2>Built around your needs</h2><p style="max-width:620px;margin-left:auto;margin-right:auto">From first look to final paperwork, our team keeps the process clear and comfortable.</p></div>'
+    }
+  ],
+  image: [
+    {
+      id: 'image-banner',
+      title: 'Image banner',
+      desc: 'Wide visual placeholder section.',
+      html: '<div class="canvas-block" data-canvas-block data-block-type="image" data-block-title="Image" style="height:260px;background:#d8dbe0;display:flex;align-items:center;justify-content:center;color:#666;font-size:14px">Dealership image</div>'
+    },
+    {
+      id: 'image-split',
+      title: 'Image and copy',
+      desc: 'Two-column media section.',
+      html: '<div class="canvas-block" data-canvas-block data-block-type="image" data-block-title="Image section" style="display:grid;grid-template-columns:1fr 1fr"><div style="background:#d8dbe0;min-height:240px;display:flex;align-items:center;justify-content:center;color:#666">Vehicle photo</div><div style="padding:42px"><h2 style="font-size:24px;margin-bottom:10px;color:#1a1c1e">See every detail</h2><p style="font-size:15px;color:#666;line-height:1.6">Use photos to highlight your lot, service team, or featured models.</p></div></div>'
+    }
+  ],
+  form: [
+    {
+      id: 'form-contact',
+      title: 'Contact form',
+      desc: 'Lead capture form layout.',
+      html: '<div class="cv-section canvas-block" data-canvas-block data-block-type="form" data-block-title="Contact form"><h2>Contact us</h2><p>Tell us what you are looking for and our team will follow up.</p><div style="display:grid;gap:10px;max-width:420px"><input class="prop-input" placeholder="Name"><input class="prop-input" placeholder="Email"><button class="cv-hero-btn">Send message</button></div></div>'
+    },
+    {
+      id: 'form-test-drive',
+      title: 'Test drive form',
+      desc: 'Appointment request block.',
+      html: '<div class="cv-section canvas-block" data-canvas-block data-block-type="form" data-block-title="Test drive form"><h2>Schedule a test drive</h2><div style="display:grid;gap:10px;max-width:420px"><input class="prop-input" placeholder="Vehicle"><input class="prop-input" placeholder="Preferred date"><button class="cv-hero-btn">Request time</button></div></div>'
+    }
+  ],
+  footer: [
+    {
+      id: 'footer-simple',
+      title: 'Simple footer',
+      desc: 'Copyright and brand footer.',
+      html: '<div class="cv-footer canvas-block" data-canvas-block data-block-type="footer" data-block-title="Footer">© 2026 DealerCrest. All rights reserved.</div>'
+    },
+    {
+      id: 'footer-links',
+      title: 'Footer with links',
+      desc: 'Footer with legal and contact links.',
+      html: '<div class="cv-footer canvas-block" data-canvas-block data-block-type="footer" data-block-title="Footer"><div style="margin-bottom:10px;color:#fff">DealerCrest</div><div style="display:flex;gap:18px;justify-content:center"><span>Privacy</span><span>Terms</span><span>Contact</span></div></div>'
+    }
+  ],
+  divider: [
+    {
+      id: 'divider-line',
+      title: 'Line divider',
+      desc: 'Subtle horizontal rule.',
+      html: '<div class="canvas-block" data-canvas-block data-block-type="divider" data-block-title="Divider" style="padding:20px 40px"><div style="height:1px;background:#e1e3e5"></div></div>'
+    },
+    {
+      id: 'divider-space',
+      title: 'Spacer',
+      desc: 'Vertical spacing between blocks.',
+      html: '<div class="canvas-block" data-canvas-block data-block-type="divider" data-block-title="Spacer" style="height:48px;background:#fff"></div>'
+    }
+  ]
+};
+
+function showTemplates(type) {
+  document.querySelectorAll('#paneBlocks [data-block-type]').forEach(item => {
+    item.classList.toggle('active', item.dataset.blockType === type);
+  });
+  const templates = window.editorBlockTemplates[type] || [];
+  document.getElementById('templateList').innerHTML = `
+    <div class="template-list-head">${escapeHtml(type)} templates</div>
+    ${templates.map(template => `
+      <div class="template-item" draggable="true" data-template-id="${escapeHtml(template.id)}" data-template-type="${escapeHtml(type)}" ondragstart="startTemplateDrag(event)" ondragend="hideDropPlaceholder()" ondblclick="addTemplateToCanvas('${escapeHtml(type)}','${escapeHtml(template.id)}')">
+        <div class="template-title">${escapeHtml(template.title)}</div>
+        <div class="template-desc">${escapeHtml(template.desc)}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function getTemplate(type, id) {
+  return (window.editorBlockTemplates[type] || []).find(template => template.id === id);
+}
+
+function startTemplateDrag(event) {
+  const item = event.currentTarget;
+  event.dataTransfer.setData('text/plain', JSON.stringify({
+    type: item.dataset.templateType,
+    id: item.dataset.templateId
+  }));
+  event.dataTransfer.effectAllowed = 'copy';
+}
+
+function addTemplateToCanvas(type, id, beforeNode) {
+  const template = getTemplate(type, id);
+  if (!template) return null;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = template.html.trim();
+  const block = wrap.firstElementChild;
+  setupCanvasBlock(block);
+  const frame = document.getElementById('canvasFrame');
+  if (beforeNode && beforeNode.parentElement === frame) {
+    frame.insertBefore(block, beforeNode);
+  } else {
+    frame.appendChild(block);
+  }
+  selectCanvasBlock(block);
+  switchPanel(null, 'props');
+  return block;
+}
+
+function getDropPlaceholder() {
+  let placeholder = document.getElementById('canvasDropPlaceholder');
+  if (!placeholder) {
+    placeholder = document.createElement('div');
+    placeholder.id = 'canvasDropPlaceholder';
+    placeholder.className = 'canvas-drop-placeholder';
+    placeholder.textContent = 'Drop template here';
+  }
+  return placeholder;
+}
+
+function hideDropPlaceholder() {
+  const placeholder = document.getElementById('canvasDropPlaceholder');
+  if (placeholder) placeholder.remove();
+  document.getElementById('canvasFrame').classList.remove('canvas-drop-active');
+}
+
+function moveDropPlaceholder(event) {
+  const frame = document.getElementById('canvasFrame');
+  const placeholder = getDropPlaceholder();
+  const blocks = [...frame.querySelectorAll(':scope > [data-canvas-block]')];
+  const target = event.target.closest('[data-canvas-block]');
+
+  frame.classList.add('canvas-drop-active');
+
+  if (target && frame.contains(target)) {
+    const rect = target.getBoundingClientRect();
+    const insertAfter = event.clientY > rect.top + rect.height / 2;
+    frame.insertBefore(placeholder, insertAfter ? target.nextSibling : target);
+    return;
+  }
+
+  const nextBlock = blocks.find(block => {
+    const rect = block.getBoundingClientRect();
+    return event.clientY < rect.top + rect.height / 2;
+  });
+  frame.insertBefore(placeholder, nextBlock || null);
+}
+
+function setupCanvasBlock(block) {
+  block.classList.add('canvas-block');
+  block.setAttribute('data-canvas-block', '');
+  if (!block.dataset.blockTitle) block.dataset.blockTitle = block.dataset.blockType || 'Block';
+  if (!block.querySelector(':scope > .canvas-delete-btn')) {
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'canvas-delete-btn';
+    del.innerHTML = '&times;';
+    del.title = 'Delete block';
+    del.onclick = event => {
+      event.stopPropagation();
+      deleteCanvasBlock(block);
+    };
+    block.appendChild(del);
+  }
+}
+
+function selectCanvasBlock(block) {
+  if (!block) {
+    renderPageSettings();
+    return;
+  }
+  window.selectedCanvasBlock = block;
+  document.querySelectorAll('[data-canvas-block]').forEach(item => {
+    item.classList.toggle('selected', item === block);
+  });
+  switchPanel(null, 'props');
+  renderCanvasBlockSettings(block);
+}
+
+function deleteCanvasBlock(block) {
+  const target = block || window.selectedCanvasBlock;
+  if (!target) return;
+  target.remove();
+  renderPageSettings();
+}
+
+function renderCanvasBlockSettings(block) {
+  const type = block.dataset.blockType || 'block';
+  const title = block.dataset.blockTitle || type;
+  const heading = escapeHtml(block.querySelector('h1,h2,.cv-card-title,strong')?.textContent?.trim() || '');
+  const body = escapeHtml(block.querySelector('p,.cv-card-body')?.textContent?.trim() || '');
+  const button = escapeHtml(block.querySelector('button:not(.canvas-delete-btn)')?.textContent?.trim() || '');
+  const forms = {
+    header: `
+      <div class="prop-section">
+        <div class="prop-section-title">Header</div>
+        <div class="prop-row"><label class="prop-lbl">Brand</label><input class="prop-input" value="${heading || 'DealerCrest'}"></div>
+        <div class="prop-row"><label class="prop-lbl">Nav</label><input class="prop-input" value="Inventory, Finance, Contact"></div>
+        <div class="prop-row"><label class="prop-lbl">Sticky</label><select class="prop-input prop-select"><option>On</option><option>Off</option></select></div>
+      </div>`,
+    hero: `
+      <div class="prop-section">
+        <div class="prop-section-title">Hero</div>
+        <div class="prop-row"><label class="prop-lbl">Heading</label><input class="prop-input" value="${heading}"></div>
+        <div class="prop-row"><label class="prop-lbl">Text</label><textarea class="prop-input prop-textarea">${body}</textarea></div>
+        <div class="prop-row"><label class="prop-lbl">Button</label><input class="prop-input" value="${button}"></div>
+      </div>`,
+    grid: `
+      <div class="prop-section">
+        <div class="prop-section-title">Grid</div>
+        <div class="prop-row"><label class="prop-lbl">Columns</label><select class="prop-input prop-select"><option>3 columns</option><option>2 columns</option><option>4 columns</option></select></div>
+        <div class="prop-row"><label class="prop-lbl">Gap</label><input class="prop-input" value="16px"></div>
+        <div class="prop-row"><label class="prop-lbl">Source</label><select class="prop-input prop-select"><option>Manual cards</option><option>Inventory</option></select></div>
+      </div>`,
+    section: `
+      <div class="prop-section">
+        <div class="prop-section-title">Section</div>
+        <div class="prop-row"><label class="prop-lbl">Heading</label><input class="prop-input" value="${heading}"></div>
+        <div class="prop-row"><label class="prop-lbl">Text</label><textarea class="prop-input prop-textarea">${body}</textarea></div>
+        <div class="prop-row"><label class="prop-lbl">Cards</label><select class="prop-input prop-select"><option>Visible</option><option>Hidden</option></select></div>
+      </div>`,
+    text: `
+      <div class="prop-section">
+        <div class="prop-section-title">Text</div>
+        <div class="prop-row"><label class="prop-lbl">Heading</label><input class="prop-input" value="${heading}"></div>
+        <div class="prop-row"><label class="prop-lbl">Body</label><textarea class="prop-input prop-textarea">${body}</textarea></div>
+        <div class="prop-row"><label class="prop-lbl">Align</label><select class="prop-input prop-select"><option>Left</option><option>Center</option><option>Right</option></select></div>
+      </div>`,
+    image: `
+      <div class="prop-section">
+        <div class="prop-section-title">Image</div>
+        <div class="prop-row"><label class="prop-lbl">Source</label><input class="prop-input" placeholder="Image URL"></div>
+        <div class="prop-row"><label class="prop-lbl">Alt</label><input class="prop-input" placeholder="Describe the image"></div>
+        <div class="prop-row"><label class="prop-lbl">Fit</label><select class="prop-input prop-select"><option>Cover</option><option>Contain</option><option>Fill</option></select></div>
+      </div>`,
+    form: `
+      <div class="prop-section">
+        <div class="prop-section-title">Form</div>
+        <div class="prop-row"><label class="prop-lbl">Title</label><input class="prop-input" value="Contact us"></div>
+        <div class="prop-row"><label class="prop-lbl">Fields</label><input class="prop-input" value="Name, Email, Phone"></div>
+        <div class="prop-row"><label class="prop-lbl">Action</label><select class="prop-input prop-select"><option>Create lead</option><option>Send email</option></select></div>
+      </div>`,
+    footer: `
+      <div class="prop-section">
+        <div class="prop-section-title">Footer</div>
+        <div class="prop-row"><label class="prop-lbl">Text</label><input class="prop-input" value="${escapeHtml(block.textContent.replace('×','').trim())}"></div>
+        <div class="prop-row"><label class="prop-lbl">Links</label><input class="prop-input" value="Privacy, Terms, Contact"></div>
+      </div>`,
+    divider: `
+      <div class="prop-section">
+        <div class="prop-section-title">Divider</div>
+        <div class="prop-row"><label class="prop-lbl">Style</label><select class="prop-input prop-select"><option>Line</option><option>Spacer</option></select></div>
+        <div class="prop-row"><label class="prop-lbl">Height</label><input class="prop-input" value="32px"></div>
+      </div>`
+  };
+  document.getElementById('propsContent').innerHTML = `
+    <div class="prop-context">
+      <div class="prop-context-title">${escapeHtml(title)}</div>
+      <button class="prop-link" type="button" onclick="deleteCanvasBlock()">Delete</button>
+    </div>
+    ${forms[type] || ''}
+    <div class="prop-section">
+      <div class="prop-section-title">Layout</div>
+      <div class="prop-row"><label class="prop-lbl">Padding</label><input class="prop-input" value="24px"></div>
+      <div class="prop-row"><label class="prop-lbl">Width</label><select class="prop-input prop-select"><option>Full</option><option>Contained</option></select></div>
+      <div class="prop-help">These controls update the selected block. Use Page settings for title, slug, SEO, and publishing status.</div>
+    </div>
+  `;
+}
+
+renderPageSettings();
+showTemplates('hero');
+
+document.querySelectorAll('[data-canvas-block]').forEach(setupCanvasBlock);
+
+document.getElementById('canvasFrame').addEventListener('click', event => {
+  const deleteButton = event.target.closest('.canvas-delete-btn');
+  if (deleteButton) return;
+  const block = event.target.closest('[data-canvas-block]');
+  if (block && event.currentTarget.contains(block)) {
+    selectCanvasBlock(block);
+  } else {
+    renderPageSettings();
+  }
+});
+
+document.querySelector('.editor-canvas').addEventListener('click', event => {
+  if (event.target === event.currentTarget) renderPageSettings();
+});
+
+document.getElementById('canvasFrame').addEventListener('dragover', event => {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'copy';
+  moveDropPlaceholder(event);
+});
+
+document.getElementById('canvasFrame').addEventListener('dragleave', event => {
+  if (!event.currentTarget.contains(event.relatedTarget)) hideDropPlaceholder();
+});
+
+document.getElementById('canvasFrame').addEventListener('drop', event => {
+  event.preventDefault();
+  const placeholder = document.getElementById('canvasDropPlaceholder');
+  try {
+    const data = JSON.parse(event.dataTransfer.getData('text/plain') || '{}');
+    const block = addTemplateToCanvas(data.type, data.id, placeholder);
+    if (placeholder) placeholder.remove();
+    if (block) selectCanvasBlock(block);
+  } catch(e) {}
+  hideDropPlaceholder();
+});
+
+// Publish
+function publishPage() {
+//   const btn = document.getElementById('publishBtn');
+//   const orig = btn.innerHTML; btn.disabled = true;
+//   btn.innerHTML = '<span class="btn-label">Publishing…</span>';
+//   setTimeout(() => {
+//     btn.innerHTML = '<svg width="14" height="14"><use href="#icon-check"/></svg><span class="btn-label"> Published</span>';
+//     document.getElementById('edPageStatus').textContent =
+//       document.getElementById('edPageStatus').textContent.replace('Draft · ','');
+//     setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2000);
+//   }, 800);
 }
 </script>

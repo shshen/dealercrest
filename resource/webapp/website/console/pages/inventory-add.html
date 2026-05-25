@@ -41,12 +41,13 @@
 
 <div class="page">
   <div class="page-header">
-    <div class="page-header-nav">
-      <button class="back-btn" onclick="navigate('inventory')">
-        <svg width="14" height="14"><use href="#icon-chevron-left"/></svg>
-        Inventory
-      </button>
-      <span class="detail-title">Add Vehicle</span>
+    <div class="breadcrumb">
+      <span class="breadcrumb-parent" onclick="navigate('inventory')">Inventory</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Add Vehicle</span>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" onclick="navigate('inventory')">Cancel</button>
     </div>
   </div>
 

@@ -26,6 +26,130 @@
 .search-wrap input:focus{border-color:var(--green)}
 .page-count{margin-left:auto;font-size:13px;color:var(--text-3);font-weight:500}
 
+/* ── Site theme ── */
+.theme-strip{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:20px;
+  overflow:hidden;
+}
+.theme-strip-main{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:16px 18px;
+}
+.theme-thumb{
+  width:168px;
+  height:104px;
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  overflow:hidden;
+  background:var(--bg);
+  flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.theme-thumb-top{height:18px;display:flex;align-items:center;gap:5px;padding:0 8px}
+.theme-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.55)}
+.theme-thumb-hero{height:44px;padding:8px}
+.theme-thumb-line{height:5px;border-radius:6px;margin-bottom:5px}
+.theme-thumb-line.short{width:58%}
+.theme-thumb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:7px 8px}
+.theme-thumb-card{height:20px;border-radius:4px}
+.theme-info{flex:1;min-width:0}
+.theme-kicker{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);margin-bottom:4px}
+.theme-name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:3px}
+.theme-desc{font-size:13px;color:var(--text-2);line-height:1.45}
+.theme-swatches{display:flex;gap:6px;margin-top:10px}
+.theme-swatch{width:18px;height:18px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--border)}
+.theme-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.theme-picker{
+  display:none;
+  border-top:1px solid var(--border-light);
+  background:var(--bg);
+  padding:14px;
+}
+.theme-strip.open .theme-picker{display:block}
+.theme-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.theme-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:10px;
+  cursor:pointer;
+  transition:border-color .15s,box-shadow .15s,background .15s;
+}
+.theme-card:hover{border-color:var(--green);background:var(--green-light)}
+.theme-card.selected{border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}
+.theme-card .theme-thumb{width:100%;height:92px;margin-bottom:10px}
+.theme-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.theme-card-sub{font-size:12px;color:var(--text-3);line-height:1.35}
+.theme-picker-footer{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-light)}
+.theme-pending-note{font-size:12px;color:var(--text-3);margin-right:auto}
+.theme-preview-modal{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:400;display:none;align-items:center;justify-content:center;padding:24px}
+.theme-preview-modal.open{display:flex}
+.theme-preview-dialog{width:min(920px,100%);max-height:calc(100vh - 48px);overflow:auto;background:var(--surface);border-radius:var(--radius);box-shadow:0 18px 48px rgba(0,0,0,.28)}
+.theme-preview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border)}
+.theme-preview-title{font-size:15px;font-weight:700;color:var(--text)}
+.theme-preview-site{background:#fff}
+.theme-preview-nav{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;color:#fff}
+.theme-preview-brand{font-size:17px;font-weight:800}
+.theme-preview-links{display:flex;gap:22px;font-size:12px;opacity:.8}
+.theme-preview-page-hero{padding:64px 40px;text-align:center}
+.theme-preview-page-hero h2{font-size:34px;font-weight:800;margin-bottom:12px}
+.theme-preview-page-hero p{font-size:16px;max-width:520px;margin:0 auto 24px;line-height:1.6}
+.theme-preview-cta{border:0;border-radius:6px;padding:12px 24px;font-family:var(--font);font-size:14px;font-weight:700;color:#fff}
+.theme-preview-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:34px 40px}
+.theme-preview-card-lg{border:1px solid #e1e3e5;border-radius:8px;padding:18px;background:#fff}
+.theme-preview-card-lg strong{display:block;font-size:14px;margin-bottom:6px}
+.theme-preview-card-lg span{display:block;font-size:13px;color:#666;line-height:1.45}
+.theme-preview-foot{padding:22px;text-align:center;font-size:12px}
+.theme-preview-site.theme-modern-full .theme-preview-nav{background:#1a1c1e}
+.theme-preview-site.theme-modern-full .theme-preview-page-hero{background:#f6f6f7;color:#1a1c1e}
+.theme-preview-site.theme-modern-full .theme-preview-page-hero p{color:#666}
+.theme-preview-site.theme-modern-full .theme-preview-cta{background:#008060}
+.theme-preview-site.theme-modern-full .theme-preview-cards{background:#fff}
+.theme-preview-site.theme-modern-full .theme-preview-foot{background:#1a1c1e;color:rgba(255,255,255,.55)}
+.theme-preview-site.theme-premium-full .theme-preview-nav{background:#111827}
+.theme-preview-site.theme-premium-full .theme-preview-page-hero{background:#e5e7eb;color:#111827}
+.theme-preview-site.theme-premium-full .theme-preview-page-hero p{color:#4b5563}
+.theme-preview-site.theme-premium-full .theme-preview-cta{background:#b45309}
+.theme-preview-site.theme-premium-full .theme-preview-cards{background:#f9fafb}
+.theme-preview-site.theme-premium-full .theme-preview-foot{background:#111827;color:rgba(255,255,255,.6)}
+.theme-preview-site.theme-bold-full .theme-preview-nav{background:#0f172a}
+.theme-preview-site.theme-bold-full .theme-preview-page-hero{background:#dbeafe;color:#0f172a}
+.theme-preview-site.theme-bold-full .theme-preview-page-hero p{color:#334155}
+.theme-preview-site.theme-bold-full .theme-preview-cta{background:#2563eb}
+.theme-preview-site.theme-bold-full .theme-preview-cards{background:#eff6ff}
+.theme-preview-site.theme-bold-full .theme-preview-foot{background:#0f172a;color:rgba(255,255,255,.6)}
+.theme-preview-site.theme-classic-full .theme-preview-nav{background:#263238}
+.theme-preview-site.theme-classic-full .theme-preview-page-hero{background:#fff;color:#263238}
+.theme-preview-site.theme-classic-full .theme-preview-page-hero p{color:#555}
+.theme-preview-site.theme-classic-full .theme-preview-cta{background:#2e7d32}
+.theme-preview-site.theme-classic-full .theme-preview-cards{background:#f5f5f5}
+.theme-preview-site.theme-classic-full .theme-preview-foot{background:#263238;color:rgba(255,255,255,.6)}
+.theme-modern .theme-thumb-top{background:#1a1c1e}
+.theme-modern .theme-thumb-hero{background:#f6f6f7}
+.theme-modern .theme-thumb-line{background:#1a1c1e}
+.theme-modern .theme-thumb-line.short{background:#008060}
+.theme-modern .theme-thumb-card{background:#fff;border:1px solid #e1e3e5}
+.theme-premium .theme-thumb-top{background:#111827}
+.theme-premium .theme-thumb-hero{background:#e5e7eb}
+.theme-premium .theme-thumb-line{background:#111827}
+.theme-premium .theme-thumb-line.short{background:#b45309}
+.theme-premium .theme-thumb-card{background:#f9fafb;border:1px solid #d1d5db}
+.theme-bold .theme-thumb-top{background:#0f172a}
+.theme-bold .theme-thumb-hero{background:#dbeafe}
+.theme-bold .theme-thumb-line{background:#0f172a}
+.theme-bold .theme-thumb-line.short{background:#2563eb}
+.theme-bold .theme-thumb-card{background:#fff;border:1px solid #bfdbfe}
+.theme-classic .theme-thumb-top{background:#263238}
+.theme-classic .theme-thumb-hero{background:#fff}
+.theme-classic .theme-thumb-line{background:#263238}
+.theme-classic .theme-thumb-line.short{background:#2e7d32}
+.theme-classic .theme-thumb-card{background:#f5f5f5;border:1px solid #ddd}
+
 /* ── Add page inline form ── */
 .add-page-wrap{
   overflow:hidden;
@@ -83,6 +207,16 @@
   .pages-grid{grid-template-columns:1fr}
   .search-wrap input{width:160px}
   .template-grid{grid-template-columns:repeat(3,1fr)}
+  .theme-strip-main{align-items:flex-start;flex-direction:column}
+  .theme-thumb{width:100%;max-width:240px}
+  .theme-actions{width:100%}
+  .theme-actions .btn{flex:1;justify-content:center}
+  .theme-picker-footer{align-items:stretch;flex-direction:column}
+  .theme-pending-note{margin-right:0}
+  .theme-preview-cards{grid-template-columns:1fr;padding:22px}
+  .theme-preview-nav{padding:0 18px}
+  .theme-preview-links{display:none}
+  .theme-preview-page-hero{padding:44px 24px}
 }
 </style>
 
@@ -105,6 +239,119 @@
   </div>
 
   <div class="page-body">
+
+    <!-- ── Site theme ── -->
+    <div class="theme-strip" id="themeStrip">
+      <div class="theme-strip-main">
+        <div class="theme-thumb theme-modern" id="currentThemeThumb">
+          <div class="theme-thumb-top"><span class="theme-dot"></span><span class="theme-dot"></span><span class="theme-dot"></span></div>
+          <div class="theme-thumb-hero">
+            <div class="theme-thumb-line"></div>
+            <div class="theme-thumb-line short"></div>
+          </div>
+          <div class="theme-thumb-grid">
+            <div class="theme-thumb-card"></div>
+            <div class="theme-thumb-card"></div>
+            <div class="theme-thumb-card"></div>
+          </div>
+        </div>
+        <div class="theme-info">
+          <div class="theme-kicker">Website theme</div>
+          <div class="theme-name" id="currentThemeName">Modern Auto</div>
+          <div class="theme-desc" id="currentThemeDesc">Clean inventory-first layout with crisp cards, dark navigation, and green accents.</div>
+          <div class="theme-swatches" id="currentThemeSwatches">
+            <span class="theme-swatch" style="background:#1a1c1e"></span>
+            <span class="theme-swatch" style="background:#008060"></span>
+            <span class="theme-swatch" style="background:#f6f6f7"></span>
+          </div>
+        </div>
+        <div class="theme-actions">
+          <button class="btn btn-secondary" onclick="toggleThemePicker()">
+            <span class="btn-label" id="themePickerBtnLabel">Change theme</span>
+          </button>
+        </div>
+      </div>
+      <div class="theme-picker" id="themePicker">
+        <div class="theme-picker-grid">
+          <div class="theme-card selected" data-theme="modern" onclick="selectWebsiteTheme(this)">
+            <div class="theme-thumb theme-modern">
+              <div class="theme-thumb-top"><span class="theme-dot"></span><span class="theme-dot"></span><span class="theme-dot"></span></div>
+              <div class="theme-thumb-hero"><div class="theme-thumb-line"></div><div class="theme-thumb-line short"></div></div>
+              <div class="theme-thumb-grid"><div class="theme-thumb-card"></div><div class="theme-thumb-card"></div><div class="theme-thumb-card"></div></div>
+            </div>
+            <div class="theme-card-title">Modern Auto</div>
+            <div class="theme-card-sub">Inventory-first with restrained green accents.</div>
+          </div>
+          <div class="theme-card" data-theme="premium" onclick="selectWebsiteTheme(this)">
+            <div class="theme-thumb theme-premium">
+              <div class="theme-thumb-top"><span class="theme-dot"></span><span class="theme-dot"></span><span class="theme-dot"></span></div>
+              <div class="theme-thumb-hero"><div class="theme-thumb-line"></div><div class="theme-thumb-line short"></div></div>
+              <div class="theme-thumb-grid"><div class="theme-thumb-card"></div><div class="theme-thumb-card"></div><div class="theme-thumb-card"></div></div>
+            </div>
+            <div class="theme-card-title">Premium Dark</div>
+            <div class="theme-card-sub">High-contrast look for luxury and performance lots.</div>
+          </div>
+          <div class="theme-card" data-theme="bold" onclick="selectWebsiteTheme(this)">
+            <div class="theme-thumb theme-bold">
+              <div class="theme-thumb-top"><span class="theme-dot"></span><span class="theme-dot"></span><span class="theme-dot"></span></div>
+              <div class="theme-thumb-hero"><div class="theme-thumb-line"></div><div class="theme-thumb-line short"></div></div>
+              <div class="theme-thumb-grid"><div class="theme-thumb-card"></div><div class="theme-thumb-card"></div><div class="theme-thumb-card"></div></div>
+            </div>
+            <div class="theme-card-title">Bold Blue</div>
+            <div class="theme-card-sub">Bright, promotional style for specials and campaigns.</div>
+          </div>
+          <div class="theme-card" data-theme="classic" onclick="selectWebsiteTheme(this)">
+            <div class="theme-thumb theme-classic">
+              <div class="theme-thumb-top"><span class="theme-dot"></span><span class="theme-dot"></span><span class="theme-dot"></span></div>
+              <div class="theme-thumb-hero"><div class="theme-thumb-line"></div><div class="theme-thumb-line short"></div></div>
+              <div class="theme-thumb-grid"><div class="theme-thumb-card"></div><div class="theme-thumb-card"></div><div class="theme-thumb-card"></div></div>
+            </div>
+            <div class="theme-card-title">Classic Dealer</div>
+            <div class="theme-card-sub">Traditional, simple, and service-forward.</div>
+          </div>
+        </div>
+        <div class="theme-picker-footer">
+          <span class="theme-pending-note" id="themePendingNote">Select a theme to preview or save.</span>
+          <button class="btn btn-secondary" onclick="previewWebsiteTheme()">
+            <svg width="14" height="14"><use href="#icon-eye"/></svg>
+            Preview
+          </button>
+          <button class="btn btn-primary" id="saveThemeBtn" onclick="saveWebsiteTheme()" disabled>
+            <svg width="14" height="14"><use href="#icon-check"/></svg>
+            Save theme
+          </button>
+          <button class="btn btn-secondary" onclick="cancelThemeChange()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="theme-preview-modal" id="themePreviewModal" onclick="closeThemePreview(event)">
+      <div class="theme-preview-dialog">
+        <div class="theme-preview-head">
+          <div class="theme-preview-title" id="themePreviewTitle">Theme preview</div>
+          <button class="icon-btn" title="Close preview" onclick="closeThemePreview()">
+            ×
+          </button>
+        </div>
+        <div class="theme-preview-site theme-modern-full" id="themePreviewSite">
+          <div class="theme-preview-nav">
+            <div class="theme-preview-brand">DealerCrest</div>
+            <div class="theme-preview-links"><span>Inventory</span><span>Finance</span><span>Contact</span></div>
+          </div>
+          <div class="theme-preview-page-hero">
+            <h2>Drive Your Dream</h2>
+            <p>Browse new and pre-owned vehicles with transparent pricing, helpful financing, and a team ready to help.</p>
+            <button class="theme-preview-cta">Browse Inventory</button>
+          </div>
+          <div class="theme-preview-cards">
+            <div class="theme-preview-card-lg"><strong>Best Price Guarantee</strong><span>Simple, transparent offers on every vehicle.</span></div>
+            <div class="theme-preview-card-lg"><strong>Certified Pre-Owned</strong><span>Inspected inventory shoppers can trust.</span></div>
+            <div class="theme-preview-card-lg"><strong>Easy Financing</strong><span>Clear options for every buyer.</span></div>
+          </div>
+          <div class="theme-preview-foot">© 2026 DealerCrest. All rights reserved.</div>
+        </div>
+      </div>
+    </div>
 
     <!-- ── Inline add-page form ── -->
     <div class="add-page-wrap" id="addPageWrap">
@@ -314,8 +561,115 @@
 </div>
 
 <script>
+/* ── Website theme ── */
+window.savedWebsiteTheme = window.savedWebsiteTheme || window.selectedWebsiteTheme || 'modern';
+window.pendingWebsiteTheme = window.pendingWebsiteTheme || window.savedWebsiteTheme;
+window.websiteThemes = window.websiteThemes || {
+  modern: {
+    name: 'Modern Auto',
+    desc: 'Clean inventory-first layout with crisp cards, dark navigation, and green accents.',
+    cls: 'theme-modern',
+    previewCls: 'theme-modern-full',
+    colors: ['#1a1c1e', '#008060', '#f6f6f7']
+  },
+  premium: {
+    name: 'Premium Dark',
+    desc: 'High-contrast look for luxury and performance lots.',
+    cls: 'theme-premium',
+    previewCls: 'theme-premium-full',
+    colors: ['#111827', '#b45309', '#e5e7eb']
+  },
+  bold: {
+    name: 'Bold Blue',
+    desc: 'Bright, promotional style for specials and campaigns.',
+    cls: 'theme-bold',
+    previewCls: 'theme-bold-full',
+    colors: ['#0f172a', '#2563eb', '#dbeafe']
+  },
+  classic: {
+    name: 'Classic Dealer',
+    desc: 'Traditional, simple, and service-forward.',
+    cls: 'theme-classic',
+    previewCls: 'theme-classic-full',
+    colors: ['#263238', '#2e7d32', '#f5f5f5']
+  }
+};
+
+function toggleThemePicker() {
+  const strip = document.getElementById('themeStrip');
+  const label = document.getElementById('themePickerBtnLabel');
+  const open = strip.classList.toggle('open');
+  label.textContent = open ? 'Close themes' : 'Change theme';
+  if (open) {
+    window.pendingWebsiteTheme = window.savedWebsiteTheme;
+    updateThemePicker();
+  }
+}
+
+function selectWebsiteTheme(card) {
+  window.pendingWebsiteTheme = card.dataset.theme;
+  updateThemePicker();
+}
+
+function applyWebsiteTheme(themeId) {
+  const theme = window.websiteThemes[themeId || window.savedWebsiteTheme] || window.websiteThemes.modern;
+  const thumb = document.getElementById('currentThemeThumb');
+  thumb.className = 'theme-thumb ' + theme.cls;
+  document.getElementById('currentThemeName').textContent = theme.name;
+  document.getElementById('currentThemeDesc').textContent = theme.desc;
+  document.getElementById('currentThemeSwatches').innerHTML = theme.colors
+    .map(color => '<span class="theme-swatch" style="background:' + color + '"></span>')
+    .join('');
+}
+
+function updateThemePicker() {
+  const pending = window.pendingWebsiteTheme || window.savedWebsiteTheme;
+  const saved = window.savedWebsiteTheme;
+  const theme = window.websiteThemes[pending] || window.websiteThemes.modern;
+  document.querySelectorAll('.theme-card').forEach(card => {
+    card.classList.toggle('selected', card.dataset.theme === pending);
+  });
+  const changed = pending !== saved;
+  document.getElementById('saveThemeBtn').disabled = !changed;
+  document.getElementById('themePendingNote').textContent = changed
+    ? theme.name + ' selected. Preview it, then save to apply.'
+    : 'Current saved theme: ' + theme.name + '.';
+}
+
+function previewWebsiteTheme() {
+  const themeId = window.pendingWebsiteTheme || window.savedWebsiteTheme;
+  const theme = window.websiteThemes[themeId] || window.websiteThemes.modern;
+  document.getElementById('themePreviewTitle').textContent = theme.name + ' preview';
+  document.getElementById('themePreviewSite').className = 'theme-preview-site ' + theme.previewCls;
+  document.getElementById('themePreviewModal').classList.add('open');
+}
+
+function closeThemePreview(event) {
+  if (event && event.target !== event.currentTarget) return;
+  document.getElementById('themePreviewModal').classList.remove('open');
+}
+
+function saveWebsiteTheme() {
+  window.savedWebsiteTheme = window.pendingWebsiteTheme || window.savedWebsiteTheme;
+  window.selectedWebsiteTheme = window.savedWebsiteTheme;
+  applyWebsiteTheme(window.savedWebsiteTheme);
+  updateThemePicker();
+  document.getElementById('themeStrip').classList.remove('open');
+  document.getElementById('themePickerBtnLabel').textContent = 'Change theme';
+}
+
+function cancelThemeChange() {
+  window.pendingWebsiteTheme = window.savedWebsiteTheme;
+  updateThemePicker();
+  document.getElementById('themeStrip').classList.remove('open');
+  document.getElementById('themePickerBtnLabel').textContent = 'Change theme';
+}
+
+applyWebsiteTheme(window.savedWebsiteTheme);
+updateThemePicker();
+
 /* ── Add page form ── */
-let selectedTemplate = 'blank';
+window.selectedTemplate = (window.selectedTemplate !== undefined) ? window.selectedTemplate : 'blank';
 
 function toggleAddPage() {
   const wrap = document.getElementById('addPageWrap');
@@ -332,7 +686,7 @@ function toggleAddPage() {
 function selectTemplate(card) {
   document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
-  selectedTemplate = card.dataset.template;
+  window.selectedTemplate = card.dataset.template;
 
   // Pre-fill name if it's still empty
   const nameEl = document.getElementById('newPageName');
@@ -345,7 +699,7 @@ function selectTemplate(card) {
       faq:     'FAQ',
       blank:   ''
     };
-    const def = defaults[selectedTemplate] || '';
+    const def = defaults[window.selectedTemplate] || '';
     if (def) {
       nameEl.value = def;
       onPageNameInput(def);
@@ -398,7 +752,7 @@ function validateForm() {
 function createPage() {
   const name = document.getElementById('newPageName').value.trim();
   const slug = '/' + document.getElementById('newPageSlug').value.trim();
-  const template = selectedTemplate;
+  const template = window.selectedTemplate;
   const pageId = slug.replace(/^\//, '').replace(/-/g, '_');
 
   if (!name || !slug) return;
@@ -476,7 +830,7 @@ function resetForm() {
   slugEl.dataset.manual = '';
   document.getElementById('slugPreview').textContent = 'dealercrest.com/…';
   document.getElementById('createPageBtn').disabled = true;
-  selectedTemplate = 'blank';
+  window.selectedTemplate = 'blank';
   document.querySelectorAll('.template-card').forEach(c => {
     c.classList.toggle('selected', c.dataset.template === 'blank');
   });
