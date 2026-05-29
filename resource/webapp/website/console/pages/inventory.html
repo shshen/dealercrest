@@ -49,66 +49,91 @@
 </style>
 
 <div class="page">
-  <div class="page-header">
-    <div class="page-header-title">
-      <div class="page-title">Inventory</div>
-      <div class="page-sub" id="invSubtitle">Loading…</div>
-    </div>
-    <div class="page-header-actions">
-      <button class="btn btn-secondary" onclick="loadInventory()">
-        <svg width="15" height="15"><use href="#icon-refresh"/></svg>
-        <span class="btn-label">Refresh</span>
-      </button>
-      <button class="btn btn-primary" onclick="navigate('inventory-add')">
-        <svg width="15" height="15"><use href="#icon-plus"/></svg>
-        <span class="btn-label">Add vehicle</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="page-body">
-    <!-- Stats -->
-    <div class="stats-grid" id="invStats" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin-bottom:20px">
-      <div class="stat-card"><div class="stat-label">Total Listed</div><div class="stat-value" id="s-total">—</div></div>
-      <div class="stat-card"><div class="stat-label">New</div><div class="stat-value" id="s-new">—</div></div>
-      <div class="stat-card"><div class="stat-label">Used</div><div class="stat-value" id="s-used">—</div></div>
-      <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value" id="s-pending">—</div></div>
+    <div class="page-header">
+        <div class="page-header-title">
+            <div class="page-title">Inventory</div>
+            <div class="page-sub" id="invSubtitle">Loading…</div>
+        </div>
+        <div class="page-header-actions">
+            <button class="btn btn-secondary" onclick="loadInventory()">
+                <svg width="15" height="15">
+                    <use href="#icon-refresh" />
+                </svg>
+                <span class="btn-label">Refresh</span>
+            </button>
+            <button class="btn btn-primary" onclick="navigate('inventory-add')">
+                <svg width="15" height="15">
+                    <use href="#icon-plus" />
+                </svg>
+                <span class="btn-label">Add vehicle</span>
+            </button>
+        </div>
     </div>
 
-    <!-- Filter bar -->
-    <div class="filter-bar">
-      <div class="search-wrap">
-        <svg><use href="#icon-search"/></svg>
-        <input type="text" id="invSearch" placeholder="Search vehicles…" oninput="filterInventory()">
-      </div>
-      <select class="filter-sel" id="condFilter" onchange="filterInventory()">
-        <option value="">All conditions</option>
-        <option>New</option><option>Used</option><option>CPO</option>
-      </select>
-      <select class="filter-sel" id="makeFilter" onchange="filterInventory()">
-        <option value="">All makes</option>
-      </select>
-      <div class="view-toggle">
-        <button class="vt-btn" id="btnGrid" title="Grid" onclick="setView('grid')">
-          <svg><use href="#icon-dashboard"/></svg>
-        </button>
-        <button class="vt-btn active" id="btnList" title="List" onclick="setView('list')">
-          <svg><use href="#icon-list"/></svg>
-        </button>
-      </div>
-    </div>
+    <div class="page-body">
+        <!-- Stats -->
+        <div class="stats-grid" id="invStats"
+            style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin-bottom:20px">
+            <div class="stat-card">
+                <div class="stat-label">Total Listed</div>
+                <div class="stat-value" id="s-total">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">New</div>
+                <div class="stat-value" id="s-new">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Used</div>
+                <div class="stat-value" id="s-used">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pending</div>
+                <div class="stat-value" id="s-pending">—</div>
+            </div>
+        </div>
 
-    <!-- Data container -->
-    <div id="invData"></div>
+        <!-- Filter bar -->
+        <div class="filter-bar">
+            <div class="search-wrap">
+                <svg>
+                    <use href="#icon-search" />
+                </svg>
+                <input type="text" id="invSearch" placeholder="Search vehicles…" oninput="filterInventory()">
+            </div>
+            <select class="filter-sel" id="condFilter" onchange="filterInventory()">
+                <option value="">All conditions</option>
+                <option>New</option>
+                <option>Used</option>
+                <option>CPO</option>
+            </select>
+            <select class="filter-sel" id="makeFilter" onchange="filterInventory()">
+                <option value="">All makes</option>
+            </select>
+            <div class="view-toggle">
+                <button class="vt-btn" id="btnGrid" title="Grid" onclick="setView('grid')">
+                    <svg>
+                        <use href="#icon-dashboard" />
+                    </svg>
+                </button>
+                <button class="vt-btn active" id="btnList" title="List" onclick="setView('list')">
+                    <svg>
+                        <use href="#icon-list" />
+                    </svg>
+                </button>
+            </div>
+        </div>
 
-    <div class="pagination" style="margin-top:16px;display:none" id="invPagination">
-      <span class="pagination-info" id="invCount"></span>
-      <div class="pagination-btns">
-        <button class="btn btn-secondary btn-sm">← Previous</button>
-        <button class="btn btn-secondary btn-sm">Next →</button>
-      </div>
+        <!-- Data container -->
+        <div id="invData"></div>
+
+        <div class="pagination" style="margin-top:16px;display:none" id="invPagination">
+            <span class="pagination-info" id="invCount"></span>
+            <div class="pagination-btns">
+                <button class="btn btn-secondary btn-sm">← Previous</button>
+                <button class="btn btn-secondary btn-sm">Next →</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
