@@ -139,7 +139,7 @@
 <script>
     window.invView = window.invView || 'list';
     window.invVehicles = window.invVehicles || [];
-    
+
     function brandClass(make) {
         const name = (make || '').toLowerCase().replace(/[^a-z]/g, '');
         if (!name) {
@@ -147,7 +147,7 @@
         }
         return 'brand-' + name;
     }
-    
+
     function brandId(make) {
         const map = {
             toyota: 'brand-toyota',
@@ -176,7 +176,7 @@
         }
         return 'badge-gray';
     }
-    
+
     function statusBadge(status) {
         if (status === 'active') {
             return 'badge-green';
@@ -186,18 +186,18 @@
         }
         return 'badge-gray';
     }
-    
+
     function statusLabel(status) {
         if (status === 'active') {
             return 'Active';
         }
         return 'Pending';
     }
-    
+
     function fmt(price) {
         return '$' + price.toLocaleString();
     }
-    
+
     function mileage(vehicle) {
         if (vehicle.mileage === 0) {
             return 'New';
@@ -211,36 +211,28 @@
           '<div class="brand-icon ' + brandClass(vehicle.make) + '">' +
             '<svg><use href="#' + brandId(vehicle.make) + '"/></svg>' +
           '</div>' +
-    
           '<div class="inv-list-info">' +
             '<div class="inv-list-title">' +
               vehicle.year + ' ' + vehicle.make + ' ' + vehicle.model + ' ' + vehicle.trim +
             '</div>' +
-    
             '<div class="inv-list-meta">' +
               '<span class="inv-meta-tag">' + mileage(vehicle) + '</span>' +
               '<span class="inv-meta-sep">·</span>' +
-    
               '<span class="inv-meta-tag">' + vehicle.color + '</span>' +
               '<span class="inv-meta-sep">·</span>' +
-    
               '<span class="inv-meta-tag">' + vehicle.transmission + '</span>' +
               '<span class="inv-meta-sep">·</span>' +
-    
               '<span class="badge ' + condBadge(vehicle.condition) + '" style="font-size:11px">' +
                 vehicle.condition +
               '</span>' +
             '</div>' +
           '</div>' +
-    
           '<div class="inv-list-price">' + fmt(vehicle.price) + '</div>' +
-    
           '<div class="inv-list-status hide-sm">' +
             '<span class="badge ' + statusBadge(vehicle.status) + '">' +
               statusLabel(vehicle.status) +
             '</span>' +
           '</div>' +
-    
           '<div class="inv-list-actions">' +
             '<button class="btn btn-secondary btn-sm">Edit</button>' +
             '<button class="btn btn-ghost btn-sm hide-sm">View</button>' +
@@ -348,8 +340,7 @@
         document.getElementById('s-used').textContent = usedCount;
         document.getElementById('s-pending').textContent = pendingCount;
 
-        document.getElementById('invSubtitle').textContent =
-            total + ' vehicles · ' + pendingCount + ' pending review';
+        document.getElementById('invSubtitle').textContent = total + ' vehicles · ' + pendingCount + ' pending review';
     }
 
     function getMakes(vehicles) {
